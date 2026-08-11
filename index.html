@@ -2780,13 +2780,17 @@ function toggleTask(id) {
 }
 function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); saveAll(); renderTasks(); showToast('已删除'); }
 function filterTasks(f) {
-  currentFilter = f; activeSavedFilter = null;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+  if (f === 'project') { taskGroupByProject = !taskGroupByProject; document.querySelector('[data-filter="project"]')?.classList.toggle('active', taskGroupByProject); renderTasks(); return; }
+  currentFilter = f; activeSavedFilter = null; taskGroupByProject = false;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    if (b.dataset.filter === 'project') return;
+    b.classList.toggle('active', b.dataset.filter === f);
+  });
   renderTasks();
 }
 function setTaskView(v) {
   currentTaskView = v;
-  document.querySelectorAll('.task-view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === v));
   renderTasks();
 }
 function toggleSubtask(tid, sid) {
@@ -2822,21 +2826,26 @@ function renderTaskProjectSelect() {
   sel.innerHTML = `<option value="">未归类</option>` + projects.map(p => `<option value="${p.id}">${p.icon} ${escHtml(p.name)}</option>`).join('');
   if (curVal) sel.value = curVal;
 }
-function saveFilter() {
-  openModal('saveFilterModal');
+function openSaveFilterModal() {
+  const sel = document.getElementById('fProject');
+  if (sel) { sel.innerHTML = '<option value="">全部项目</option>' + projects.map(p => `<option value="${p.id}">${p.icon} ${escHtml(p.name)}</option>`).join(''); }
+  document.getElementById('filterNameInput').value = '';
+  ['fActive','fHigh','fToday','fUrgent','fImportant'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
+  document.getElementById('fTag').value = '';
+  openModal('filterModal');
 }
-function confirmSaveFilter() {
+function saveFilter() {
   const name = document.getElementById('filterNameInput').value.trim();
   if (!name) { showToast('请输入过滤器名'); return; }
   const cond = {
-    onlyActive: document.getElementById('fcondActive').checked,
-    onlyHigh: document.getElementById('fcondHigh').checked,
-    todayDue: document.getElementById('fcondToday').checked,
-    tag: document.getElementById('fcondTag').value.trim(),
-    projectId: document.getElementById('fcondProject').value || ''
+    onlyActive: document.getElementById('fActive').checked,
+    onlyHigh: document.getElementById('fHigh').checked,
+    todayDue: document.getElementById('fToday').checked,
+    tag: document.getElementById('fTag').value.trim(),
+    projectId: document.getElementById('fProject').value || ''
   };
   savedFilters.push({ id: Date.now(), name, conditions: cond });
-  saveAll(); closeModal('saveFilterModal'); renderSavedFiltersBar(); showToast('已保存');
+  saveAll(); closeModal('filterModal'); renderSavedFiltersBar(); showToast('已保存');
 }
 function applySavedFilter(id) {
   const f = savedFilters.find(x => x.id === id); if (!f) return;
@@ -2887,6 +2896,8 @@ function renderTasks() {
     display = [...todayTasks, ...nonTodayDue];
     if (currentFilter === 'active') display = display.filter(t => !t.done);
     if (currentFilter === 'completed') display = display.filter(t => t.done);
+    if (currentFilter === 'today') display = display.filter(t => t.dueDate && new Date(t.dueDate).toDateString() === now.toDateString() || t.date === today);
+    if (currentFilter === 'high') display = display.filter(t => t.priority === 'high');
   }
   display.sort((a,b) => {
     if (a.done !== b.done) return a.done ? 1 : -1;
