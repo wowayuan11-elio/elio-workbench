@@ -7,6 +7,8 @@
 <meta name="theme-color" content="#f0ede8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="elio工作台">
+<link rel="manifest" href='data:application/manifest+json,{"name":"elio工作台","short_name":"elio","start_url":".","display":"standalone","background_color":"#efebe5","theme_color":"#f0ede8","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%2345403a'/%3E%3Ctext x='96' y='130' font-size='96' text-anchor='middle' fill='%23faf7f2' font-family='sans-serif'%3Ee%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"},{"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%2345403a'/%3E%3Ctext x='256' y='350' font-size='256' text-anchor='middle' fill='%23faf7f2' font-family='sans-serif'%3Ee%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
 <title>elio工作台</title>
 <style>
 /* ==================== Design Tokens ==================== */
@@ -1007,6 +1009,210 @@ ul { list-style: none; }
   pointer-events: none;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ==================== A: Life Management ==================== */
+.life-schedule { display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; }
+.schedule-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; background: var(--surface);
+  border: 1px solid var(--rule); border-radius: var(--radius-sm);
+  transition: all var(--transition); cursor: pointer;
+}
+.schedule-item:hover { background: var(--surface-hover); }
+.schedule-item.done { opacity: 0.45; }
+.schedule-item.done .schedule-time { text-decoration: line-through; }
+.schedule-item.now { border-color: var(--accent); background: var(--accent-bg); }
+.schedule-time { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--ink); min-width: 100px; }
+.schedule-name { flex: 1; font-size: 13px; color: var(--ink-soft); }
+.schedule-check {
+  width: 20px; height: 20px; border: 1.5px solid var(--muted-light);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition); flex-shrink: 0;
+}
+.schedule-item.done .schedule-check { background: var(--sage); border-color: var(--sage); }
+.schedule-item.done .schedule-check::after { content: ''; width: 5px; height: 9px; border: solid var(--surface); border-width: 0 2px 2px 0; transform: rotate(45deg) translateY(-1px); }
+
+.life-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.life-card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px; }
+.life-card-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+.life-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.life-input-row input { flex: 1; padding: 8px 12px; background: var(--surface-2); border: 1px solid var(--rule); border-radius: var(--radius-xs); font-size: 13px; color: var(--ink); outline: none; }
+.life-input-row input:focus { border-color: var(--accent-soft); }
+.life-input-row select { padding: 8px 10px; background: var(--surface-2); border: 1px solid var(--rule); border-radius: var(--radius-xs); font-size: 12px; color: var(--ink); }
+.life-log { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
+.life-log-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--surface-2); border-radius: var(--radius-xs); font-size: 12px; }
+.life-log-val { font-weight: 600; color: var(--accent); }
+.life-log-del { color: var(--muted-light); cursor: pointer; font-size: 14px; }
+.life-log-del:hover { color: var(--rose); }
+.life-progress { margin-top: 10px; }
+.life-progress-bar { height: 6px; background: var(--rule-soft); border-radius: 3px; overflow: hidden; }
+.life-progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+.life-stats { display: flex; gap: 16px; margin-top: 10px; }
+.life-stat { text-align: center; flex: 1; }
+.life-stat-val { font-size: 20px; font-weight: 600; }
+.life-stat-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+.job-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+.job-stat-box { background: var(--surface-2); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
+.job-stat-num { font-size: 22px; font-weight: 600; color: var(--accent); }
+.job-stat-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* ==================== B: Feynman Practice ==================== */
+.feyn-concept { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; }
+.feyn-concept-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.feyn-concept-name { font-size: 20px; font-weight: 600; }
+.feyn-concept-en { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.feyn-concept-nav { display: flex; gap: 6px; }
+.feyn-nav-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--rule); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: var(--ink-soft); transition: all var(--transition); }
+.feyn-nav-btn:hover { background: var(--surface-hover); }
+.feyn-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.7; padding: 14px; background: var(--surface-2); border-radius: var(--radius-sm); margin-bottom: 16px; }
+.feyn-analogy { font-size: 13px; color: var(--accent); padding: 10px 14px; background: var(--accent-bg); border-radius: var(--radius-sm); margin-bottom: 16px; }
+.feyn-prep { display: flex; flex-direction: column; gap: 14px; }
+.feyn-prep-item { background: var(--surface-2); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 14px; }
+.feyn-prep-label { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.feyn-prep-letter { width: 24px; height: 24px; border-radius: 6px; background: var(--ink); color: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.feyn-prep-textarea { width: 100%; min-height: 60px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-xs); color: var(--ink); font-size: 13px; resize: vertical; outline: none; font-family: inherit; line-height: 1.6; }
+.feyn-prep-textarea:focus { border-color: var(--accent-soft); }
+.feyn-voice-btn { padding: 4px 10px; border-radius: 6px; font-size: 11px; background: var(--surface); border: 1px solid var(--rule); color: var(--muted); cursor: pointer; transition: all var(--transition); }
+.feyn-voice-btn:hover { background: var(--surface-hover); }
+.feyn-voice-btn.recording { background: var(--rose-bg); border-color: var(--rose); color: var(--rose); }
+.feyn-actions { display: flex; gap: 8px; margin-top: 16px; }
+.feyn-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 20px; }
+.feyn-grid-cell { aspect-ratio: 1; border-radius: 5px; background: var(--rule-soft); display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--muted-light); transition: all var(--transition); }
+.feyn-grid-cell.done { background: var(--sage); color: var(--surface); }
+.feyn-grid-cell.today { border: 2px solid var(--accent); }
+.feyn-streak { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--gold); }
+
+/* ==================== C: Media / Self-media ==================== */
+.kanban { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.kanban-col { background: var(--surface-2); border-radius: var(--radius); padding: 14px; min-height: 200px; }
+.kanban-col-head { font-size: 12px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.kanban-col-count { font-size: 11px; color: var(--muted); background: var(--surface); padding: 1px 8px; border-radius: 8px; }
+.kanban-cards { display: flex; flex-direction: column; gap: 8px; min-height: 40px; }
+.kanban-card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 10px 12px; cursor: grab; transition: all var(--transition); animation: slideIn 0.25s ease; }
+.kanban-card:hover { border-color: var(--muted-light); box-shadow: var(--shadow); }
+.kanban-card.dragging { opacity: 0.4; }
+.kanban-card.drag-over { border-color: var(--accent); border-style: dashed; }
+.kanban-card-title { font-size: 12.5px; font-weight: 600; margin-bottom: 4px; }
+.kanban-card-meta { display: flex; gap: 6px; align-items: center; }
+.kanban-card-tag { font-size: 9px; font-weight: 600; padding: 1px 6px; border-radius: 6px; }
+.kanban-card-tag.xhs { background: rgba(255,36,66,0.10); color: #c44a56; }
+.kanban-card-tag.douyin { background: rgba(232,77,92,0.10); color: #c44a56; }
+.kanban-card-del { color: var(--muted-light); font-size: 12px; cursor: pointer; opacity: 0; transition: opacity var(--transition); }
+.kanban-card:hover .kanban-card-del { opacity: 1; }
+.kanban-card-del:hover { color: var(--rose); }
+.kanban-add { padding: 6px; border: 1px dashed var(--rule); border-radius: var(--radius-sm); text-align: center; font-size: 11px; color: var(--muted); cursor: pointer; transition: all var(--transition); }
+.kanban-add:hover { border-color: var(--accent-soft); color: var(--ink); }
+
+.draft-section { margin-bottom: 24px; }
+.draft-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.draft-tab { padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 500; color: var(--muted); background: transparent; border: 1px solid var(--rule); cursor: pointer; transition: all var(--transition); }
+.draft-tab.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.draft-list { display: flex; flex-direction: column; gap: 8px; }
+.draft-item { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px 16px; transition: all var(--transition); }
+.draft-item:hover { border-color: var(--muted-light); }
+.draft-item-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.draft-item-title { font-size: 13px; font-weight: 600; }
+.draft-item-content { font-size: 12px; color: var(--muted); margin-bottom: 6px; white-space: pre-wrap; }
+.draft-item-actions { display: flex; gap: 6px; }
+
+.publish-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.publish-stat-box { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 14px; text-align: center; }
+.publish-stat-num { font-size: 24px; font-weight: 600; color: var(--accent); }
+.publish-stat-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.publish-list { display: flex; flex-direction: column; gap: 8px; }
+.publish-item { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+.publish-item-info { flex: 1; }
+.publish-item-title { font-size: 13px; font-weight: 600; }
+.publish-item-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.publish-item-data { display: flex; gap: 10px; }
+.publish-data-item { text-align: center; }
+.publish-data-num { font-size: 14px; font-weight: 600; }
+.publish-data-lbl { font-size: 9px; color: var(--muted); }
+
+/* ==================== D: AI News ==================== */
+.news-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+.news-cats { display: flex; gap: 6px; flex-wrap: wrap; }
+.news-cat { padding: 5px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; color: var(--muted); background: transparent; border: 1px solid var(--rule); cursor: pointer; transition: all var(--transition); }
+.news-cat:hover { color: var(--ink-soft); }
+.news-cat.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.news-list { display: flex; flex-direction: column; gap: 10px; }
+.news-item { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px 18px; transition: all var(--transition); animation: slideIn 0.25s ease; }
+.news-item:hover { border-color: var(--muted-light); box-shadow: var(--shadow); }
+.news-item-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.news-item-title { font-size: 14px; font-weight: 600; flex: 1; }
+.news-item-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 8px; white-space: nowrap; }
+.news-item-tag.ai { background: var(--accent-bg); color: var(--accent); }
+.news-item-tag.tech { background: var(--sage-bg); color: var(--sage); }
+.news-item-tag.industry { background: var(--gold-bg); color: var(--gold); }
+.news-item-tag.dev { background: var(--rose-bg); color: var(--rose); }
+.news-item-summary { font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
+.news-item-meta { display: flex; gap: 10px; margin-top: 8px; font-size: 11px; color: var(--muted); }
+.news-item-link { color: var(--accent); font-size: 11px; text-decoration: none; }
+.news-item-link:hover { text-decoration: underline; }
+
+/* ==================== E: Charts / Visualization ==================== */
+.chart-container { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+.chart-title { font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+.chart-svg { width: 100%; height: auto; }
+.chart-legend { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+.chart-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.chart-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 10px; }
+.heatmap-cell { aspect-ratio: 1; border-radius: 3px; background: var(--rule-soft); transition: all var(--transition); }
+.heatmap-cell.l1 { background: rgba(138,154,130,0.25); }
+.heatmap-cell.l2 { background: rgba(138,154,130,0.50); }
+.heatmap-cell.l3 { background: rgba(138,154,130,0.75); }
+.heatmap-cell.l4 { background: var(--sage); }
+.heatmap-labels { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 4px; }
+.heatmap-label { text-align: center; font-size: 9px; color: var(--muted-light); }
+
+/* ==================== F: Export / Settings ==================== */
+.export-section { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+.export-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+.export-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.export-btn { padding: 10px 16px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 600; background: var(--surface-2); border: 1px solid var(--rule); color: var(--ink-soft); cursor: pointer; transition: all var(--transition); display: flex; align-items: center; gap: 6px; }
+.export-btn:hover { background: var(--surface-hover); color: var(--ink); }
+.export-btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.export-btn.primary:hover { background: var(--ink-soft); }
+
+/* ==================== G: Dark Mode ==================== */
+.theme-toggle { width: 36px; height: 36px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--rule); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: all var(--transition); }
+.theme-toggle:hover { background: var(--surface-hover); }
+body.dark {
+  --bg: #1a1814; --bg-warm: #1f1d18; --surface: #28241e; --surface-2: #221f1a;
+  --surface-hover: #2e2a23; --ink: #e4dfd7; --ink-soft: #b0a99e;
+  --muted: #7a736a; --muted-light: #5a544c; --rule: #3a3530; --rule-soft: #2e2a24;
+  --accent: #a89580; --accent-soft: #c4b5a0; --accent-bg: rgba(168,149,128,0.10);
+  --sage-bg: rgba(138,154,130,0.12); --gold-bg: rgba(184,160,126,0.12); --rose-bg: rgba(184,154,150,0.12);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.15); --shadow: 0 2px 12px rgba(0,0,0,0.2); --shadow-lg: 0 8px 30px rgba(0,0,0,0.25);
+}
+body.dark .mobile-nav { background: rgba(31,29,24,0.92); }
+
+/* Sidebar theme toggle placement */
+.sidebar-theme-row { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; margin-bottom: 12px; }
+
+/* Settings section */
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--rule-soft); }
+.settings-row:last-child { border-bottom: none; }
+.settings-label { font-size: 13px; color: var(--ink-soft); }
+.settings-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* PWA install banner */
+.pwa-banner { display: none; position: fixed; bottom: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--surface); border-radius: 12px; padding: 12px 20px; font-size: 13px; box-shadow: var(--shadow-lg); z-index: 9998; gap: 12px; align-items: center; }
+.pwa-banner.show { display: flex; }
+.pwa-banner-btn { padding: 5px 14px; border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 600; cursor: pointer; }
+.pwa-banner-dismiss { color: var(--muted-light); cursor: pointer; font-size: 16px; }
+
+/* Responsive for new modules */
+@media (max-width: 768px) {
+  .life-grid { grid-template-columns: 1fr; }
+  .kanban { grid-template-columns: 1fr; }
+  .job-stats { grid-template-columns: repeat(2, 1fr); }
+  .publish-stats { grid-template-columns: repeat(2, 1fr); }
+  .feyn-grid { grid-template-columns: repeat(7, 1fr); }
+  .heatmap-grid { grid-template-columns: repeat(7, 1fr); }
+}
 </style>
 </head>
 <body>
@@ -1018,17 +1224,26 @@ ul { list-style: none; }
       <div class="logo-mark"><span>W</span></div>
       <div class="logo-text">elio工作台</div>
     </div>
-    <div class="nav-section-label">工作区</div>
+    <div class="sidebar-theme-row">
+      <div class="nav-section-label" style="margin:0">工作区</div>
+      <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换深色模式">☀</div>
+    </div>
     <div class="nav-items">
       <div class="nav-item active" data-section="dashboard"><span class="nav-icon">◈</span> 仪表盘</div>
       <div class="nav-item" data-section="tasks"><span class="nav-icon">✓</span> 任务管理</div>
       <div class="nav-item" data-section="pomodoro"><span class="nav-icon">◐</span> 番茄钟</div>
       <div class="nav-item" data-section="habits"><span class="nav-icon">◉</span> 习惯打卡</div>
+      <div class="nav-item" data-section="life"><span class="nav-icon">★</span> 生活管理</div>
+      <div class="nav-item" data-section="feynman"><span class="nav-icon">✦</span> 费曼练习</div>
+      <div class="nav-item" data-section="media"><span class="nav-icon">◈</span> 自媒体</div>
       <div class="nav-item" data-section="topics"><span class="nav-icon">◆</span> 热点追踪</div>
+      <div class="nav-item" data-section="news"><span class="nav-icon">❖</span> 资讯日报</div>
       <div class="nav-item" data-section="review"><span class="nav-icon">❏</span> 每日复盘</div>
+      <div class="nav-item" data-section="stats"><span class="nav-icon">▤</span> 数据统计</div>
+      <div class="nav-item" data-section="settings"><span class="nav-icon">⚙</span> 设置</div>
     </div>
     <div class="sidebar-footer">
-      <div class="footer-text">数据本地存储 · v2.0</div>
+      <div class="footer-text">数据本地存储 · v3.0</div>
     </div>
   </nav>
 
@@ -1231,6 +1446,196 @@ ul { list-style: none; }
       </div>
     </section>
 
+    <!-- ====== A: Life Management ====== -->
+    <section class="section" id="life">
+      <h1 class="page-title">生活管理</h1>
+      <p class="page-sub">作息打卡 · 运动记录 · 体重喝水 · 求职进度</p>
+
+      <div class="card-title" style="margin-bottom:14px"><span class="ct-icon">⏰</span> 每日作息打卡</div>
+      <div class="life-schedule" id="lifeSchedule"></div>
+
+      <div class="life-grid">
+        <div class="life-card">
+          <div class="life-card-title">🏊 运动记录</div>
+          <div class="life-input-row">
+            <select id="sportType">
+              <option value="swim">游泳</option>
+              <option value="pushup">俯卧撑</option>
+              <option value="clap">胯下击掌</option>
+              <option value="walk">散步</option>
+              <option value="run">跑步</option>
+            </select>
+            <input type="number" id="sportVal" placeholder="数量/分钟" min="0">
+            <button class="btn btn-primary btn-sm" onclick="addSportLog()">记录</button>
+          </div>
+          <div class="life-log" id="sportLog"></div>
+          <div class="life-stats" id="sportStats"></div>
+        </div>
+
+        <div class="life-card">
+          <div class="life-card-title">⚖ 体重 / 💧 喝水</div>
+          <div class="life-input-row">
+            <input type="number" id="weightVal" placeholder="体重 kg" step="0.1" min="0">
+            <button class="btn btn-ghost btn-sm" onclick="addWeightLog()">记录体重</button>
+          </div>
+          <div class="life-input-row">
+            <input type="number" id="waterVal" placeholder="喝水 ml" min="0" value="250">
+            <button class="btn btn-ghost btn-sm" onclick="addWaterLog()">记录喝水</button>
+          </div>
+          <div class="life-log" id="healthLog" style="max-height:120px"></div>
+          <div class="life-stats" id="healthStats"></div>
+        </div>
+      </div>
+
+      <div class="life-card">
+        <div class="life-card-title">💼 求职进度</div>
+        <div class="life-input-row">
+          <input type="text" id="jobInput" placeholder="公司/岗位..." maxlength="30">
+          <select id="jobStatus">
+            <option value="applied">已投递</option>
+            <option value="chatting">沟通中</option>
+            <option value="interview">面试中</option>
+            <option value="offer">已Offer</option>
+            <option value="rejected">已拒绝</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="addJobLog()">添加</button>
+        </div>
+        <div class="job-stats" id="jobStats"></div>
+        <div class="life-log" id="jobLog" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <!-- ====== B: Feynman Practice ====== -->
+    <section class="section" id="feynman">
+      <h1 class="page-title">费曼练习</h1>
+      <p class="page-sub">用大白话讲清楚每个AI概念 · PREP结构练习</p>
+
+      <div class="feyn-concept" id="feynConcept"></div>
+
+      <div class="card-title" style="margin-bottom:14px"><span class="ct-icon">📊</span> 30天打卡进度</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="feyn-streak" id="feynStreak"></div>
+        <span class="label-small" id="feynDayLabel"></span>
+      </div>
+      <div class="feyn-grid" id="feynGrid"></div>
+    </section>
+
+    <!-- ====== C: Self-Media ====== -->
+    <section class="section" id="media">
+      <h1 class="page-title">自媒体运营</h1>
+      <p class="page-sub">选题看板 · 分平台草稿 · 发布追踪</p>
+
+      <div class="card-title" style="margin-bottom:14px"><span class="ct-icon">📋</span> 选题看板</div>
+      <div class="kanban" id="kanban"></div>
+
+      <div class="draft-section">
+        <div class="card-title" style="margin-bottom:14px"><span class="ct-icon">✍</span> 创作草稿箱</div>
+        <div class="draft-tabs" id="draftTabs">
+          <button class="draft-tab active" data-platform="xhs" onclick="switchDraftTab('xhs')">小红书</button>
+          <button class="draft-tab" data-platform="douyin" onclick="switchDraftTab('douyin')">抖音</button>
+        </div>
+        <div class="input-row">
+          <input type="text" class="input-field" id="draftTitle" placeholder="草稿标题..." maxlength="40">
+          <button class="btn btn-primary btn-sm" onclick="addDraft()">新建草稿</button>
+        </div>
+        <div class="draft-list" id="draftList"></div>
+      </div>
+
+      <div class="card-title" style="margin-bottom:14px"><span class="ct-icon">📈</span> 发布追踪</div>
+      <div class="publish-stats" id="publishStats"></div>
+      <div class="publish-list" id="publishList"></div>
+    </section>
+
+    <!-- ====== D: AI News ====== -->
+    <section class="section" id="news">
+      <h1 class="page-title">资讯日报</h1>
+      <p class="page-sub">AI行业新闻 · 技术动态 · 自动聚合</p>
+
+      <div class="news-toolbar">
+        <div class="news-cats" id="newsCats">
+          <button class="news-cat active" data-cat="all" onclick="switchNewsCat('all')">全部</button>
+          <button class="news-cat" data-cat="ai" onclick="switchNewsCat('ai')">AI动态</button>
+          <button class="news-cat" data-cat="tech" onclick="switchNewsCat('tech')">技术</button>
+          <button class="news-cat" data-cat="industry" onclick="switchNewsCat('industry')">行业</button>
+          <button class="news-cat" data-cat="dev" onclick="switchNewsCat('dev')">开发</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="fetchNews(true)">↻ 刷新</button>
+      </div>
+      <div class="news-list" id="newsList">
+        <div class="hot-loading"><div class="hl-spinner"></div><div class="hl-text">正在加载资讯...</div></div>
+      </div>
+    </section>
+
+    <!-- ====== E: Statistics ====== -->
+    <section class="section" id="stats">
+      <h1 class="page-title">数据统计</h1>
+      <p class="page-sub">效率趋势 · 习惯热力图 · 番茄分布</p>
+
+      <div class="chart-container">
+        <div class="chart-title">近7天效率趋势</div>
+        <div id="trendChart"></div>
+        <div class="chart-legend" id="trendLegend"></div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">习惯打卡热力图（近4周）</div>
+        <div id="heatmap"></div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">番茄钟专注分布</div>
+        <div id="pomoChart"></div>
+      </div>
+    </section>
+
+    <!-- ====== F+G: Settings ====== -->
+    <section class="section" id="settings">
+      <h1 class="page-title">设置</h1>
+      <p class="page-sub">数据管理 · 主题 · 导出备份</p>
+
+      <div class="export-section">
+        <div class="export-title">📤 数据导出</div>
+        <div class="export-btns">
+          <button class="export-btn primary" onclick="exportMarkdown()">导出 Markdown 日报</button>
+          <button class="export-btn" onclick="exportJSON()">导出 JSON 备份</button>
+          <button class="export-btn" onclick="exportCSV()">导出 CSV</button>
+        </div>
+      </div>
+
+      <div class="export-section">
+        <div class="export-title">📥 数据导入</div>
+        <div class="export-btns">
+          <button class="export-btn" onclick="document.getElementById('importFile').click()">导入 JSON 备份</button>
+          <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+        </div>
+      </div>
+
+      <div class="export-section">
+        <div class="export-title">🎨 外观</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">深色模式</div>
+            <div class="settings-desc">护眼夜间模式</div>
+          </div>
+          <div class="theme-toggle" id="settingsThemeToggle" onclick="toggleTheme()" style="font-size:18px">☀</div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">PWA 安装</div>
+            <div class="settings-desc">添加到主屏幕，体验如原生APP</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="installPWA()">安装</button>
+        </div>
+      </div>
+
+      <div class="export-section">
+        <div class="export-title">⚠ 危险操作</div>
+        <div class="export-btns">
+          <button class="export-btn" onclick="clearAllData()" style="color:var(--rose)">清空所有数据</button>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Mobile Nav -->
@@ -1239,14 +1644,24 @@ ul { list-style: none; }
       <div class="mn-item active" data-section="dashboard"><span class="mn-icon">◈</span> 仪表盘</div>
       <div class="mn-item" data-section="tasks"><span class="mn-icon">✓</span> 任务</div>
       <div class="mn-item" data-section="pomodoro"><span class="mn-icon">◐</span> 番茄</div>
-      <div class="mn-item" data-section="habits"><span class="mn-icon">◉</span> 习惯</div>
+      <div class="mn-item" data-section="life"><span class="mn-icon">★</span> 生活</div>
+      <div class="mn-item" data-section="feynman"><span class="mn-icon">✦</span> 费曼</div>
+      <div class="mn-item" data-section="media"><span class="mn-icon">◈</span> 自媒体</div>
       <div class="mn-item" data-section="topics"><span class="mn-icon">◆</span> 热点</div>
+      <div class="mn-item" data-section="news"><span class="mn-icon">❖</span> 资讯</div>
       <div class="mn-item" data-section="review"><span class="mn-icon">❏</span> 复盘</div>
+      <div class="mn-item" data-section="stats"><span class="mn-icon">▤</span> 统计</div>
+      <div class="mn-item" data-section="settings"><span class="mn-icon">⚙</span> 设置</div>
     </div>
   </nav>
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="pwa-banner" id="pwaBanner">
+  <span>📱 安装 elio工作台 到主屏幕</span>
+  <button class="pwa-banner-btn" onclick="installPWA()">安装</button>
+  <span class="pwa-banner-dismiss" onclick="document.getElementById('pwaBanner').classList.remove('show')">✕</span>
+</div>
 
 <script>
 // ==================== Data Layer ====================
@@ -1266,6 +1681,20 @@ let widgetOrder = DB.get('widgetOrder', ['clock','tasks','pomo','habits','topics
 let currentFilter = 'all';
 let selectedMood = '';
 let pomoInterval = null;
+// A: Life Management
+let lifeData = DB.get('life', { schedule:{}, sportLog:[], healthLog:[], jobLog:[] });
+// B: Feynman
+let feynmanData = DB.get('feynman', { currentIdx:0, records:{}, drafts:{} });
+// C: Media
+let mediaData = DB.get('media', { kanban:{idea:[],creating:[],published:[]}, drafts:{xhs:[],douyin:[]}, publishes:[] });
+// D: News
+let newsCache = [];
+let newsCurrentCat = 'all';
+let newsLoaded = false;
+// G: Theme
+let darkMode = DB.get('darkMode', false);
+// PWA
+let deferredPrompt = null;
 
 function todayStr() {
   const d = new Date();
@@ -1280,6 +1709,8 @@ function showToast(msg) {
 function saveAll() {
   DB.set('tasks', tasks); DB.set('habits', habits); DB.set('topics', topics);
   DB.set('reviews', reviews); DB.set('pomo', pomoData); DB.set('widgetOrder', widgetOrder);
+  DB.set('life', lifeData); DB.set('feynman', feynmanData); DB.set('media', mediaData);
+  DB.set('darkMode', darkMode);
 }
 function escHtml(s) {
   if (!s) return '';
@@ -1294,6 +1725,11 @@ function switchSection(name) {
   if (name === 'dashboard') renderDashboard();
   if (name === 'review') renderReview();
   if (name === 'topics' && !hotLoaded) fetchHotData(false);
+  if (name === 'life') renderLife();
+  if (name === 'feynman') renderFeynman();
+  if (name === 'media') renderMedia();
+  if (name === 'news' && !newsLoaded) fetchNews(false);
+  if (name === 'stats') renderStats();
   window.scrollTo(0, 0);
 }
 document.querySelectorAll('.nav-item, .mn-item').forEach(item => {
@@ -2153,6 +2589,682 @@ function renderReview() {
   `).join('');
 }
 
+// ==================== A: Life Management ====================
+const SCHEDULE = [
+  {time:'06:00', name:'起床 + 喝水'},
+  {time:'06:30', name:'游泳/有氧运动'},
+  {time:'07:30', name:'早餐 + 洗漱'},
+  {time:'08:30', name:'俯卧撑/核心训练'},
+  {time:'09:00', name:'Boss直聘 投递+沟通'},
+  {time:'12:00', name:'午餐 + 休息'},
+  {time:'14:00', name:'继续找工作'},
+  {time:'16:30', name:'学AI / 技能提升'},
+  {time:'18:00', name:'晚餐'},
+  {time:'19:00', name:'散步/放松'},
+  {time:'20:00', name:'娱乐/自媒体'},
+  {time:'21:30', name:'复盘 + 明日计划'},
+  {time:'22:30', name:'早睡'},
+];
+function toggleSchedule(idx) {
+  const today = todayStr();
+  if (!lifeData.schedule[today]) lifeData.schedule[today] = [];
+  const arr = lifeData.schedule[today];
+  const i = arr.indexOf(idx);
+  if (i >= 0) arr.splice(i, 1); else arr.push(idx);
+  saveAll(); renderLife();
+}
+function renderLife() {
+  const today = todayStr();
+  const doneArr = lifeData.schedule[today] || [];
+  const nowH = new Date().getHours() * 60 + new Date().getMinutes();
+  document.getElementById('lifeSchedule').innerHTML = SCHEDULE.map((s, i) => {
+    const [h, m] = s.time.split(':').map(Number);
+    const isDone = doneArr.includes(i);
+    const isNow = nowH >= h * 60 + m && nowH < (SCHEDULE[i + 1] ? parseInt(SCHEDULE[i + 1].time.split(':')[0]) * 60 + parseInt(SCHEDULE[i + 1].time.split(':')[1]) : 1440);
+    return `<div class="schedule-item ${isDone?'done':''} ${isNow?'now':''}" onclick="toggleSchedule(${i})">
+      <div class="schedule-time">${s.time}</div>
+      <div class="schedule-name">${s.name}</div>
+      <div class="schedule-check"></div>
+    </div>`;
+  }).join('');
+
+  // Sport log
+  const sportNames = { swim:'游泳', pushup:'俯卧撑', clap:'胯下击掌', walk:'散步', run:'跑步' };
+  const sportUnits = { swim:'米', pushup:'个', clap:'个', walk:'分钟', run:'分钟' };
+  document.getElementById('sportLog').innerHTML = lifeData.sportLog.filter(s => s.date === today).map((s, i) => {
+    const idx = lifeData.sportLog.indexOf(s);
+    return `<div class="life-log-item"><span>${sportNames[s.type]} ${s.val}${sportUnits[s.type]}</span><span class="life-log-del" onclick="delSportLog(${idx})">✕</span></div>`;
+  }).join('') || '<div class="mini-empty" style="padding:10px">今日暂无运动记录</div>';
+  const sportToday = lifeData.sportLog.filter(s => s.date === today);
+  document.getElementById('sportStats').innerHTML = Object.keys(sportNames).map(k => {
+    const total = sportToday.filter(s => s.type === k).reduce((sum, s) => sum + Number(s.val), 0);
+    return total > 0 ? `<div class="life-stat"><div class="life-stat-val">${total}</div><div class="life-stat-lbl">${sportNames[k]}</div></div>` : '';
+  }).join('');
+
+  // Health log
+  document.getElementById('healthLog').innerHTML = lifeData.healthLog.filter(h => h.date === today).map(h => {
+    const idx = lifeData.healthLog.indexOf(h);
+    return `<div class="life-log-item"><span>${h.type === 'weight' ? '⚖' : '💧'} ${h.val}${h.type === 'weight' ? 'kg' : 'ml'}</span><span class="life-log-del" onclick="delHealthLog(${idx})">✕</span></div>`;
+  }).join('') || '<div class="mini-empty" style="padding:10px">今日暂无记录</div>';
+  const weights = lifeData.healthLog.filter(h => h.type === 'weight' && h.date === today);
+  const waters = lifeData.healthLog.filter(h => h.type === 'water' && h.date === today);
+  const totalWater = waters.reduce((sum, h) => sum + Number(h.val), 0);
+  document.getElementById('healthStats').innerHTML = `
+    ${weights.length > 0 ? `<div class="life-stat"><div class="life-stat-val">${weights[weights.length-1].val}</div><div class="life-stat-lbl">体重kg</div></div>` : ''}
+    <div class="life-stat"><div class="life-stat-val">${totalWater}</div><div class="life-stat-lbl">饮水ml</div></div>
+    <div class="life-stat"><div class="life-stat-val">${Math.round(totalWater/2000*100)}%</div><div class="life-stat-lbl">目标2000ml</div></div>`;
+  document.getElementById('healthStats').innerHTML += `<div class="life-progress" style="flex-basis:100%"><div class="life-progress-bar"><div class="life-progress-fill sage" style="width:${Math.min(totalWater/2000*100,100)}%"></div></div></div>`;
+
+  // Job stats
+  const jobStatusNames = { applied:'已投递', chatting:'沟通中', interview:'面试中', offer:'已Offer', rejected:'已拒绝' };
+  const jobToday = lifeData.jobLog.filter(j => j.date === today);
+  const jobCounts = { applied:0, chatting:0, interview:0, offer:0, rejected:0 };
+  jobToday.forEach(j => { if (jobCounts[j.status] !== undefined) jobCounts[j.status]++; });
+  document.getElementById('jobStats').innerHTML = Object.keys(jobCounts).map(k =>
+    `<div class="job-stat-box"><div class="job-stat-num">${jobCounts[k]}</div><div class="job-stat-label">${jobStatusNames[k]}</div></div>`
+  ).join('');
+  document.getElementById('jobLog').innerHTML = jobToday.map(j => {
+    const idx = lifeData.jobLog.indexOf(j);
+    return `<div class="life-log-item"><span>${escHtml(j.company)} · ${jobStatusNames[j.status]}</span><span class="life-log-del" onclick="delJobLog(${idx})">✕</span></div>`;
+  }).join('') || '<div class="mini-empty" style="padding:10px">今日暂无求职记录</div>';
+}
+function addSportLog() {
+  const type = document.getElementById('sportType').value;
+  const val = document.getElementById('sportVal').value;
+  if (!val || val <= 0) { showToast('请输入数量'); return; }
+  lifeData.sportLog.push({ type, val: Number(val), date: todayStr(), time: Date.now() });
+  document.getElementById('sportVal').value = '';
+  saveAll(); renderLife(); showToast('运动已记录');
+}
+function delSportLog(idx) { lifeData.sportLog.splice(idx, 1); saveAll(); renderLife(); }
+function addWeightLog() {
+  const val = document.getElementById('weightVal').value;
+  if (!val || val <= 0) { showToast('请输入体重'); return; }
+  lifeData.healthLog.push({ type:'weight', val: Number(val), date: todayStr(), time: Date.now() });
+  document.getElementById('weightVal').value = '';
+  saveAll(); renderLife(); showToast('体重已记录');
+}
+function addWaterLog() {
+  const val = document.getElementById('waterVal').value;
+  if (!val || val <= 0) { showToast('请输入水量'); return; }
+  lifeData.healthLog.push({ type:'water', val: Number(val), date: todayStr(), time: Date.now() });
+  saveAll(); renderLife(); showToast('喝水已记录');
+}
+function delHealthLog(idx) { lifeData.healthLog.splice(idx, 1); saveAll(); renderLife(); }
+function addJobLog() {
+  const company = document.getElementById('jobInput').value.trim();
+  if (!company) { showToast('请输入公司/岗位'); return; }
+  lifeData.jobLog.push({ company, status: document.getElementById('jobStatus').value, date: todayStr(), time: Date.now() });
+  document.getElementById('jobInput').value = '';
+  saveAll(); renderLife(); showToast('求职记录已添加');
+}
+function delJobLog(idx) { lifeData.jobLog.splice(idx, 1); saveAll(); renderLife(); }
+document.getElementById('jobInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') addJobLog(); });
+
+// ==================== B: Feynman Practice ====================
+const FEYN_CONCEPTS = [
+  { name:'智能体', en:'Agent', desc:'AI Agent 是能自主感知环境、做决策、调用工具来完成任务的AI程序。它不只是回答问题，而是能规划步骤、执行操作、根据反馈调整策略。', analogy:'就像一个能干的助理：你让他订机票，他会自己查航班、比价格、选座位、完成支付，而不是只告诉你有哪些航班。' },
+  { name:'用量单位', en:'Token', desc:'Token是大语言模型处理文本的最小单位。一个中文字约1-2个Token，一个英文单词约1个Token。模型的上下文长度和计费都以Token计算。', analogy:'就像出租车计价器：不是按路程远近收费，而是按「轮子转的圈数」收费。Token就是AI的「计价圈数」。' },
+  { name:'模型', en:'Model', desc:'大语言模型是通过海量文本训练出来的统计预测引擎，根据上下文预测下一个最可能出现的Token。', analogy:'像一个读了整个图书馆的学生：你问他什么他都能聊两句，但他不是真的「理解」，而是根据读过的内容推测最合理的回答。' },
+  { name:'提示词', en:'Prompt', desc:'Prompt是你给AI的输入指令。好的Prompt包含角色设定、任务描述、输出格式、示例等要素，能显著提升输出质量。', analogy:'就像给厨师写菜单：只写「来个菜」和写「番茄炒蛋、少油少盐、装盘精致」得到的结果完全不同。' },
+  { name:'接口', en:'API', desc:'API是应用程序之间的通信接口，定义了如何请求数据和接收响应。AI的API让你能用代码调用模型能力。', analogy:'就像餐厅的菜单和点菜流程：你不需要知道厨房怎么炒菜，只需要按菜单格式点菜，菜就会端上来。' },
+  { name:'上下文', en:'Context', desc:'Context是模型在一次对话中能「记住」的文本范围。超出上下文窗口的内容会被遗忘。通常为4K-128K Token。', analogy:'就像人的短期记忆：你能记住刚才聊了什么，但记不住100页前的对话。上下文就是AI的「短期记忆容量」。' },
+  { name:'幻觉', en:'Hallucination', desc:'幻觉是指AI生成看似合理但实际错误或虚构的内容。模型不知道自己「不知道」，会用自信的语气编造答案。', analogy:'像一个考试不会但很会编答案的学生：写得头头是道、逻辑通顺，但答案完全是编的。' },
+  { name:'微调', en:'Fine-tuning', desc:'微调是在预训练模型基础上，用特定领域数据继续训练，使模型在特定任务上表现更好。', analogy:'像医学院学生毕业后做专科实习：基础医学知识都学过了（预训练），但要去心内科轮转三个月（微调）才能看心脏病。' },
+  { name:'检索增强', en:'RAG', desc:'RAG是先从知识库检索相关文档，再把检索结果作为上下文喂给模型生成答案。解决模型知识过时和幻觉问题。', analogy:'开卷考试：不靠死记硬背（纯模型），而是先翻书找相关段落（检索），再根据书上的内容组织答案（生成）。' },
+  { name:'向量嵌入', en:'Embedding', desc:'Embedding把文本转成高维向量，使语义相近的文本在向量空间中距离更近。是语义搜索和RAG的基础。', analogy:'把每段文字放到一张巨大的「意义地图」上：意思相近的文字在地图上离得近，意思相反的离得远。搜索时就是在地图上找最近的点。' },
+  { name:'温度', en:'Temperature', desc:'Temperature控制模型输出的随机性。值越低越确定保守，值越高越有创意多样性。范围通常0-2。', analogy:'像水龙头的温度旋钮：往左拧（低温）出确定的结果，适合写代码做表格；往右拧（高温）出天马行空的结果，适合写诗 brainstorm。' },
+  { name:'系统提示', en:'System Prompt', desc:'System Prompt是设定AI角色和行为规则的最高优先级指令，在整个对话中持续生效。', analogy:'像给演员的剧本角色设定：「你是一个专业的健身教练，语气鼓励、回答简洁、注重安全」。演员在整个演出中都保持这个角色。' },
+  { name:'少样本', en:'Few-shot', desc:'Few-shot是在Prompt中给出几个输入-输出示例，让模型通过模式模仿来完成任务，不需要额外训练。', analogy:'像教新人做表格：不写长篇说明，而是直接给他看3个做好的例子，他照着样子就能学会。' },
+  { name:'思维链', en:'Chain of Thought', desc:'CoT是让模型在给出答案前先展示推理过程，能显著提升数学和逻辑类任务的准确率。', analogy:'像数学老师要求「写出解题步骤」：直接写答案容易出错，但一步步推导下来，正确率大大提高。' },
+  { name:'集成开发环境', en:'IDE', desc:'IDE是集代码编辑、调试、运行、版本控制于一体的开发工具。现代AI IDE还集成了AI编程助手。', analogy:'像一个全功能的厨房：有灶台（编辑器）、油烟机（调试）、冰箱（文件管理）、菜谱书（文档），不用到处跑就能完成做饭全流程。' },
+  { name:'插件', en:'Plugin', desc:'插件是为宿主程序扩展功能的独立模块，可以按需安装卸载，不影响主程序运行。', analogy:'像手机的App Store：手机本身能打电话发短信（核心功能），装了微信就能聊天，装了美团就能点外卖（插件扩展）。' },
+  { name:'模型上下文协议', en:'MCP', desc:'MCP是让AI模型与外部工具、数据源交互的标准协议，定义了工具调用、资源访问的统一接口。', analogy:'像USB接口标准：不管是什么品牌的设备（工具），只要符合USB接口（MCP协议），就能插上电脑（AI模型）使用。' },
+  { name:'函数调用', en:'Function Calling', desc:'Function Calling让模型能识别用户意图并输出结构化的函数调用参数，由外部代码执行后返回结果。', analogy:'像餐厅服务员：客人说「来个辣的」，服务员不自己炒菜，而是翻译成「川菜、微辣、一人份」传给厨房（函数），菜好了再端给客人。' },
+  { name:'工具使用', en:'Tool Use', desc:'Tool Use是AI模型自主选择和调用外部工具（搜索、计算、API等）来增强自身能力。', analogy:'像会使用工具的工匠：不靠徒手，而是根据任务选择锤子、锯子、尺子，完成更复杂的工作。' },
+  { name:'沙箱', en:'Sandbox', desc:'Sandbox是隔离的执行环境，代码在沙箱内运行不会影响宿主系统，用于安全执行不受信任的代码。', analogy:'像医院的隔离病房：病人在里面活动（代码运行），但不会传染到外面（不影响系统），安全可控。' },
+  { name:'运行时', en:'Runtime', desc:'Runtime是程序执行的引擎环境，负责内存管理、代码解释执行、资源调度等。如Node.js、V8引擎。', analogy:'像舞台的幕后团队：演员（代码）在台上表演，但灯光、音响、道具调度都由幕后团队（运行时）负责，没有他们演出无法进行。' },
+  { name:'自动化', en:'Automation', desc:'Automation是通过程序或脚本自动执行重复性任务，减少人工干预，提升效率和一致性。', analogy:'像自动浇水系统：设定好时间和水量，每天自动浇花，不用你拿着水壶一棵棵浇。出差也不怕花枯死。' },
+  { name:'网络钩子', en:'Webhook', desc:'Webhook是事件触发的HTTP回调，当某事件发生时自动向指定URL发送POST请求，实现系统间实时通知。', analogy:'像快递柜的取件通知：包裹到了（事件发生），系统自动给你发短信（回调通知），你不用每隔5分钟去查一次。' },
+  { name:'定时任务', en:'Cron', desc:'Cron是Unix系统的定时任务调度器，用cron表达式定义执行时间，周期性执行指定命令或脚本。', analogy:'像一个超级闹钟：不仅能设定每天7点响，还能设定「每月1号和15号的工作日上午9点」响，到点自动执行任务。' },
+  { name:'基础地址', en:'Base URL', desc:'Base URL是API调用的根地址，所有具体的API端点都在此基础上拼接路径。切换服务商只需改Base URL。', analogy:'像快递公司的总部分拣中心：所有包裹先到总站（Base URL），再根据地址分到不同的派送路线（API端点）。换快递公司就换总站。' },
+  { name:'流式输出', en:'Streaming', desc:'Streaming让模型逐Token返回结果，用户能看到「打字」效果，大幅降低首字等待时间。', analogy:'像看自来水流：不用等整桶水接满才用，水龙头一开就有水流出。虽然总水量一样，但体验好很多。' },
+  { name:'多模态', en:'Multimodal', desc:'Multimodal指模型能同时处理文本、图像、音频、视频等多种模态的输入和输出。', analogy:'像一个全能翻译官：不仅能翻译文字，还能看图说话、听音辨意、看视频总结，不局限于单一「语言」。' },
+  { name:'视觉模型', en:'Vision Model', desc:'Vision Model能理解和分析图像内容，包括物体识别、OCR文字提取、图表理解、场景描述等。', analogy:'像一个火眼金睛的质检员：给他看一张图，他能告诉你图里有什么、文字写了什么、哪里有瑕疵、整体什么风格。' },
+  { name:'向量数据库', en:'Vector Database', desc:'Vector DB专门存储和检索高维向量，支持相似度搜索，是RAG和语义搜索的核心基础设施。', analogy:'像一个按「意义」排列的超级书架：不是按书名字母排序，而是按内容相似度排列。你拿一本书问「类似的在哪」，它能秒指方向。' },
+  { name:'框架', en:'Framework', desc:'Framework提供可复用的基础架构和标准化的开发模式，开发者在其规则内填充业务逻辑即可。', analogy:'像盖房子的脚手架和图纸：框架搭好了结构、走线、管道的位置，你只需要往里面填墙面、家具、装饰，不用从挖地基开始。' },
+];
+function getFeynConcept() {
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  return dayOfYear % FEYN_CONCEPTS.length;
+}
+function renderFeynman() {
+  const idx = feynmanData.currentIdx || getFeynConcept();
+  const c = FEYN_CONCEPTS[idx];
+  const today = todayStr();
+  const isDone = feynmanData.records[today];
+  document.getElementById('feynConcept').innerHTML = `
+    <div class="feyn-concept-head">
+      <div>
+        <div class="feyn-concept-name">${c.name}</div>
+        <div class="feyn-concept-en">${c.en} · 第 ${idx+1}/${FEYN_CONCEPTS.length} 个概念</div>
+      </div>
+      <div class="feyn-concept-nav">
+        <button class="feyn-nav-btn" onclick="feynNav(-1)">‹</button>
+        <button class="feyn-nav-btn" onclick="feynNav(1)">›</button>
+      </div>
+    </div>
+    <div class="feyn-desc">${c.desc}</div>
+    <div class="feyn-analogy">💡 大白话：${c.analogy}</div>
+    <div class="feyn-prep">
+      <div class="feyn-prep-item">
+        <div class="feyn-prep-label"><div class="feyn-prep-letter">P</div> 结论（一句话说清楚）<button class="feyn-voice-btn" onclick="feynVoice('prepP')">🎤</button></div>
+        <textarea class="feyn-prep-textarea" id="prepP" placeholder="用一句话说出这个概念是什么...">${escHtml(feynmanData.drafts[today]?.P || '')}</textarea>
+      </div>
+      <div class="feyn-prep-item">
+        <div class="feyn-prep-label"><div class="feyn-prep-letter">R</div> 原因（为什么重要）<button class="feyn-voice-btn" onclick="feynVoice('prepR')">🎤</button></div>
+        <textarea class="feyn-prep-textarea" id="prepR" placeholder="解释这个概念为什么重要、解决了什么问题...">${escHtml(feynmanData.drafts[today]?.R || '')}</textarea>
+      </div>
+      <div class="feyn-prep-item">
+        <div class="feyn-prep-label"><div class="feyn-prep-letter">E</div> 举例（生活类比）<button class="feyn-voice-btn" onclick="feynVoice('prepE')">🎤</button></div>
+        <textarea class="feyn-prep-textarea" id="prepE" placeholder="用一个生活中的例子来类比...">${escHtml(feynmanData.drafts[today]?.E || '')}</textarea>
+      </div>
+      <div class="feyn-prep-item">
+        <div class="feyn-prep-label"><div class="feyn-prep-letter">P</div> 重申（总结升华）<button class="feyn-voice-btn" onclick="feynVoice('prepP2')">🎤</button></div>
+        <textarea class="feyn-prep-textarea" id="prepP2" placeholder="用不同的话再总结一遍...">${escHtml(feynmanData.drafts[today]?.P2 || '')}</textarea>
+      </div>
+    </div>
+    <div class="feyn-actions">
+      <button class="btn btn-ghost btn-sm" onclick="feynCopy()">📋 复制内容</button>
+      <button class="btn btn-primary btn-sm" onclick="feynMarkDone()">${isDone ? '✓ 已完成' : '标记完成'}</button>
+    </div>`;
+  renderFeynGrid();
+  // Auto-save drafts
+  ['prepP','prepR','prepE','prepP2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => {
+      if (!feynmanData.drafts[today]) feynmanData.drafts[today] = {};
+      const key = id.replace('prep','');
+      feynmanData.drafts[today][key] = el.value;
+      DB.set('feynman', feynmanData);
+    });
+  });
+}
+function feynNav(dir) {
+  feynmanData.currentIdx = ((feynmanData.currentIdx || getFeynConcept()) + dir + FEYN_CONCEPTS.length) % FEYN_CONCEPTS.length;
+  saveAll(); renderFeynman();
+}
+function feynVoice(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { showToast('浏览器不支持语音输入'); return; }
+  const rec = new SR();
+  rec.lang = 'zh-CN';
+  rec.continuous = false;
+  const btn = el.parentElement.querySelector('.feyn-voice-btn');
+  btn.classList.add('recording');
+  btn.textContent = '🔴';
+  rec.onresult = e => { el.value += e.results[0][0].transcript; el.dispatchEvent(new Event('input')); };
+  rec.onend = () => { btn.classList.remove('recording'); btn.textContent = '🎤'; };
+  rec.onerror = () => { btn.classList.remove('recording'); btn.textContent = '🎤'; showToast('语音识别失败'); };
+  rec.start();
+}
+function feynCopy() {
+  const today = todayStr();
+  const d = feynmanData.drafts[today] || {};
+  const c = FEYN_CONCEPTS[feynmanData.currentIdx || getFeynConcept()];
+  const text = `【费曼练习】${c.name}（${c.en}）\n\nP 结论：${d.P||''}\n\nR 原因：${d.R||''}\n\nE 举例：${d.E||''}\n\nP 重申：${d.P2||''}`;
+  navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板')).catch(() => showToast('复制失败'));
+}
+function feynMarkDone() {
+  const today = todayStr();
+  feynmanData.records[today] = !feynmanData.records[today];
+  saveAll(); renderFeynman();
+  showToast(feynmanData.records[today] ? '打卡完成！' : '已取消打卡');
+}
+function renderFeynGrid() {
+  const today = todayStr();
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  let streak = 0;
+  let d = new Date();
+  while (true) {
+    const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    if (feynmanData.records[ds]) { streak++; d.setDate(d.getDate()-1); }
+    else { if (streak === 0 && ds === today) { d.setDate(d.getDate()-1); continue; } break; }
+  }
+  document.getElementById('feynStreak').innerHTML = `🔥 连续 ${streak} 天`;
+  document.getElementById('feynDayLabel').textContent = `今日第 ${dayOfYear % FEYN_CONCEPTS.length + 1} 个概念`;
+  const cells = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    const done = feynmanData.records[ds];
+    const isToday = ds === today;
+    cells.push(`<div class="feyn-grid-cell ${done?'done':''} ${isToday?'today':''}" title="${ds}">${d.getDate()}</div>`);
+  }
+  document.getElementById('feynGrid').innerHTML = cells.join('');
+}
+
+// ==================== C: Self-Media ====================
+const KANBAN_COLS = [
+  { id:'idea', name:'💡 灵感选题' },
+  { id:'creating', name:'✍ 创作中' },
+  { id:'published', name:'✅ 已发布' },
+];
+let kanbanDragData = null;
+let currentDraftTab = 'xhs';
+function renderMedia() {
+  // Kanban
+  document.getElementById('kanban').innerHTML = KANBAN_COLS.map(col => {
+    const cards = mediaData.kanban[col.id] || [];
+    return `<div class="kanban-col" data-col="${col.id}" ondragover="kanbanDragOver(event,'${col.id}')" ondrop="kanbanDrop('${col.id}')">
+      <div class="kanban-col-head">${col.name} <span class="kanban-col-count">${cards.length}</span></div>
+      <div class="kanban-cards">
+        ${cards.map(c => `
+          <div class="kanban-card" draggable="true" ondragstart="kanbanDragStart(${c.id})" ondragend="kanbanDragEnd()">
+            <div class="kanban-card-title">${escHtml(c.title)}</div>
+            <div class="kanban-card-meta">
+              <span class="kanban-card-tag ${c.platform}">${c.platform==='xhs'?'小红书':'抖音'}</span>
+              <span class="kanban-card-del" onclick="delKanbanCard('${col.id}',${c.id})">✕</span>
+            </div>
+          </div>`).join('')}
+        <div class="kanban-add" onclick="addKanbanCard('${col.id}')">+ 添加</div>
+      </div>
+    </div>`;
+  }).join('');
+  renderDrafts();
+  renderPublishes();
+}
+function addKanbanCard(colId) {
+  const title = prompt('输入选题标题：');
+  if (!title) return;
+  const platform = confirm('确定选「抖音」吗？取消则选「小红书」') ? 'douyin' : 'xhs';
+  mediaData.kanban[colId].push({ id: Date.now(), title, platform });
+  saveAll(); renderMedia(); showToast('已添加');
+}
+function kanbanDragStart(id) { kanbanDragData = id; }
+function kanbanDragEnd() { kanbanDragData = null; document.querySelectorAll('.kanban-card').forEach(c => c.classList.remove('dragging','drag-over')); }
+function kanbanDragOver(e, colId) { e.preventDefault(); }
+function kanbanDrop(colId) {
+  if (!kanbanDragData) return;
+  for (const col of KANBAN_COLS) {
+    const idx = mediaData.kanban[col.id].findIndex(c => c.id === kanbanDragData);
+    if (idx >= 0) {
+      const card = mediaData.kanban[col.id].splice(idx, 1)[0];
+      mediaData.kanban[colId].push(card);
+      if (colId === 'published' && col.id !== 'published') {
+        mediaData.publishes.push({ id: Date.now(), title: card.title, platform: card.platform, date: todayStr(), views:0, likes:0, comments:0 });
+      }
+      saveAll(); renderMedia(); showToast('已移动');
+      return;
+    }
+  }
+}
+function delKanbanCard(colId, id) {
+  mediaData.kanban[colId] = mediaData.kanban[colId].filter(c => c.id !== id);
+  saveAll(); renderMedia();
+}
+function switchDraftTab(tab) {
+  currentDraftTab = tab;
+  document.querySelectorAll('.draft-tab').forEach(t => t.classList.toggle('active', t.dataset.platform === tab));
+  renderDrafts();
+}
+function addDraft() {
+  const title = document.getElementById('draftTitle').value.trim();
+  if (!title) { showToast('请输入标题'); return; }
+  mediaData.drafts[currentDraftTab].push({ id: Date.now(), title, content: '', date: todayStr(), created: Date.now() });
+  document.getElementById('draftTitle').value = '';
+  saveAll(); renderDrafts(); showToast('草稿已创建');
+}
+function renderDrafts() {
+  const list = document.getElementById('draftList');
+  const drafts = mediaData.drafts[currentDraftTab] || [];
+  const tips = {
+    xhs: '小红书：图文为主、情绪标题、5-10个标签、最佳发布7-9/12-14/20-22点',
+    douyin: '抖音：竖屏视频、前3秒抓人、BGM搭配、最佳发布12-14/18-22点',
+  };
+  if (drafts.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="es-icon">✍</div><div class="es-text">${tips[currentDraftTab]}</div></div>`;
+    return;
+  }
+  list.innerHTML = drafts.map(d => `
+    <div class="draft-item">
+      <div class="draft-item-head">
+        <div class="draft-item-title">${escHtml(d.title)}</div>
+        <span class="kanban-card-tag ${d.platform||currentDraftTab}">${(d.platform||currentDraftTab)==='xhs'?'小红书':'抖音'}</span>
+      </div>
+      <div class="draft-item-content">${escHtml(d.content||'(空)')}</div>
+      <div class="draft-item-actions">
+        <button class="topic-act" onclick="editDraft(${d.id})">编辑</button>
+        <button class="topic-act" onclick="delDraft(${d.id})">删除</button>
+      </div>
+    </div>`).join('');
+}
+function editDraft(id) {
+  const d = (mediaData.drafts[currentDraftTab] || []).find(x => x.id === id);
+  if (!d) return;
+  const content = prompt('编辑草稿内容：', d.content || '');
+  if (content !== null) { d.content = content; saveAll(); renderDrafts(); }
+}
+function delDraft(id) {
+  mediaData.drafts[currentDraftTab] = mediaData.drafts[currentDraftTab].filter(x => x.id !== id);
+  saveAll(); renderDrafts(); showToast('已删除');
+}
+function renderPublishes() {
+  const pubs = mediaData.publishes || [];
+  const totalViews = pubs.reduce((s, p) => s + (p.views||0), 0);
+  const totalLikes = pubs.reduce((s, p) => s + (p.likes||0), 0);
+  const totalComments = pubs.reduce((s, p) => s + (p.comments||0), 0);
+  document.getElementById('publishStats').innerHTML = `
+    <div class="publish-stat-box"><div class="publish-stat-num">${pubs.length}</div><div class="publish-stat-label">已发布</div></div>
+    <div class="publish-stat-box"><div class="publish-stat-num">${totalViews}</div><div class="publish-stat-label">总浏览</div></div>
+    <div class="publish-stat-box"><div class="publish-stat-num">${totalLikes}</div><div class="publish-stat-label">总点赞</div></div>
+    <div class="publish-stat-box"><div class="publish-stat-num">${totalComments}</div><div class="publish-stat-label">总评论</div></div>`;
+  document.getElementById('publishList').innerHTML = pubs.slice().reverse().map(p => `
+    <div class="publish-item">
+      <div class="publish-item-info">
+        <div class="publish-item-title">${escHtml(p.title)}</div>
+        <div class="publish-item-meta">${p.date} · ${p.platform==='xhs'?'小红书':'抖音'}</div>
+      </div>
+      <div class="publish-item-data">
+        <div class="publish-data-item"><div class="publish-data-num">${p.views||0}</div><div class="publish-data-lbl">浏览</div></div>
+        <div class="publish-data-item"><div class="publish-data-num">${p.likes||0}</div><div class="publish-data-lbl">赞</div></div>
+        <div class="publish-data-item"><div class="publish-data-num">${p.comments||0}</div><div class="publish-data-lbl">评</div></div>
+      </div>
+      <button class="topic-act" onclick="updatePublishData(${p.id})">更新</button>
+    </div>`).join('') || '<div class="mini-empty">暂无发布记录</div>';
+}
+function updatePublishData(id) {
+  const p = mediaData.publishes.find(x => x.id === id);
+  if (!p) return;
+  const views = prompt('浏览量：', p.views || 0);
+  if (views === null) return;
+  const likes = prompt('点赞数：', p.likes || 0);
+  if (likes === null) return;
+  const comments = prompt('评论数：', p.comments || 0);
+  if (comments === null) return;
+  p.views = Number(views); p.likes = Number(likes); p.comments = Number(comments);
+  saveAll(); renderPublishes(); showToast('数据已更新');
+}
+
+// ==================== D: AI News ====================
+const NEWS_RSS = [
+  { url:'https://rsshub.app/36kr/motif/452080', cat:'industry', name:'36氪AI' },
+  { url:'https://rsshub.app/jiqizhixin/news', cat:'ai', name:'机器之心' },
+  { url:'https://rsshub.app/aibase/news', cat:'ai', name:'AI基地' },
+  { url:'https://rsshub.app/github/trending/daily', cat:'dev', name:'GitHub Trending' },
+  { url:'https://rsshub.app/huxiu/article', cat:'tech', name:'虎嗅' },
+];
+async function fetchNews(force) {
+  const list = document.getElementById('newsList');
+  if (!force && newsLoaded) { renderNews(); return; }
+  list.innerHTML = '<div class="hot-loading"><div class="hl-spinner"></div><div class="hl-text">正在加载AI资讯...</div></div>';
+  newsCache = [];
+  // Try RSSHub
+  try {
+    const results = await Promise.allSettled(
+      NEWS_RSS.map(async r => {
+        const res = await fetchWithTimeout(r.url, 8000);
+        const xml = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xml, 'text/xml');
+        const items = [...doc.querySelectorAll('item')].slice(0, 6).map(item => ({
+          title: item.querySelector('title')?.textContent || '',
+          link: item.querySelector('link')?.textContent || '',
+          desc: (item.querySelector('description')?.textContent || '').replace(/<[^>]+>/g, '').slice(0, 200),
+          date: item.querySelector('pubDate')?.textContent || '',
+          cat: r.cat, source: r.name
+        }));
+        return items;
+      })
+    );
+    results.forEach(r => { if (r.status === 'fulfilled' && r.value) newsCache.push(...r.value); });
+  } catch(e) {}
+  // Fallback: if no news, use curated placeholder
+  if (newsCache.length === 0) {
+    newsCache = [
+      { title:'AI Agent 行业持续火热，多家大厂发布新框架', desc:'近期国内外多家科技巨头陆续发布AI Agent框架，降低开发门槛的同时提升多步推理能力。', cat:'ai', source:'编辑推荐', link:'' },
+      { title:'大模型Token价格持续下降，API调用成本创新低', desc:'随着模型推理优化和竞争加剧，主流大模型API价格较年初下降超50%，开发者利好。', cat:'industry', source:'编辑推荐', link:'' },
+      { title:'RAG技术成为企业落地AI的首选方案', desc:'检索增强生成（RAG）因无需微调、数据可控、成本可控等优势，成为企业AI落地的主流方案。', cat:'tech', source:'编辑推荐', link:'' },
+      { title:'GitHub本周热门：AI编程工具持续霸榜', desc:'AI编程助手相关项目在GitHub Trending持续上榜，开发者社区关注度高。', cat:'dev', source:'编辑推荐', link:'' },
+      { title:'多模态大模型进展：图文音视频一体化处理', desc:'最新多模态模型支持文本、图像、音频、视频的统一理解和生成，应用场景进一步扩展。', cat:'ai', source:'编辑推荐', link:'' },
+    ];
+  }
+  newsCache.sort((a, b) => new Date(b.date) - new Date(a.date));
+  newsLoaded = true;
+  renderNews();
+}
+function switchNewsCat(cat) {
+  newsCurrentCat = cat;
+  document.querySelectorAll('.news-cat').forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
+  renderNews();
+}
+function renderNews() {
+  const list = document.getElementById('newsList');
+  let items = newsCache;
+  if (newsCurrentCat !== 'all') items = items.filter(n => n.cat === newsCurrentCat);
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="es-icon">❖</div><div class="es-text">暂无资讯</div></div>';
+    return;
+  }
+  const catNames = { ai:'AI动态', tech:'技术', industry:'行业', dev:'开发' };
+  list.innerHTML = items.slice(0, 30).map(n => `
+    <div class="news-item">
+      <div class="news-item-head">
+        <div class="news-item-title">${escHtml(n.title)}</div>
+        <span class="news-item-tag ${n.cat}">${catNames[n.cat]||n.cat}</span>
+      </div>
+      <div class="news-item-summary">${escHtml(n.desc)}</div>
+      <div class="news-item-meta">
+        <span>来源：${escHtml(n.source||'')}</span>
+        ${n.date ? `<span>${new Date(n.date).toLocaleDateString('zh-CN')}</span>` : ''}
+        ${n.link ? `<a class="news-item-link" href="${escHtml(n.link)}" target="_blank">查看原文 →</a>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+// ==================== E: Statistics ====================
+function renderStats() {
+  // Trend chart - last 7 days
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    const dayTasks = tasks.filter(t => t.date === ds);
+    const doneTasks = dayTasks.filter(t => t.done);
+    const doneHabits = habits.filter(h => h.records && h.records[ds]);
+    let score = 0;
+    if (dayTasks.length > 0) score += Math.round((doneTasks.length / dayTasks.length) * 40);
+    if (habits.length > 0) score += Math.round((doneHabits.length / habits.length) * 30);
+    score += Math.min((doneTasks.length > 0 ? 15 : 0) + doneHabits.length * 5, 30);
+    days.push({ date: ds, score, tasks: doneTasks.length, totalTasks: dayTasks.length, habits: doneHabits.length });
+  }
+  const maxScore = 100;
+  const chartW = 500, chartH = 200, pad = 30;
+  const barW = (chartW - pad * 2) / 7 * 0.6;
+  const gap = (chartW - pad * 2) / 7;
+  const trendSVG = `<svg class="chart-svg" viewBox="0 0 ${chartW} ${chartH}">
+    <line x1="${pad}" y1="${chartH-pad}" x2="${chartW-pad}" y2="${chartH-pad}" stroke="var(--rule)" stroke-width="1"/>
+    <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${chartH-pad}" stroke="var(--rule)" stroke-width="1"/>
+    ${[0,25,50,75,100].map(v => `<line x1="${pad}" y1="${chartH-pad-v/100*(chartH-pad*2)}" x2="${chartW-pad}" y2="${chartH-pad-v/100*(chartH-pad*2)}" stroke="var(--rule-soft)" stroke-width="0.5" stroke-dasharray="3,3"/><text x="${pad-5}" y="${chartH-pad-v/100*(chartH-pad*2)+3}" font-size="9" fill="var(--muted)" text-anchor="end">${v}</text>`).join('')}
+    <polyline points="${days.map((d,i) => `${pad+gap*i+gap/2},${chartH-pad-d.score/100*(chartH-pad*2)}`).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    ${days.map((d,i) => `<circle cx="${pad+gap*i+gap/2}" cy="${chartH-pad-d.score/100*(chartH-pad*2)}" r="3" fill="var(--accent)"/><text x="${pad+gap*i+gap/2}" y="${chartH-pad+12}" font-size="9" fill="var(--muted)" text-anchor="middle">${d.date.slice(5)}</text>`).join('')}
+  </svg>`;
+  document.getElementById('trendChart').innerHTML = trendSVG;
+  document.getElementById('trendLegend').innerHTML = `<div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--accent)"></div>效率指数（满分100）</div>`;
+
+  // Heatmap - last 4 weeks
+  const heatDays = [];
+  for (let i = 27; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    const doneHabits = habits.filter(h => h.records && h.records[ds]).length;
+    const totalHabits = habits.length;
+    const ratio = totalHabits > 0 ? doneHabits / totalHabits : 0;
+    let level = 0;
+    if (ratio > 0) level = 1;
+    if (ratio >= 0.25) level = 1;
+    if (ratio >= 0.5) level = 2;
+    if (ratio >= 0.75) level = 3;
+    if (ratio >= 1 && totalHabits > 0) level = 4;
+    heatDays.push({ ds, level, day: d.getDate() });
+  }
+  document.getElementById('heatmap').innerHTML = `
+    <div class="heatmap-grid">${heatDays.map(d => `<div class="heatmap-cell ${d.level>0?'l'+d.level:''}" title="${d.ds}: ${d.level*25}%"></div>`).join('')}</div>
+    <div class="heatmap-labels">${['一','二','三','四','五','六','日'].map(d => `<div class="heatmap-label">${d}</div>`).join('')}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:11px;color:var(--muted)">
+      <span>少</span>
+      <div class="heatmap-cell" style="width:12px;height:12px"></div>
+      <div class="heatmap-cell l1" style="width:12px;height:12px"></div>
+      <div class="heatmap-cell l2" style="width:12px;height:12px"></div>
+      <div class="heatmap-cell l3" style="width:12px;height:12px"></div>
+      <div class="heatmap-cell l4" style="width:12px;height:12px"></div>
+      <span>多</span>
+    </div>`;
+
+  // Pomo distribution - donut chart
+  const totalPomo = pomoData.totalCount || 0;
+  const todayPomo = pomoData.todayCount || 0;
+  const workSessions = totalPomo;
+  const breakSessions = Math.floor(totalPomo / 4) * 3 + (totalPomo % 4 > 0 ? (totalPomo % 4) - 1 : 0);
+  const total = workSessions + breakSessions;
+  const r = 70, cx = 100, cy = 100;
+  let workPct = total > 0 ? workSessions / total : 0;
+  let breakPct = total > 0 ? breakSessions / total : 0;
+  const workArc = workPct > 0 ? describeArc(cx, cy, r, 0, workPct * 360) : '';
+  const breakArc = breakPct > 0 ? describeArc(cx, cy, r, workPct * 360, (workPct + breakPct) * 360) : '';
+  document.getElementById('pomoChart').innerHTML = `
+    <svg class="chart-svg" viewBox="0 0 200 200" style="max-width:200px;margin:0 auto;display:block">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--rule-soft)" stroke-width="20"/>
+      ${workPct > 0 ? `<path d="${workArc}" fill="none" stroke="var(--accent)" stroke-width="20"/>` : ''}
+      ${breakPct > 0 ? `<path d="${breakArc}" fill="none" stroke="var(--sage)" stroke-width="20"/>` : ''}
+      <text x="${cx}" y="${cy-5}" font-size="28" font-weight="600" fill="var(--ink)" text-anchor="middle">${totalPomo}</text>
+      <text x="${cx}" y="${cy+15}" font-size="10" fill="var(--muted)" text-anchor="middle">累计番茄</text>
+    </svg>
+    <div class="chart-legend" style="justify-content:center">
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--accent)"></div>专注 ${workSessions}次</div>
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--sage)"></div>休息 ${breakSessions}次</div>
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--rule-soft)"></div>今日 ${todayPomo}次</div>
+    </div>`;
+}
+function polarToCartesian(cx, cy, r, angleDeg) {
+  const rad = (angleDeg - 90) * Math.PI / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+function describeArc(cx, cy, r, startAngle, endAngle) {
+  const start = polarToCartesian(cx, cy, r, endAngle);
+  const end = polarToCartesian(cx, cy, r, startAngle);
+  const largeArc = endAngle - startAngle <= 180 ? '0' : '1';
+  return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y}`;
+}
+
+// ==================== F: Export ====================
+function exportMarkdown() {
+  const today = todayStr();
+  const todayTasks = tasks.filter(t => t.date === today);
+  const doneTasks = todayTasks.filter(t => t.done);
+  const doneHabits = habits.filter(h => h.records && h.records[today]);
+  const todayReview = reviews.find(r => r.date === today);
+  const sportToday = (lifeData.sportLog||[]).filter(s => s.date === today);
+  const sportNames = { swim:'游泳', pushup:'俯卧撑', clap:'胯下击掌', walk:'散步', run:'跑步' };
+  let md = `# elio工作台日报 ${today}\n\n`;
+  md += `## 📊 效率概览\n- 任务：${doneTasks.length}/${todayTasks.length}\n- 习惯：${doneHabits.length}/${habits.length}\n- 番茄：${pomoData.todayCount}个 / ${pomoData.todayCount * pomoData.settings.work}分钟\n\n`;
+  md += `## ✓ 今日任务\n`;
+  todayTasks.forEach(t => md += `- [${t.done?'x':' '}] ${t.text} (${t.priority})\n`);
+  md += `\n## ◉ 习惯打卡\n`;
+  habits.forEach(h => md += `- [${h.records&&h.records[today]?'x':' '}] ${h.emoji||''} ${h.name}\n`);
+  md += `\n## ★ 运动记录\n`;
+  sportToday.forEach(s => md += `- ${sportNames[s.type]||s.type}: ${s.val}\n`);
+  if (sportToday.length === 0) md += `- 暂无记录\n`;
+  md += `\n## ❏ 每日复盘\n`;
+  if (todayReview) {
+    md += `- 心情：${todayReview.mood||''}\n- 做对了：${todayReview.well||''}\n- 可改进：${todayReview.improve||''}\n- 明日重点：${todayReview.tomorrow||''}\n`;
+  } else { md += `- 暂未复盘\n`; }
+  downloadFile(`${today}-elio日报.md`, md, 'text/markdown');
+  showToast('Markdown已导出');
+}
+function exportJSON() {
+  const data = { tasks, habits, topics, reviews, pomoData, lifeData, feynmanData, mediaData, exportDate: new Date().toISOString() };
+  downloadFile('elio-workbench-backup.json', JSON.stringify(data, null, 2), 'application/json');
+  showToast('JSON备份已导出');
+}
+function exportCSV() {
+  const today = todayStr();
+  const todayTasks = tasks.filter(t => t.date === today);
+  let csv = '\ufeff类型,内容,状态,优先级,日期\n';
+  todayTasks.forEach(t => { csv += `任务,"${t.text}",${t.done?'完成':'待办'},${t.priority},${t.date}\n`; });
+  habits.forEach(h => { csv += `习惯,"${h.name}",${h.records&&h.records[today]?'已打卡':'未打卡'},,${today}\n`; });
+  downloadFile(`${today}-elio数据.csv`, csv, 'text/csv');
+  showToast('CSV已导出');
+}
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.tasks) tasks = data.tasks;
+      if (data.habits) habits = data.habits;
+      if (data.topics) topics = data.topics;
+      if (data.reviews) reviews = data.reviews;
+      if (data.pomoData) pomoData = data.pomoData;
+      if (data.lifeData) lifeData = data.lifeData;
+      if (data.feynmanData) feynmanData = data.feynmanData;
+      if (data.mediaData) mediaData = data.mediaData;
+      saveAll();
+      showToast('数据导入成功！请刷新页面');
+      setTimeout(() => location.reload(), 1500);
+    } catch(err) { showToast('导入失败：文件格式错误'); }
+  };
+  reader.readAsText(file);
+}
+function downloadFile(filename, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+function clearAllData() {
+  if (!confirm('确定要清空所有数据吗？此操作不可恢复！')) return;
+  if (!confirm('再次确认：所有任务、习惯、热点、复盘、生活数据都将被删除！')) return;
+  Object.keys(localStorage).filter(k => k.startsWith('wb2_')).forEach(k => localStorage.removeItem(k));
+  showToast('所有数据已清空');
+  setTimeout(() => location.reload(), 1500);
+}
+
+// ==================== G: Theme & PWA ====================
+function toggleTheme() {
+  darkMode = !darkMode;
+  document.body.classList.toggle('dark', darkMode);
+  document.getElementById('themeToggle').textContent = darkMode ? '☾' : '☀';
+  const st = document.getElementById('settingsThemeToggle');
+  if (st) st.textContent = darkMode ? '☾' : '☀';
+  saveAll();
+}
+function applyTheme() {
+  if (darkMode) {
+    document.body.classList.add('dark');
+    document.getElementById('themeToggle').textContent = '☾';
+    const st = document.getElementById('settingsThemeToggle');
+    if (st) st.textContent = '☾';
+  }
+}
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') showToast('安装成功！');
+      deferredPrompt = null;
+      document.getElementById('pwaBanner').classList.remove('show');
+    });
+  } else {
+    showToast('请使用浏览器菜单的「添加到主屏幕」功能');
+  }
+}
+
 // ==================== Init ====================
 function init() {
   updateClock();
@@ -2162,6 +3274,7 @@ function init() {
   document.getElementById('longMin').value = pomoData.settings.long;
   if (pomoData.running) { pomoData.running = false; document.getElementById('pomoStartBtn').textContent = '▶'; }
   updatePomoDisplay();
+  applyTheme();
   renderDashboard();
   renderTasks();
   renderHabits();
@@ -2169,6 +3282,12 @@ function init() {
   renderReview();
   // Pre-fetch hot data in background
   setTimeout(() => fetchHotData(false), 1500);
+  // PWA install prompt
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    setTimeout(() => document.getElementById('pwaBanner').classList.add('show'), 3000);
+  });
   // Refresh dashboard widgets periodically
   setInterval(() => {
     if (document.getElementById('dashboard').classList.contains('active')) renderDashboard();
