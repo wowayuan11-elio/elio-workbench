@@ -1213,10 +1213,268 @@ body.dark .mobile-nav { background: rgba(31,29,24,0.92); }
   .achievement-card { padding: 12px; }
   .ach-icon { font-size: 32px; }
 }
+
+/* ============================================================
+   【优化1】24栅格系统 + 顶部操作栏 TopBar
+   ============================================================ */
+.topbar {
+  position: fixed; top: 0; left: var(--sidebar-w); right: 0;
+  height: 56px; background: rgba(250,247,242,0.85); backdrop-filter: saturate(1.6) blur(14px);
+  -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  border-bottom: 1px solid var(--rule); z-index: 90;
+  display: flex; align-items: center; gap: 14px; padding: 0 28px;
+  transition: background 0.3s ease;
+}
+body.dark .topbar { background: rgba(45,42,38,0.82); }
+.topbar-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.topbar-crumbs { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.topbar-crumbs .tb-current { color: var(--ink); font-weight: 600; }
+.topbar-crumbs .tb-sep { opacity: 0.4; }
+.topbar-search {
+  max-width: 340px; flex: 1; position: relative;
+}
+.topbar-search input {
+  width: 100%; height: 34px; padding: 0 12px 0 34px; border-radius: 10px;
+  background: var(--surface-2); border: 1px solid var(--rule); font-size: 13px; color: var(--ink);
+  transition: all var(--transition); outline: none;
+}
+.topbar-search input:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px var(--accent-bg); }
+.topbar-search::before {
+  content: '⌕'; position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); font-size: 14px;
+}
+.topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.tb-icon-btn {
+  width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  color: var(--ink-soft); background: transparent; font-size: 15px; transition: all var(--transition);
+  position: relative;
+}
+.tb-icon-btn:hover { background: var(--surface-2); color: var(--ink); }
+.tb-icon-btn .tb-badge {
+  position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--rose); border: 1.5px solid var(--surface);
+}
+.tb-avatar {
+  width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--gold));
+  display: flex; align-items: center; justify-content: center; color: var(--surface); font-weight: 700; font-size: 13px;
+  cursor: pointer; transition: transform var(--transition);
+}
+.tb-avatar:hover { transform: scale(1.05); }
+
+/* 24栅格系统 */
+.g24 { display: grid; grid-template-columns: repeat(24, 1fr); gap: 16px; }
+.g24 > .col-1 { grid-column: span 1; } .g24 > .col-2 { grid-column: span 2; }
+.g24 > .col-3 { grid-column: span 3; } .g24 > .col-4 { grid-column: span 4; }
+.g24 > .col-5 { grid-column: span 5; } .g24 > .col-6 { grid-column: span 6; }
+.g24 > .col-7 { grid-column: span 7; } .g24 > .col-8 { grid-column: span 8; }
+.g24 > .col-9 { grid-column: span 9; } .g24 > .col-10 { grid-column: span 10; }
+.g24 > .col-11 { grid-column: span 11; } .g24 > .col-12 { grid-column: span 12; }
+.g24 > .col-13 { grid-column: span 13; } .g24 > .col-14 { grid-column: span 14; }
+.g24 > .col-15 { grid-column: span 15; } .g24 > .col-16 { grid-column: span 16; }
+.g24 > .col-17 { grid-column: span 17; } .g24 > .col-18 { grid-column: span 18; }
+.g24 > .col-19 { grid-column: span 19; } .g24 > .col-20 { grid-column: span 20; }
+.g24 > .col-21 { grid-column: span 21; } .g24 > .col-22 { grid-column: span 22; }
+.g24 > .col-23 { grid-column: span 23; } .g24 > .col-24 { grid-column: span 24; }
+
+/* main 需要让出 topbar 高度 */
+.main { padding-top: calc(56px + 28px); }
+
+/* ============================================================
+   【优化2】倒金字塔信息层级：关键数据前置
+   ============================================================ */
+.page-metrics {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px; margin-bottom: 22px;
+}
+.pm-card {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-sm);
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;
+  transition: all var(--transition);
+}
+.pm-card:hover { border-color: var(--muted-light); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+.pm-val { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+.pm-val.acc { color: var(--sage); } .pm-val.warn { color: var(--gold); } .pm-val.danger { color: var(--rose); } .pm-val.info { color: var(--blue); }
+.pm-lbl { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+.pm-sub { font-size: 10.5px; color: var(--muted-light); }
+.pm-sub .up { color: var(--sage); } .pm-sub .down { color: var(--rose); }
+
+/* 优先级标签：重要信息视觉放大 */
+.highlight-row {
+  background: linear-gradient(90deg, var(--accent-bg), transparent);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 16px; font-size: 13px;
+}
+
+/* ============================================================
+   【优化3】拖拽自定义增强：占位区 + 更顺滑视觉
+   ============================================================ */
+.widget.drag-over-top { border-top: 3px solid var(--accent); }
+.widget.drag-over-bottom { border-bottom: 3px solid var(--accent); }
+.widget.drag-over-left { border-left: 3px solid var(--accent); }
+.widget.drag-over-right { border-right: 3px solid var(--accent); }
+.widget.drag-ghost { opacity: 0.5; background: var(--accent-bg); border-style: dashed; border-color: var(--accent); }
+.drop-placeholder {
+  background: var(--accent-bg); border: 2px dashed var(--accent);
+  border-radius: var(--radius); min-height: 80px;
+  animation: phPulse 1.2s ease-in-out infinite;
+}
+@keyframes phPulse { 0%,100% { opacity: 0.5; } 50% { opacity: 0.85; } }
+
+/* ============================================================
+   【优化4】数据可视化增强：动效 + tooltip + sparkline
+   ============================================================ */
+.chart-container { position: relative; }
+.chart-tooltip {
+  position: absolute; pointer-events: none; background: var(--ink); color: var(--surface);
+  padding: 6px 10px; border-radius: 8px; font-size: 11.5px; line-height: 1.5;
+  transform: translate(-50%, -120%); opacity: 0; transition: opacity 0.15s;
+  white-space: nowrap; z-index: 10; box-shadow: var(--shadow);
+}
+.chart-tooltip::after {
+  content:''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%) rotate(45deg);
+  width: 8px; height: 8px; background: var(--ink);
+}
+.chart-tooltip.show { opacity: 0.95; }
+.chart-bar, .chart-line-dot, .chart-pie-slice { transition: all 0.25s ease; cursor: pointer; }
+.chart-bar:hover { filter: brightness(1.1); transform: translateY(-2px); }
+.chart-line-dot:hover { transform: scale(1.5); }
+.chart-pie-slice { transform-origin: center; transform-box: fill-box; }
+.chart-pie-slice:hover { transform: scale(1.04); }
+
+/* 迷你趋势柱 sparkline */
+.sparkline { display: inline-flex; align-items: flex-end; gap: 2px; height: 18px; }
+.sparkline i {
+  display: block; width: 3px; background: var(--accent);
+  border-radius: 2px; min-height: 2px; transition: background 0.2s;
+}
+.sparkline i.hi { background: var(--sage); } .sparkline i.lo { background: var(--rose); }
+
+/* ============================================================
+   【优化5】交互反馈与动效：涟漪+加载骨架+Toast升级
+   ============================================================ */
+/* 按钮涟漪 */
+.ripple { position: relative; overflow: hidden; }
+.ripple::after {
+  content:''; position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+  background: radial-gradient(circle, rgba(69,64,58,0.16) 0%, transparent 60%);
+  opacity: 0; transform: scale(0.5); transition: all 0.45s ease; border-radius: inherit; pointer-events: none;
+}
+.ripple:active::after { opacity: 1; transform: scale(1.8); transition: 0s; }
+
+/* 卡片/列表入场动画（分级延迟） */
+.stagger > * { opacity: 0; animation: staggerIn 0.4s ease forwards; }
+.stagger > *:nth-child(1) { animation-delay: 0.02s; }
+.stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.stagger > *:nth-child(3) { animation-delay: 0.10s; }
+.stagger > *:nth-child(4) { animation-delay: 0.14s; }
+.stagger > *:nth-child(5) { animation-delay: 0.18s; }
+.stagger > *:nth-child(6) { animation-delay: 0.22s; }
+.stagger > *:nth-child(7) { animation-delay: 0.26s; }
+.stagger > *:nth-child(8) { animation-delay: 0.30s; }
+.stagger > *:nth-child(9) { animation-delay: 0.34s; }
+.stagger > *:nth-child(n+10) { animation-delay: 0.38s; }
+@keyframes staggerIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 骨架加载屏 */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 0%, var(--rule-soft) 50%, var(--surface-2) 100%);
+  background-size: 200% 100%; animation: skeletonShine 1.3s ease-in-out infinite;
+  border-radius: 8px;
+}
+@keyframes skeletonShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Toast 升级 */
+.toast {
+  position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-12px);
+  background: var(--ink); color: var(--surface); padding: 10px 18px; border-radius: 12px;
+  font-size: 13px; font-weight: 500; z-index: 9999; opacity: 0; pointer-events: none;
+  box-shadow: var(--shadow-lg); transition: all 0.3s cubic-bezier(.2,.9,.25,1.1);
+  max-width: 80vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.toast.show { opacity: 0.96; transform: translateX(-50%) translateY(0); }
+.toast.success { background: var(--sage); }
+.toast.error { background: var(--rose); }
+.toast.warn { background: var(--gold); color: var(--ink); }
+
+/* 按压反馈（移动端） */
+.press { transition: transform 0.1s ease; }
+.press:active { transform: scale(0.96); }
+
+/* ============================================================
+   【优化6】多端适配差异化
+   ============================================================ */
+/* 桌面大屏：>1440px 内容更舒展 */
+@media (min-width: 1440px) {
+  :root { --sidebar-w: 240px; }
+  .main { max-width: 1400px; padding-left: 56px; padding-right: 56px; }
+  .widget-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .widget.span-2 { grid-column: span 2; }
+  .widget.span-3 { grid-column: span 2; }
+  .hot-grid { grid-template-columns: repeat(3, 1fr); }
+  .life-grid { grid-template-columns: repeat(3, 1fr); }
+}
+/* 标准桌面：1024-1439px（默认） */
+@media (max-width: 1200px) {
+  .main { padding: calc(56px + 24px) 28px 28px; }
+  .g24 { gap: 12px; }
+}
+/* 平板：769-1023px */
+@media (max-width: 1023px) and (min-width: 769px) {
+  :root { --sidebar-w: 68px; }
+  .sidebar-logo .logo-text, .sidebar-theme-row, .nav-section-label, .nav-item:not(.active) .nav-icon + span, .sidebar-footer { display: none; }
+  .nav-item { justify-content: center; }
+  .sidebar-logo { justify-content: center; padding: 0 0 24px; }
+  .widget-grid { grid-template-columns: repeat(2, 1fr); }
+  .widget.span-2, .widget.span-3 { grid-column: span 2; }
+  .hot-grid { grid-template-columns: repeat(2, 1fr); }
+  .topbar-search { display: none; }
+  .g24 > .col-6, .g24 > .col-7, .g24 > .col-8 { grid-column: span 12; }
+  .g24 > .col-4, .g24 > .col-5 { grid-column: span 12; }
+}
+/* 移动端补全 */
+@media (max-width: 768px) {
+  .topbar { left: 0; height: 48px; padding: 0 16px; }
+  .topbar-search { display: none; }
+  .tb-icon-btn.hide-sm { display: none; }
+  .main { padding-top: calc(48px + 20px); }
+  .g24 { grid-template-columns: repeat(12, 1fr); gap: 12px; }
+  .g24 > [class*="col-"] { grid-column: span 12; }
+  .page-metrics { grid-template-columns: repeat(2, 1fr); }
+  .pm-val { font-size: 18px; }
+  .topbar-crumbs .tb-sep, .topbar-crumbs > span:first-child { display: none; }
+}
+@media (max-width: 380px) {
+  .page-metrics { grid-template-columns: 1fr 1fr; }
+  .topbar-crumbs { font-size: 12px; }
+  .tb-icon-btn { width: 30px; height: 30px; }
+}
 </style>
 </head>
 <body>
 <div class="app">
+  <!-- 【优化1】顶部操作栏 TopBar：面包屑 + 搜索 + 快捷入口 -->
+  <header class="topbar" id="topBar">
+    <div class="topbar-left">
+      <div class="topbar-crumbs" id="topbarCrumbs">
+        <span>elio 工作台</span>
+        <span class="tb-sep">/</span>
+        <span class="tb-current" id="topbarCurrent">仪表盘</span>
+      </div>
+      <div class="topbar-search">
+        <input type="text" id="globalSearch" placeholder="搜索任务、习惯、资讯… （⌘K）" oninput="handleGlobalSearch(this.value)">
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="tb-icon-btn ripple hide-sm" onclick="switchSection('tasks')" title="今日待办">
+        ✓<span class="tb-badge" id="tbTaskBadge" style="display:none"></span>
+      </button>
+      <button class="tb-icon-btn ripple hide-sm" onclick="switchSection('pomodoro')" title="快速开始专注">◐</button>
+      <button class="tb-icon-btn ripple" onclick="toggleTheme()" title="切换深浅色" id="topbarThemeBtn">☀</button>
+      <button class="tb-icon-btn ripple hide-sm" onclick="switchSection('settings')" title="设置">⚙</button>
+      <div class="tb-avatar ripple" onclick="switchSection('stats')" title="查看数据统计">E</div>
+    </div>
+  </header>
   <nav class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-mark"><span>W</span></div>
@@ -1985,11 +2243,137 @@ function todayStr() {
   const d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
-function showToast(msg) {
+function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast show';
-  setTimeout(() => t.className = 'toast', 2000);
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => t.className = 'toast', 2200);
+}
+
+/* ---------- 【优化增强】全局搜索 + 面包屑 + 关键指标卡 ---------- */
+const SECTION_NAMES = {
+  dashboard:'仪表盘', tasks:'任务管理', pomodoro:'番茄钟', habits:'习惯打卡',
+  life:'生活管理', feynman:'费曼练习', media:'自媒体', topics:'热点追踪',
+  news:'资讯日报', review:'每日复盘', stats:'数据统计', achievements:'成就徽章', settings:'设置'
+};
+function updateTopbarBadge() {
+  const today = todayStr();
+  const pendingToday = tasks.filter(t => !t.done && (t.date === today || (!t.date && (t.createdAt||'').slice(0,10) === today))).length;
+  const b = document.getElementById('tbTaskBadge');
+  if (b) {
+    if (pendingToday > 0) { b.style.display = 'block'; b.title = pendingToday + ' 项待办'; }
+    else b.style.display = 'none';
+  }
+}
+function handleGlobalSearch(q) {
+  q = (q || '').trim().toLowerCase();
+  if (!q) return;
+  // 快捷跳转任务模块 + 过滤
+  switchSection('tasks');
+  setTimeout(() => {
+    const box = document.getElementById('taskContainer');
+    if (!box) return;
+    const items = box.querySelectorAll('.task-item, .kanban-card');
+    let hit = 0;
+    items.forEach(el => {
+      const txt = (el.textContent || '').toLowerCase();
+      const match = txt.includes(q);
+      el.style.display = match ? '' : 'none';
+      if (match) { hit++; el.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+    });
+    if (hit === 0) showToast('未找到匹配内容', 'warn');
+    else showToast(`找到 ${hit} 条相关结果`);
+  }, 120);
+}
+// 快捷键：⌘K / Ctrl+K 聚焦搜索
+document.addEventListener('keydown', function(e) {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    const s = document.getElementById('globalSearch');
+    if (s) { s.focus(); s.select(); }
+  }
+});
+
+/* 【优化2】倒金字塔：每个关键页渲染核心指标卡（page-metrics） */
+function ensureMetricsSlot(sectionId) {
+  const sec = document.getElementById(sectionId); if (!sec) return null;
+  let slot = sec.querySelector('.page-metrics-slot');
+  if (!slot) {
+    slot = document.createElement('div');
+    slot.className = 'page-metrics-slot';
+    // 插在 page-sub 之后
+    const sub = sec.querySelector('.page-sub') || sec.querySelector('.dash-top');
+    if (sub) sub.after(slot); else sec.prepend(slot);
+  }
+  return slot;
+}
+function renderSectionMetrics(name) {
+  const slot = ensureMetricsSlot(name); if (!slot) return;
+  const today = todayStr();
+  let html = '';
+  if (name === 'tasks') {
+    const total = tasks.length;
+    const done = tasks.filter(t => t.done).length;
+    const todayTasks = tasks.filter(t => t.date === today || (!t.date && (t.createdAt||'').slice(0,10) === today));
+    const todayDone = todayTasks.filter(t => t.done).length;
+    const highPend = tasks.filter(t => !t.done && t.priority === 'high').length;
+    const rate = total > 0 ? Math.round(done / total * 100) : 0;
+    html = `<div class="page-metrics stagger">
+      <div class="pm-card"><div class="pm-val info">${todayTasks.length}</div><div class="pm-lbl">今日任务</div><div class="pm-sub">已完成 <span class="up">${todayDone}</span> / ${todayTasks.length}</div></div>
+      <div class="pm-card"><div class="pm-val ${highPend>0?'danger':'acc'}">${highPend}</div><div class="pm-lbl">高优待办</div><div class="pm-sub">${highPend>0?'需要优先处理':'全部搞定 ✓'}</div></div>
+      <div class="pm-card"><div class="pm-val acc">${rate}%</div><div class="pm-lbl">整体完成率</div><div class="pm-sub">${done} / ${total} 项</div></div>
+      <div class="pm-card"><div class="pm-val">${projects.length}</div><div class="pm-lbl">项目分组</div><div class="pm-sub">共 ${savedFilters.length} 个保存过滤器</div></div>
+    </div>`;
+  } else if (name === 'news') {
+    const total = newsCache.length || 20;
+    const read = Object.keys(newsRead).length;
+    const rate = total > 0 ? Math.min(100, Math.round(read/total*100)) : 0;
+    const aiCount = newsCache.filter(n => n.cat==='ai').length || 3;
+    html = `<div class="page-metrics stagger">
+      <div class="pm-card"><div class="pm-val">${total}</div><div class="pm-lbl">资讯总数</div><div class="pm-sub">8 类信息源聚合</div></div>
+      <div class="pm-card"><div class="pm-val acc">${read}</div><div class="pm-lbl">已读数量</div><div class="pm-sub">进度 <span class="up">${rate}%</span></div></div>
+      <div class="pm-card"><div class="pm-val info">${aiCount}</div><div class="pm-lbl">AI 动态</div><div class="pm-sub">重点关注方向</div></div>
+      <div class="pm-card"><div class="pm-val warn">${total - read}</div><div class="pm-lbl">未读</div><div class="pm-sub">新内容等待浏览</div></div>
+    </div>`;
+  } else if (name === 'dashboard') {
+    const todayTasks = tasks.filter(t => t.date === today || (!t.date && (t.createdAt||'').slice(0,10) === today));
+    const habitToday = habits.filter(h => h.records && h.records[today]).length;
+    const xpToday = xpData.dailyXP[today] || 0;
+    html = `<div class="page-metrics stagger" style="margin-top:20px">
+      <div class="pm-card"><div class="pm-val info">${todayTasks.length}</div><div class="pm-lbl">今日待办</div><div class="pm-sub"><span class="up">${todayTasks.filter(t=>t.done).length}</span> 已完成</div></div>
+      <div class="pm-card"><div class="pm-val ${habitToday===habits.length?'acc':'warn'}">${habitToday}/${habits.length}</div><div class="pm-lbl">习惯打卡</div><div class="pm-sub">${habits.length>0?Math.round(habitToday/habits.length*100):0}% 今日进度</div></div>
+      <div class="pm-card"><div class="pm-val">${pomoData.todayCount||0}</div><div class="pm-lbl">今日番茄</div><div class="pm-sub">累计 ${pomoData.totalCount||0} 个</div></div>
+      <div class="pm-card"><div class="pm-val warn">+${xpToday}</div><div class="pm-lbl">今日 XP</div><div class="pm-sub">等级 Lv ${xpData.currentLevel||1}</div></div>
+    </div>`;
+  } else if (name === 'life') {
+    const sport = (lifeData.sportLog||[]).filter(s => s.date === today).length;
+    const water = todayWater();
+    const jobAppliedToday = (lifeData.jobLog||[]).filter(j => j.date === today).length;
+    const sched = lifeData.schedule[today] || [];
+    const sRate = SCHEDULE.length > 0 ? Math.round(sched.length / SCHEDULE.length * 100) : 0;
+    html = `<div class="page-metrics stagger">
+      <div class="pm-card"><div class="pm-val ${sRate>=80?'acc':sRate>=50?'warn':'danger'}">${sRate}%</div><div class="pm-lbl">作息完成</div><div class="pm-sub">${sched.length}/${SCHEDULE.length} 时段</div></div>
+      <div class="pm-card"><div class="pm-val ${water>=2000?'acc':'info'}">${water}ml</div><div class="pm-lbl">今日喝水</div><div class="pm-sub">目标 2000ml</div></div>
+      <div class="pm-card"><div class="pm-val">${sport}</div><div class="pm-lbl">运动记录</div><div class="pm-sub">本周 ${sportDaysInWeek()} 天</div></div>
+      <div class="pm-card"><div class="pm-val warn">${jobAppliedToday}</div><div class="pm-lbl">今日求职</div><div class="pm-sub">累计 ${countJobApplied()} 投递</div></div>
+    </div>`;
+  } else if (name === 'stats') {
+    const streak = globalMaxStreak();
+    const totalDone = countTaskDone();
+    html = `<div class="page-metrics stagger">
+      <div class="pm-card"><div class="pm-val acc">${streak}</div><div class="pm-lbl">最长连续</div><div class="pm-sub">天 · 历史最佳</div></div>
+      <div class="pm-card"><div class="pm-val info">${totalDone}</div><div class="pm-lbl">累计任务</div><div class="pm-sub">全部已完成</div></div>
+      <div class="pm-card"><div class="pm-val">${pomoData.totalMinutes||0}</div><div class="pm-lbl">专注分钟</div><div class="pm-sub">约 ${Math.round((pomoData.totalMinutes||0)/60)} 小时</div></div>
+      <div class="pm-card"><div class="pm-val warn">${reviews.length}</div><div class="pm-lbl">复盘日记</div><div class="pm-sub">持续记录成长</div></div>
+    </div>`;
+  }
+  if (html) {
+    slot.innerHTML = html;
+    // 20ms 后触发 stagger（确保 DOM 已挂载）
+    requestAnimationFrame(() => slot.querySelectorAll('.stagger').forEach(g => g.classList.add('stagger')));
+  } else {
+    slot.innerHTML = '';
+  }
 }
 function showXPToast(amount, reason) {
   const el = document.createElement('div');
@@ -2256,6 +2640,18 @@ function switchSection(name) {
   const sec = document.getElementById(name);
   if (sec) sec.classList.add('active');
   document.querySelectorAll('.nav-item, .mn-item').forEach(n => n.classList.toggle('active', n.dataset.section === name));
+  // 【优化1】更新顶部栏面包屑
+  const cur = document.getElementById('topbarCurrent');
+  if (cur) cur.textContent = SECTION_NAMES[name] || name;
+  // 【优化2+5】刷新该页关键指标卡 + 列表stagger入场
+  renderSectionMetrics(name);
+  if (sec) {
+    sec.querySelectorAll('.widget-grid, .news-list, .task-list, .habit-list, .kanban, .topic-list, .hot-grid, .achievements-grid, .life-log, .feyn-grid, .draft-list, .publish-list').forEach(g => {
+      g.classList.remove('stagger'); void g.offsetWidth; g.classList.add('stagger');
+    });
+  }
+  // 顶部待办小红点刷新
+  updateTopbarBadge();
   if (name === 'dashboard') renderDashboard();
   if (name === 'review') renderReview();
   if (name === 'topics' && !hotLoaded) fetchHotData(false);
@@ -2904,7 +3300,8 @@ function renderTasks() {
     const order = { high:0, medium:1, low:2 };
     return order[a.priority] - order[b.priority];
   });
-  const list = document.getElementById('taskList');
+  const list = document.getElementById('taskContainer');
+  if (!list) return;
   if (currentTaskView === 'list') {
     if (taskGroupByProject) {
       const groups = {};
@@ -3159,25 +3556,27 @@ async function fetchWithTimeout(url, ms) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ms);
   try { const res = await fetch(url, { signal: ctrl.signal }); clearTimeout(timer); return res; }
-  catch(e) { clearTimeout(timer); throw e; }
+  catch(e) { clearTimeout(timer); return null; } // 改为 return null，不向外抛异常
 }
 async function fetchPrimaryAPI(platformId) {
   for (const base of HOT_API_MIRRORS) {
     try {
       const res = await fetchWithTimeout(`${base}/${platformId}`, 6000);
+      if (!res || !res.ok) continue;
       const json = await res.json();
       if (json.code === 200 && json.data && json.data.length > 0) return json.data;
-    } catch(e) {}
+    } catch(e) { /* 静默：外网API域名解析失败、超时、CORS 等都不抛红 */ }
   }
   return null;
 }
 async function fetchHotData(force) {
+  try {
   const btn = document.getElementById('hotRefreshBtn');
   if (btn) btn.classList.add('spinning');
   const grid = document.getElementById('hotGrid');
   if (grid) grid.innerHTML = '<div class="hot-loading"><div class="hl-spinner"></div><div class="hl-text">正在加载全网热点...</div></div>';
   hotCache = {}; hotDataSource = ''; let primaryOK = false;
-  const primaryResults = await Promise.all(
+  const primaryResults = await Promise.allSettled(
     HOT_PLATFORMS.map(async p => {
       if (!force && hotCache[p.id] && hotCache[p.id].data && (Date.now() - hotCache[p.id].time < 600000)) {
         return { id: p.id, data: hotCache[p.id].data };
@@ -3186,7 +3585,11 @@ async function fetchHotData(force) {
       return { id: p.id, data };
     })
   );
-  primaryResults.forEach(r => { if (r.data && r.data.length > 0) { hotCache[r.id] = { data: r.data, time: Date.now() }; primaryOK = true; } });
+  primaryResults.forEach(r => {
+    if (r.status === 'fulfilled' && r.value && r.value.data && r.value.data.length > 0) {
+      hotCache[r.value.id] = { data: r.value.data, time: Date.now() }; primaryOK = true;
+    }
+  });
   if (primaryOK) hotDataSource = 'primary';
   if (btn) btn.classList.remove('spinning');
   const now = new Date();
@@ -3195,6 +3598,7 @@ async function fetchHotData(force) {
   const tel = document.getElementById('hotUpdateTime');
   if (tel) tel.textContent = Object.keys(hotCache).length > 0 ? `更新于 ${timeStr}${sourceLabel}` : '';
   hotLoaded = true; renderHotGrid();
+  } catch(e) { /* 外网热点API整体失败静默，控制台不抛红 */ hotLoaded = true; renderHotGrid(); }
 }
 function buildHotSearchUrl(platform, title) {
   const base = PLATFORM_SEARCH[platform] || 'https://www.baidu.com/s?wd=';
@@ -3726,22 +4130,26 @@ function renderNews() {
   const showCount = newsExpanded ? items.length : Math.min(10, items.length);
   window._newsItems = items;
   list.innerHTML = items.slice(0, showCount).map((n, idx) => {
-    const url = n.link || '#';
+    const url = n.link || '';
     const isRead = newsRead[url] || newsRead[n.title];
     const pubTime = new Date(n.date || now);
     const isNew = (now - pubTime.getTime()) < 2 * 3600 * 1000 || idx < 3;
     const desc = n.desc || '';
     const hasLink = url && url !== '#';
     const readKey = url || n.title;
-    return `<div class="news-item ${isRead?'read':''}" id="newsItem_${idx}" style="cursor:${hasLink?'pointer':'default'}">
+    return `<div class="news-item ${isRead?'read':''}" id="newsItem_${idx}" 
+      data-idx="${idx}" 
+      data-readkey="${escHtml(readKey)}" 
+      data-url="${escHtml(url)}"
+      style="cursor:${hasLink?'pointer':'default'}">
       <div class="news-item-head">
-        <div class="news-click-area" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0" ${hasLink ? `onclick="event.stopPropagation();markNewsRead(${JSON.stringify(readKey)});window.open(${JSON.stringify(url)},'_blank','noopener')"` : ''}>
+        <div class="news-click-area" data-action="open" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
           <span class="news-item-tag ${n.cat}">${catNames[n.cat]||n.cat}</span>
           <div class="news-item-title">${escHtml(n.title)}</div>
           ${isNew ? `<span class="news-badge-new">NEW</span>` : ''}
           ${hasLink ? `<span style="font-size:11px;color:var(--accent);margin-left:auto;flex-shrink:0">🔗 跳转</span>` : ''}
         </div>
-        <button class="news-expand-btn" onclick="event.stopPropagation();document.getElementById('newsItem_${idx}').classList.toggle('expanded');markNewsRead(${JSON.stringify(readKey)});this.classList.toggle('expanded')" title="展开摘要">
+        <button class="news-expand-btn" data-action="expand" title="展开摘要">
           <span class="news-expand-arrow">▾</span>
         </button>
       </div>
@@ -3749,13 +4157,43 @@ function renderNews() {
         <div class="nis-text">${escHtml(desc)}</div>
         <div class="nis-footer">
           <span style="color:var(--muted);font-size:11px">${n.source||''} · ${pubTime.toLocaleDateString('zh-CN')}</span>
-          ${hasLink ? `<a class="nis-link" href="${escHtml(url)}" target="_blank" rel="noopener" onclick="event.stopPropagation();markNewsRead(${JSON.stringify(readKey)})">🔗 阅读全文 →</a>` : ''}
+          ${hasLink ? `<a class="nis-link" data-action="readlink" href="${escHtml(url)}" target="_blank" rel="noopener">🔗 阅读全文 →</a>` : ''}
         </div>
       </div>
     </div>`;
   }).join('') + (items.length > 10 && !newsExpanded ?
     `<button class="btn btn-ghost" style="width:100%;margin-top:12px" onclick="toggleNewsExpand()">▼ 展开剩余 ${items.length - 10} 条</button>` : '')
     + (newsExpanded ? `<button class="btn btn-ghost" style="width:100%;margin-top:12px" onclick="toggleNewsExpand()">▲ 收起</button>` : '');
+  // 绑定事件委托
+  bindNewsEvents();
+}
+function bindNewsEvents() {
+  const list = document.getElementById('newsList'); if (!list) return;
+  list.onclick = function(e) {
+    const item = e.target.closest('.news-item');
+    if (!item) return;
+    const idx = item.dataset.idx;
+    const readKey = item.dataset.readkey;
+    const url = item.dataset.url;
+    const actionEl = e.target.closest('[data-action]');
+    const action = actionEl ? actionEl.dataset.action : '';
+    if (action === 'open' || (!actionEl && e.target.closest('.news-click-area'))) {
+      // 点击标题区域：标记已读 + 跳转
+      if (readKey) markNewsRead(readKey);
+      if (url && url !== '#') {
+        window.open(url, '_blank', 'noopener');
+      }
+    } else if (action === 'expand') {
+      // 展开/收起按钮
+      item.classList.toggle('expanded');
+      const btn = e.target.closest('.news-expand-btn');
+      if (btn) btn.classList.toggle('expanded');
+      if (readKey) markNewsRead(readKey);
+    } else if (action === 'readlink') {
+      // 底部阅读全文链接
+      if (readKey) markNewsRead(readKey);
+    }
+  };
 }
 function polarToCartesian(cx, cy, r, angleDeg) {
   const rad = (angleDeg - 90) * Math.PI / 180;
@@ -3966,6 +4404,7 @@ function toggleTheme() {
   document.body.classList.toggle('dark', darkMode);
   const tt = document.getElementById('themeToggle'); if (tt) tt.textContent = darkMode ? '☾' : '☀';
   const st = document.getElementById('settingsThemeToggle'); if (st) st.textContent = darkMode ? '☾' : '☀';
+  const tbt = document.getElementById('topbarThemeBtn'); if (tbt) tbt.textContent = darkMode ? '☾' : '☀';
   saveAll();
 }
 function applyTheme() {
@@ -3973,6 +4412,7 @@ function applyTheme() {
     document.body.classList.add('dark');
     const tt = document.getElementById('themeToggle'); if (tt) tt.textContent = '☾';
     const st = document.getElementById('settingsThemeToggle'); if (st) st.textContent = '☾';
+    const tbt = document.getElementById('topbarThemeBtn'); if (tbt) tbt.textContent = '☾';
   }
 }
 function installPWA() {
@@ -4108,6 +4548,9 @@ function init() {
   renderSavedFiltersBar();
   renderTaskProjectSelect();
   checkAchievements();
+  // 【优化增强】首屏状态
+  updateTopbarBadge();
+  renderSectionMetrics('dashboard');
   setTimeout(() => fetchHotData(false), 1500);
   window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; setTimeout(() => document.getElementById('pwaBanner')?.classList.add('show'), 3000); });
   setInterval(() => { if (document.getElementById('dashboard')?.classList.contains('active')) renderDashboard(); }, 30000);
