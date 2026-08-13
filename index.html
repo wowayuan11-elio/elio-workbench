@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#fafafa">
+<meta name="theme-color" content="#6366f1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="elio工作台">
-<link rel="manifest" href='data:application/manifest+json,{"name":"elio工作台","short_name":"elio","start_url":".","display":"standalone","background_color":"#efebe5","theme_color":"#f0ede8","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 192 192\"%3E%3Crect width=\"192\" height=\"192\" rx=\"40\" fill=\"%2345403a\"/%3E%3Ctext x=\"96\" y=\"130\" font-size=\"96\" text-anchor=\"middle\" fill=\"%23faf7f2\" font-family=\"sans-serif\"%3Ee%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"},{"src":"data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"%3E%3Crect width=\"512\" height=\"512\" rx=\"100\" fill=\"%2345403a\"/%3E%3Ctext x=\"256\" y=\"350\" font-size=\"256\" text-anchor=\"middle\" fill=\"%23faf7f2\" font-family=\"sans-serif\"%3Ee%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.svg">
+<link rel="icon" type="image/svg+xml" href="icon-192.svg">
 <title>elio工作台 v4</title>
 <style>
 :root {
@@ -490,6 +492,35 @@ ul { list-style: none; }
   position: absolute; top: 8px; right: 8px; display: none; gap: 4px; z-index: 10;
 }
 .widget.editing .widget-edit-controls { display: flex; }
+/* 编辑模式：widget 内部顶部编辑栏 */
+.widget-edit-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px; padding: 6px 10px;
+  background: rgba(99,102,241,0.08); border-radius: var(--radius-sm);
+  border: 1px dashed rgba(99,102,241,0.30);
+}
+.widget-edit-head .we-del {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  background: rgba(239,68,68,0.10); border: 1px solid rgba(239,68,68,0.25);
+  color: var(--rose); font-size: 16px; cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition);
+}
+.widget-edit-head .we-del:hover {
+  background: rgba(239,68,68,0.20); transform: scale(1.08);
+}
+.widget-edit-head .we-sizes { display: flex; gap: 4px; }
+.widget-edit-head .we-size {
+  padding: 4px 12px; border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.6); border: 1px solid var(--rule);
+  font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--muted);
+  cursor: pointer; transition: all var(--transition);
+}
+.widget-edit-head .we-size:hover { border-color: var(--accent); color: var(--accent); }
+.widget-edit-head .we-size.active {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.25);
+}
 .we-btn {
   width: 28px; height: 28px; border-radius: 7px; background: var(--surface);
   border: 1px solid var(--rule); display: flex; align-items: center; justify-content: center;
@@ -1314,17 +1345,48 @@ ul { list-style: none; }
 }
 .mn-item .mn-icon { font-size: 18px; }
 .mn-item.active { color: var(--ink); }
+/* Toast → 液态玻璃胶囊，底部居中，小巧不抢眼 */
 .toast {
-  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(80px);
-  background: var(--ink); color: var(--surface); border-radius: 10px;
-  padding: 10px 22px; font-size: 13px; z-index: 9999; opacity: 0;
-  transition: all 0.25s ease; box-shadow: var(--shadow-lg); pointer-events: none;
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  min-width: 200px;
+  max-width: 360px;
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  text-align: center;
+  color: var(--ink);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(24px) saturate(1.25);
+  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.85) inset,
+    0 -1px 0 0 rgba(20,20,60,0.04) inset,
+    0 12px 32px rgba(20,20,60,0.12),
+    0 4px 12px rgba(20,20,60,0.06);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.35s cubic-bezier(.2,.9,.25,1.1);
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { background: rgba(16,185,129,0.18); color: #065f46; border-color: rgba(16,185,129,0.35); }
+.toast.error   { background: rgba(239,68,68,0.15);  color: #991b1b; border-color: rgba(239,68,68,0.30); }
+.toast.warn    { background: rgba(245,158,11,0.15); color: #92400e; border-color: rgba(245,158,11,0.30); }
+
 .xp-toast {
-  position: fixed; bottom: 100px; right: 30px; background: linear-gradient(135deg, var(--gold), var(--rose));
-  color: var(--surface); padding: 10px 18px; border-radius: 20px; font-size: 14px;
-  font-weight: 700; z-index: 9999; box-shadow: var(--shadow-lg);
+  position: fixed; bottom: 100px; right: 30px;
+  background: linear-gradient(135deg, var(--gold), var(--rose));
+  color: #fff; padding: 10px 18px; border-radius: var(--radius-pill);
+  font-size: 14px; font-weight: var(--fw-bold); z-index: 9999;
+  box-shadow: 0 8px 24px rgba(245,158,11,0.35);
   animation: xpFloat 1.8s ease forwards; pointer-events: none;
 }
 .celebration-overlay {
@@ -1653,7 +1715,7 @@ body.dark .mobile-nav { background: rgba(31,29,24,0.92); }
 }
 @media (max-width: 768px) {
   .sidebar { display: none; }
-  .main { margin-left: 0; padding: 24px 18px; padding-bottom: calc(var(--nav-h) + 24px); }
+  .main { margin-left: 0; padding: 24px 16px; padding-bottom: calc(var(--nav-h) + 28px); }
   .mobile-nav { display: block; }
   .dash-greeting { font-size: 22px; }
   .dash-clock { font-size: 22px; }
@@ -1665,7 +1727,7 @@ body.dark .mobile-nav { background: rgba(31,29,24,0.92); }
   .habit-day-btn { width: 30px; height: 30px; }
   .page-title { font-size: 20px; }
   .task-del, .task-actions { opacity: 1; }
-  .card, .widget { padding: 18px; }
+  .card, .widget { padding: 16px; }
   .drag-handle { display: none; }
   .hot-grid { grid-template-columns: 1fr; }
   .hot-tabs { gap: 3px; }
@@ -1682,6 +1744,19 @@ body.dark .mobile-nav { background: rgba(31,29,24,0.92); }
   .media-quick-row { grid-template-columns: repeat(3, 1fr); }
   .quick-links { grid-template-columns: repeat(3, 1fr); }
   .cal-cell { min-height: 60px; }
+  /* 移动端触摸优化 */
+  .btn, .dash-edit-btn, .dash-add-btn { min-height: 44px; font-size: 14px; }
+  .input-field, .select-field { min-height: 44px; font-size: 15px; }
+  .input-row { gap: 8px; }
+  .input-row .select-field { max-width: 120px; }
+  .view-btn { min-height: 40px; padding: 8px 14px; font-size: 13px; }
+  .nav-item, .mn-item { min-height: 44px; }
+  .task-check { width: 26px; height: 26px; }
+  .task-item { padding: 12px 14px; }
+  .we-btn, .we-del { width: 36px; height: 36px; }
+  .modal-box { margin: 16px; max-height: 80vh; overflow-y: auto; }
+  .pwa-banner { bottom: calc(var(--nav-h) + 16px); }
+  .toast { bottom: calc(var(--nav-h) + 16px); }
 }
 @media (max-width: 380px) {
   .habit-week { gap: 3px; }
@@ -1860,19 +1935,6 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
 }
 @keyframes skeletonShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-/* Toast 升级 */
-.toast {
-  position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-12px);
-  background: var(--ink); color: var(--surface); padding: 10px 18px; border-radius: 12px;
-  font-size: 13px; font-weight: 500; z-index: 9999; opacity: 0; pointer-events: none;
-  box-shadow: var(--shadow-lg); transition: all 0.3s cubic-bezier(.2,.9,.25,1.1);
-  max-width: 80vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.toast.show { opacity: 0.96; transform: translateX(-50%) translateY(0); }
-.toast.success { background: var(--sage); }
-.toast.error { background: var(--rose); }
-.toast.warn { background: var(--gold); color: var(--ink); }
-
 /* 按压反馈（移动端） */
 .press { transition: transform 0.1s ease; }
 .press:active { transform: scale(0.96); }
@@ -1990,8 +2052,8 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
         <div>
           <div class="dash-clock" id="dashClock">00:00</div>
           <div class="dash-toolbar" style="margin-top:10px;justify-content:flex-end">
-            <button class="dash-edit-btn" id="dashEditBtn" onclick="toggleWidgetEdit()">✎ 编辑布局</button>
-            <button class="dash-add-btn" onclick="openWidgetPicker()">+ 添加Widget</button>
+            <button class="dash-edit-btn" id="dashEditBtn" onclick="toggleEditMode()">✎ 编辑布局</button>
+            <button class="dash-add-btn" onclick="openAddWidgetModal()">+ 添加Widget</button>
           </div>
         </div>
       </div>
@@ -3509,16 +3571,22 @@ function cycleWidgetSize(idx) {
   widgetOrder[idx].span = sizes[(i+1) % sizes.length];
   saveAll(); renderDashboard();
 }
+function setWidgetSpan(idx, span) {
+  if (widgetOrder[idx]) {
+    widgetOrder[idx].span = span;
+    saveAll(); renderDashboard();
+  }
+}
 function toggleEditMode() {
   widgetEditMode = !widgetEditMode;
-  const btn = document.getElementById('editModeBtn');
+  const btn = document.getElementById('dashEditBtn');
   if (btn) btn.textContent = widgetEditMode ? '✓ 完成编辑' : '✎ 编辑布局';
   renderDashboard();
 }
-function openAddWidgetModal() { openModal('addWidgetModal'); renderWidgetCatalog(); }
+function openAddWidgetModal() { openModal('widgetPickerModal'); renderWidgetCatalog(); }
 function renderWidgetCatalog() {
   const usedTypes = widgetOrder.map(w => w.type);
-  const grid = document.getElementById('widgetCatalogGrid');
+  const grid = document.getElementById('widgetPickerGrid');
   grid.innerHTML = WIDGET_CATALOG.map(w => `
     <div class="widget-catalog-item">
       <div class="wci-icon">${w.icon}</div>
@@ -3529,7 +3597,7 @@ function renderWidgetCatalog() {
 }
 function addWidget(type, span) {
   widgetOrder.push({ type, span: span||'' });
-  saveAll(); closeModal('addWidgetModal'); renderDashboard(); showToast('已添加');
+  saveAll(); closeModal('widgetPickerModal'); renderDashboard(); showToast('已添加');
 }
 function renderDashboard() {
   const today = todayStr();
@@ -5040,6 +5108,10 @@ function init() {
   }, 1000);
 }
 init();
+// 注册 Service Worker，启用 PWA 离线能力
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').catch(() => {});
+}
 </script>
 </body>
 </html>
