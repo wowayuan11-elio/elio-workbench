@@ -69,7 +69,7 @@
     0 18px 48px rgba(20,20,60,0.08),
     0 6px 18px var(--glass-shadow-hard);
   --sidebar-w: 220px;
-  --nav-h: 60px;
+  --nav-h: 66px;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   /* 阴影：柔和多层 */
@@ -1334,17 +1334,82 @@ ul { list-style: none; }
 .review-hist-body strong { color: var(--ink-soft); font-weight: 600; }
 .mobile-nav {
   display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
-  background: rgba(244,240,234,0.92); backdrop-filter: blur(20px);
-  border-top: 1px solid var(--rule); z-index: 100; padding-bottom: env(safe-area-inset-bottom);
+  background: rgba(244,240,234,0.92); backdrop-filter: blur(24px) saturate(1.25);
+  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  border-top: 1px solid var(--glass-border); z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 24px rgba(20,20,60,0.06);
 }
-.mobile-nav-items { display: flex; height: 100%; overflow-x: auto; }
+.mobile-nav-items { display: flex; height: 100%; overflow: hidden; padding: 6px 8px; gap: 2px; }
 .mn-item {
-  flex: 1; min-width: 60px; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 1px; color: var(--muted-light); font-size: 9px;
-  font-weight: 500; transition: color var(--transition);
+  flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 3px; color: var(--muted-light); font-size: 11px;
+  font-weight: 600; transition: all 0.3s cubic-bezier(.2,.9,.25,1);
+  border-radius: 18px; position: relative; touch-action: manipulation;
 }
-.mn-item .mn-icon { font-size: 18px; }
-.mn-item.active { color: var(--ink); }
+.mn-item .mn-icon { font-size: 22px; line-height: 1; margin-bottom: 1px; }
+.mn-item.active {
+  color: var(--primary);
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(236,72,153,0.08));
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.9) inset,
+    0 0 0 1px rgba(99,102,241,0.15),
+    0 6px 16px rgba(99,102,241,0.10);
+}
+.mn-item:active { transform: scale(0.94); }
+
+/* 移动端更多导航抽屉 */
+.more-sheet-mask {
+  display: none; position: fixed; inset: 0; z-index: 199;
+  background: rgba(15,15,35,0.40); backdrop-filter: blur(4px);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.more-sheet-mask.show { display: block; opacity: 1; }
+.more-sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
+  transform: translateY(105%); transition: transform 0.42s cubic-bezier(.2,.9,.25,1.05);
+  background: rgba(250,247,241,0.96);
+  backdrop-filter: blur(32px) saturate(1.3); -webkit-backdrop-filter: blur(32px) saturate(1.3);
+  border: 1px solid var(--glass-border);
+  border-top-left-radius: 32px; border-top-right-radius: 32px;
+  padding: 10px 20px calc(20px + env(safe-area-inset-bottom));
+  box-shadow: 0 -12px 48px rgba(20,20,60,0.18);
+}
+.more-sheet.show { transform: translateY(0); }
+.more-sheet-grip {
+  width: 44px; height: 5px; border-radius: 999px;
+  background: rgba(120,110,90,0.28); margin: 6px auto 14px;
+}
+.more-sheet-title {
+  font-size: 16px; font-weight: 700; color: var(--ink);
+  margin: 0 0 14px 4px; letter-spacing: 0.2px;
+}
+.more-sheet-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px;
+}
+.ms-item {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 14px 6px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.65);
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.9) inset,
+    0 4px 12px rgba(20,20,60,0.04);
+  transition: all 0.25s cubic-bezier(.2,.9,.25,1);
+  touch-action: manipulation;
+}
+.ms-item:active { transform: scale(0.95); background: rgba(255,255,255,0.85); }
+.ms-item .ms-icon { font-size: 26px; line-height: 1; }
+.ms-item .ms-label { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+.ms-item.active .ms-label { color: var(--primary); }
+.ms-item.active {
+  background: linear-gradient(135deg, rgba(99,102,241,0.14), rgba(236,72,153,0.08));
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.9) inset,
+    0 0 0 1px rgba(99,102,241,0.18),
+    0 6px 18px rgba(99,102,241,0.12);
+}
 /* Toast → 液态玻璃胶囊，底部居中，小巧不抢眼 */
 .toast {
   position: fixed;
@@ -2422,19 +2487,29 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
   </main>
   <nav class="mobile-nav">
     <div class="mobile-nav-items">
-      <div class="mn-item active" data-section="dashboard"><span class="mn-icon">◈</span> 仪表盘</div>
-      <div class="mn-item" data-section="tasks"><span class="mn-icon">✓</span> 任务</div>
-      <div class="mn-item" data-section="pomodoro"><span class="mn-icon">◐</span> 番茄</div>
-      <div class="mn-item" data-section="life"><span class="mn-icon">★</span> 生活</div>
-      <div class="mn-item" data-section="feynman"><span class="mn-icon">✦</span> 费曼</div>
-      <div class="mn-item" data-section="media"><span class="mn-icon">◈</span> 自媒体</div>
-      <div class="mn-item" data-section="topics"><span class="mn-icon">◆</span> 热点</div>
-      <div class="mn-item" data-section="news"><span class="mn-icon">❖</span> 资讯</div>
-      <div class="mn-item" data-section="review"><span class="mn-icon">❏</span> 复盘</div>
-      <div class="mn-item" data-section="achievements"><span class="mn-icon">🏆</span> 成就</div>
-      <div class="mn-item" data-section="settings"><span class="mn-icon">⚙</span> 设置</div>
+      <div class="mn-item active" data-section="dashboard"><span class="mn-icon">◈</span>仪表盘</div>
+      <div class="mn-item" data-section="tasks"><span class="mn-icon">✓</span>任务</div>
+      <div class="mn-item" data-section="pomodoro"><span class="mn-icon">◐</span>番茄</div>
+      <div class="mn-item" data-section="news"><span class="mn-icon">❖</span>资讯</div>
+      <div class="mn-item" id="moreTabBtn"><span class="mn-icon">⋯</span>更多</div>
     </div>
   </nav>
+  <div class="more-sheet-mask" id="moreSheetMask" onclick="toggleMoreSheet(false)"></div>
+  <div class="more-sheet" id="moreSheet" role="dialog" aria-modal="true">
+    <div class="more-sheet-grip"></div>
+    <div class="more-sheet-title">所有模块</div>
+    <div class="more-sheet-grid" id="moreSheetGrid">
+      <div class="ms-item" data-section="habits"><span class="ms-icon">◉</span><span class="ms-label">习惯打卡</span></div>
+      <div class="ms-item" data-section="life"><span class="ms-icon">★</span><span class="ms-label">生活管理</span></div>
+      <div class="ms-item" data-section="feynman"><span class="ms-icon">✦</span><span class="ms-label">费曼练习</span></div>
+      <div class="ms-item" data-section="media"><span class="ms-icon">◈</span><span class="ms-label">自媒体</span></div>
+      <div class="ms-item" data-section="topics"><span class="ms-icon">◆</span><span class="ms-label">热点追踪</span></div>
+      <div class="ms-item" data-section="review"><span class="ms-icon">❏</span><span class="ms-label">每日复盘</span></div>
+      <div class="ms-item" data-section="stats"><span class="ms-icon">▤</span><span class="ms-label">数据统计</span></div>
+      <div class="ms-item" data-section="achievements"><span class="ms-icon">🏆</span><span class="ms-label">成就徽章</span></div>
+      <div class="ms-item" data-section="settings"><span class="ms-icon">⚙</span><span class="ms-label">设置</span></div>
+    </div>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 <div class="pwa-banner" id="pwaBanner">
@@ -3204,8 +3279,44 @@ function switchSection(name) {
   window.scrollTo(0, 0);
 }
 document.querySelectorAll('.nav-item, .mn-item').forEach(item => {
-  item.addEventListener('click', () => switchSection(item.dataset.section));
+  item.addEventListener('click', () => {
+    if (item.id === 'moreTabBtn') { toggleMoreSheet(true); return; }
+    if (item.dataset.section) switchSection(item.dataset.section);
+  });
 });
+// 移动端更多抽屉：打开/关闭 + 条目点击跳转 + 激活态同步
+function toggleMoreSheet(show) {
+  const mask = document.getElementById('moreSheetMask');
+  const sheet = document.getElementById('moreSheet');
+  if (!mask || !sheet) return;
+  const willShow = (typeof show === 'boolean') ? show : !sheet.classList.contains('show');
+  mask.classList.toggle('show', willShow);
+  sheet.classList.toggle('show', willShow);
+  // 同步抽屉条目的激活态
+  if (willShow) {
+    const current = document.querySelector('.section.active')?.id;
+    sheet.querySelectorAll('.ms-item').forEach(it => {
+      it.classList.toggle('active', it.dataset.section === current);
+    });
+  }
+}
+document.querySelectorAll('.ms-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const section = item.dataset.section;
+    if (section) {
+      toggleMoreSheet(false);
+      setTimeout(() => switchSection(section), 120);
+    }
+  });
+});
+// 同步：mn-item 激活时，如果当前 section 不在底部5个核心 tab，更多按钮高亮
+const _origSwitchSection = switchSection;
+switchSection = function(name) {
+  _origSwitchSection(name);
+  const coreSections = ['dashboard','tasks','pomodoro','news'];
+  const moreBtn = document.getElementById('moreTabBtn');
+  if (moreBtn) moreBtn.classList.toggle('active', !coreSections.includes(name));
+};
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 6) return '夜深了'; if (h < 9) return '早上好'; if (h < 12) return '上午好';
