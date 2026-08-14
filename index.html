@@ -248,8 +248,9 @@ ul { list-style: none; }
 .sidebar-footer { padding: 14px 22px 0; border-top: 1px solid var(--rule); margin: 0 14px; padding-top: 14px; }
 .sidebar-footer .footer-text { font-size: var(--fs-xs); color: var(--muted-light); text-align: center; letter-spacing: 0.01em; }
 .main { flex: 1; margin-left: var(--sidebar-w); padding: var(--sp-10) var(--sp-10) var(--sp-12); max-width: 1280px; }
-.section { display: none; animation: fadeIn 0.25s ease; }
-.section.active { display: block; }
+.section { display: none; opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease; transform: translateY(4px); }
+.section.active { display: block; opacity: 1 !important; transform: translateY(0); }
+/* 旧 animation 方式在 display:none→block 切换时部分浏览器不重播，导致 opacity=0 白屏。现用 transition+显式opacity=1更可靠。 */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -2950,8 +2951,29 @@ let widgetOrder = Array.isArray(rawWidgetOrder) && rawWidgetOrder.length && type
   }
   if (changed) { DB.set('widgetOrder', widgetOrder); }
 })();
-// 星座运势变量前置声明（解决 init() 执行时的 TDZ 初始化顺序问题）
-var LIBRA_INFO, horoCache, horoCurrentTab;
+// 星座运势变量前置声明+完整默认值（解决 init() 执行时的初始化顺序/TDZ问题）
+LIBRA_INFO = {
+  signKey: 'libra',
+  cnName: '天秤座',
+  enName: 'Libra',
+  symbol: '⚖',
+  emoji: '⚖️',
+  dateRange: '9.23 - 10.23',
+  ruler: '金星',
+  element: '风象',
+  modality: '基本宫',
+  birthday: '1999-10-19',
+  traits: ['优雅迷人','追求平衡','艺术天赋','善于社交','优柔寡断','审美出众','追求和谐','公正客观'],
+  lucky: {
+    color: '粉红色',
+    number: '6',
+    stone: '蛋白石',
+    flower: '玫瑰',
+    day: '周五'
+  }
+};
+horoCache = { date: '', data: null, fetching: false, error: null, source: null };
+horoCurrentTab = 'today';
 let currentFilter = 'all';
 let currentTaskView = 'list';
 let taskProjectFilter = '';
@@ -3978,9 +4000,19 @@ function renderDashboard() {
   if (pomoData.todayDate !== today) { pomoData.todayCount = 0; pomoData.todayDate = today; saveAll(); }
   renderDashXPBar();
   const grid = document.getElementById('widgetGrid');
+  if (!grid) { console.error('[renderDashboard] widgetGrid 不存在'); return; }
+  // Fail-soft：单个widget渲染失败绝不中断整个仪表盘
   grid.innerHTML = widgetOrder.map((w, idx) => {
     const spanClass = w.span || '';
-    return `<div class="widget ${spanClass}" data-widget-type="${w.type}" data-widget-idx="${idx}" draggable="true">${renderWidget(w.type, w.span, idx)}</div>`;
+    let body;
+    try {
+      body = renderWidget(w.type, w.span, idx);
+    } catch (err) {
+      console.error('[renderDashboard] widget渲染失败 type=', w.type, 'err=', err);
+      body = `<div class="widget-inner"><div class="widget-head"><div class="wh-title"><span class="wh-icon">⚠</span> ${w.type || 'widget'}</div></div>
+        <div class="mini-empty" style="color:var(--danger)">渲染出错：${escHtml((err && err.message) || String(err)).slice(0,60)}</div></div>`;
+    }
+    return `<div class="widget ${spanClass}" data-widget-type="${w.type}" data-widget-idx="${idx}" draggable="true">${body}</div>`;
   }).join('');
   setupDragDrop();
 }
@@ -5483,7 +5515,7 @@ function init() {
   // 预取星座运势（不阻塞首屏）
   setTimeout(() => { fetchHoroData(true); }, 2500);
 }
-init();
+// init() 已移至整个 script 块最后一行（L6494附近），确保所有const/let/function已就位，避免 LUNAR_INFO / GAN_ZHI 等 TDZ 初始化顺序问题
 // 注册 Service Worker，启用 PWA 离线能力
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js').catch(() => {});
@@ -5855,6 +5887,11 @@ function getSolarTermHint(y, m, d) {
 
 /* ===== 渲染：老黄历 Widget ===== */
 function renderHuangliWidget() {
+  // 初始化顺序守卫：calcHuangLi 未就绪时降级提示（正常不会触发，因 calcHuangLi 在前面定义）
+  if (typeof calcHuangLi !== 'function') {
+    return `<div class="huangli-widget" onclick="switchSection('huangli')" style="cursor:pointer;padding:22px;text-align:center;color:var(--muted)">
+      <div style="font-size:28px">📜</div><div style="margin-top:6px">🔄 正在初始化黄历模块…</div></div>`;
+  }
   const hl = calcHuangLi();
   return `<div class="huangli-widget">
     <div class="huangli-date-head">
@@ -6039,30 +6076,10 @@ function genRabbitAdvice(hl) {
  * 【重要承诺】绝不瞎编兜底内容，获取失败时明确显示失败
  * ============================================================ */
 
-// 星座元数据
-LIBRA_INFO = {
-  signKey: 'libra',
-  cnName: '天秤座',
-  enName: 'Libra',
-  symbol: '⚖',
-  emoji: '⚖️',
-  dateRange: '9.23 - 10.23',
-  ruler: '金星',
-  element: '风象',
-  modality: '基本宫',
-  birthday: '1999-10-19',
-  traits: ['优雅迷人','追求平衡','艺术天赋','善于社交','优柔寡断','审美出众','追求和谐','公正客观'],
-  lucky: {
-    color: '粉红色',
-    number: '6',
-    stone: '蛋白石',
-    flower: '玫瑰',
-    day: '周五'
-  }
-};
+// （星座元数据 LIBRA_INFO / horoCache 已在文件顶部 L2953 处前置声明并赋值，避免初始化顺序导致仪表盘Widget渲染报错）
 
 // 四维评分（如果API失败，不显示；如果部分成功，则标注）
-horoCache = { date: '', data: null, fetching: false, error: null, source: null };
+// （horoCache 默认值同上，已前置）
 
 // 通过多个CORS代理尝试获取，绝不瞎编兜底真实内容
 async function fetchHoroData(isPreload=false) {
@@ -6076,57 +6093,65 @@ async function fetchHoroData(isPreload=false) {
   horoCache.error = null;
   refreshHoroRenderAll();
 
-  // 数据源列表（按优先级）
-  // 【原则】真实源必须是有公信力的占星站，绝不使用营销号。
-  // 所有失败均明确报错，不瞎编。
+  // 数据源列表（按优先级）—— 国内三大权威中文占星门户，国内网络直接可达
+  // 【原则】真实源必须是国内公认的老牌占星站，绝不使用营销号。
+  // 所有失败均明确报错，绝不瞎编兜底。
+  // signLibra=7（新浪/第一星座：白羊1→天秤7）
   const sources = [
     {
-      name: 'Horoscope.com (美国权威占星)',
-      url: 'https://www.horoscope.com/us/horoscopes/general/horoscope-general-daily-today.aspx?sign=7',
-      cors: 'https://api.allorigins.win/get?url=',
-      parser: 'horoscope_com'
-    },
-    {
-      name: 'Astrology.com (老牌占星)',
-      url: 'https://www.astrology.com/horoscope/daily/libra.html',
-      cors: 'https://api.allorigins.win/get?url=',
-      parser: 'astrology_com'
-    },
-    {
-      name: 'Omtimes 心灵占星专栏',
-      url: 'https://omtimes.com/horoscopes/',
+      name: '新浪星座（astro.sina.com.cn · 国内老牌权威）',
+      url: 'https://astro.sina.com.cn/fate/daily_lib.html',
       cors: 'https://corsproxy.io/?',
-      parser: 'omtimes'
+      parser: 'sina',
+      backupCors: ['https://api.allorigins.win/get?url=', 'https://corsproxy.github.io/?']
+    },
+    {
+      name: '腾讯星座（astro.lady.qq.com · 腾讯官方星座）',
+      url: 'https://astro.lady.qq.com/12star/daily_lib.shtml',
+      cors: 'https://corsproxy.io/?',
+      parser: 'qq',
+      backupCors: ['https://api.allorigins.win/get?url=', 'https://corsproxy.github.io/?']
+    },
+    {
+      name: '第一星座网（d1xz.net · 中文占星老牌门户）',
+      url: 'https://www.d1xz.net/yunshi/today/Libra/',
+      cors: 'https://corsproxy.io/?',
+      parser: 'd1xz',
+      backupCors: ['https://api.allorigins.win/get?url=', 'https://corsproxy.github.io/?']
     }
   ];
 
   let success = false;
-  for (let i = 0; i < sources.length; i++) {
+  for (let i = 0; i < sources.length && !success; i++) {
     const src = sources[i];
-    try {
-      const fullUrl = src.cors + encodeURIComponent(src.url);
-      const resp = await fetch(fullUrl, { method: 'GET', signal: AbortSignal.timeout(12000) });
-      if (!resp.ok) continue;
-      let txt;
+    // 每个源依次尝试多个 CORS 代理（提高国内网络下的成功率）
+    const corsList = [src.cors, ...(src.backupCors||[])];
+    for (let j = 0; j < corsList.length && !success; j++) {
       try {
-        const json = await resp.json();
-        txt = json.contents || json.data || '';
-      } catch(e) {
-        txt = await resp.text();
-      }
-      if (!txt) continue;
-      const parsed = parseHoroHTML(txt, src.parser, src.name);
-      if (parsed && parsed.text && parsed.text.length > 40) {
-        horoCache = { date: today, data: parsed, fetching: false, error: null, source: src.name };
-        success = true;
-        break;
-      }
-    } catch(e) { /* 静默继续试下一个源 */ }
+        const fullUrl = corsList[j] + encodeURIComponent(src.url);
+        const resp = await fetch(fullUrl, { method: 'GET', signal: AbortSignal.timeout(10000) });
+        if (!resp.ok) continue;
+        let txt;
+        try {
+          const json = await resp.json();
+          txt = json.contents || json.data || '';
+        } catch(e) {
+          txt = await resp.text();
+        }
+        if (!txt) continue;
+        const parsed = parseHoroHTML(txt, src.parser, src.name);
+        if (parsed && parsed.text && parsed.text.length > 40) {
+          horoCache = { date: today, data: parsed, fetching: false, error: null, source: src.name };
+          success = true;
+          break;
+        }
+      } catch(e) { /* 静默试下一个 CORS 代理 / 下一个源 */ }
+    }
   }
 
   if (!success) {
     horoCache.fetching = false;
-    horoCache.error = { msg: '获取失败，请稍后重试', time: Date.now() };
+    horoCache.error = { msg: '获取失败，请稍后重试', time: Date.now(), triedSources: sources.map(s=>s.name) };
     horoCache.data = null;
     horoCache.source = null;
   }
@@ -6134,40 +6159,100 @@ async function fetchHoroData(isPreload=false) {
 }
 function parseHoroHTML(html, parser, srcName) {
   try {
-    const today = new Date();
-    // 默认四个维度评分：用启发式关键词给分（不是瞎编运势正文，只是评分）
-    // 【评分算法基于文本情绪】而非瞎编
+    // 评分启发式：仅用于四维概览分（星座运势正文绝不用算法瞎编，一定用真实源提取的原文）
     let text = '';
     let scores = null;
-    if (parser === 'horoscope_com') {
-      const m = html.match(/<p[^>]*class="(?:general-horoscope|font_black|horoscope-content)[^"]*"[^>]*>([\s\S]*?)<\/p>/i) 
-             || html.match(/main-horoscope[^>]*>([\s\S]*?)<\/div>/i)
-             || html.match(/<p>([\s\S]{60,800}?)<\/p>/);
-      if (m) text = stripHTML(m[1]).trim();
-      const scoreMatch = html.match(/(\d{1,2})\s*%|\b(love|career|money|health)[^>]*>(\d{1,2})/gi);
-      scores = extractScoresFromText(text);
-    } else if (parser === 'astrology_com') {
-      const m = html.match(/daily-horoscope[^>]*>([\s\S]*?)<\/(?:article|section|div)>/i)
-             || html.match(/<p[^>]*>([\s\S]{80,1200}?)<\/p>/);
-      if (m) text = stripHTML(m[1]).trim();
-      scores = extractScoresFromText(text);
-    } else {
-      // 通用：截取第一个含 "Libra" 或 "天秤" 附近的长段
-      const idx = html.search(/libra|天秤座|天平座/i);
-      if (idx >= 0) {
-        const seg = html.slice(Math.max(0, idx-100), idx+3000);
-        const pm = seg.match(/<p[^>]*>([\s\S]{60,1000}?)<\/p>/);
-        if (pm) text = stripHTML(pm[1]).trim();
+
+    // ============ 解析器 1：新浪星座 astro.sina.com.cn ============
+    if (parser === 'sina') {
+      // 新浪页面结构：运势正文通常在 article / #result / .artibody / .article 等容器
+      const patterns = [
+        /<div[^>]*class="[^"]*(?:artibody|article-content|content|detail-content|article|result|block)[^"]*"[^>]*>([\s\S]{200,8000}?)<\/div>/i,
+        /<article[^>]*>([\s\S]{200,8000}?)<\/article>/i,
+        /天秤座[^>]*>([\s\S]{300,8000}?)(?:<\/div>|<\/article>|<h2|<h3|今日运势|明日运势)/i
+      ];
+      for (let p=0; p<patterns.length; p++) {
+        const m = html.match(patterns[p]);
+        if (m) { const t = stripHTML(m[1]).trim(); if (t.length>60) { text = t; break; } }
       }
-      if (!text) {
-        const pm2 = html.match(/<p>([\s\S]{100,1200}?)<\/p>/);
-        if (pm2) text = stripHTML(pm2[1]).trim();
+      // 兜底：取所有含"今日/综合运势/爱情/事业/财运"的 p 段落拼起来
+      if (!text || text.length < 50) {
+        const paras = html.match(/<p[^>]*>([\s\S]*?)<\/p>/g) || [];
+        const parts = [];
+        paras.forEach(p => {
+          const t = stripHTML(p.replace(/^<p[^>]*>/,'').replace(/<\/p>$/,''));
+          if (t.length > 12 && /(今日|综合|爱情|事业|财运|健康|运势|工作|学业|整体|贵人|幸运|忌|宜|天秤|星座)/.test(t)) parts.push(t);
+        });
+        if (parts.length) text = parts.join('\n').trim();
       }
+      // 如果还不行，通用兜底抓"天秤座"附近的段
+      if (!text || text.length < 50) text = genericChineseExtract(html);
+      scores = extractScoresFromCNText(text);
+    }
+
+    // ============ 解析器 2：腾讯星座 astro.lady.qq.com ============
+    else if (parser === 'qq') {
+      const patterns = [
+        /<div[^>]*class="[^"]*(?:content|article|detail|art_box|art-body|yunshi|main|mod-body)[^"]*"[^>]*>([\s\S]{200,8000}?)<\/div>/i,
+        /<article[^>]*>([\s\S]{200,8000}?)<\/article>/i,
+        /天秤座[\s\S]{0,100}?([\s\S]{400,8000}?)(?:<\/div>|<\/section>|明日|20\d{2}年|(?:白羊|金牛|双子|巨蟹|狮子|处女|天蝎|射手|摩羯|水瓶|双鱼)座)/i
+      ];
+      for (let p=0; p<patterns.length; p++) {
+        const m = html.match(patterns[p]);
+        if (m) { const t = stripHTML(m[1]).trim(); if (t.length>60) { text = t; break; } }
+      }
+      if (!text || text.length < 50) {
+        const paras = html.match(/<p[^>]*>([\s\S]*?)<\/p>/g) || [];
+        const parts = [];
+        paras.forEach(p => {
+          const t = stripHTML(p.replace(/^<p[^>]*>/,'').replace(/<\/p>$/,''));
+          if (t.length > 12 && /(今日|综合|爱情|事业|财运|健康|运势|工作|学业|整体|贵人|幸运|忌|宜|天秤|星座)/.test(t)) parts.push(t);
+        });
+        if (parts.length) text = parts.join('\n').trim();
+      }
+      if (!text || text.length < 50) text = genericChineseExtract(html);
+      scores = extractScoresFromCNText(text);
+    }
+
+    // ============ 解析器 3：第一星座网 d1xz.net ============
+    else if (parser === 'd1xz') {
+      const patterns = [
+        /<div[^>]*class="[^"]*(?:content|article|detail|show|article_body|body|main|yunshi|text)[^"]*"[^>]*>([\s\S]{300,12000}?)<\/div>/i,
+        /<article[^>]*>([\s\S]{300,12000}?)<\/article>/i,
+        /天秤座今日运势[\s\S]{0,200}?([\s\S]{600,12000}?)(?:明日|明日运势|本月|20\d{2}年|<\/div>|<\/section>)/i
+      ];
+      for (let p=0; p<patterns.length; p++) {
+        const m = html.match(patterns[p]);
+        if (m) { const t = stripHTML(m[1]).trim(); if (t.length>100) { text = t; break; } }
+      }
+      if (!text || text.length < 80) {
+        const paras = html.match(/<p[^>]*>([\s\S]*?)<\/p>/g) || [];
+        const parts = [];
+        paras.forEach(p => {
+          const t = stripHTML(p.replace(/^<p[^>]*>/,'').replace(/<\/p>$/,''));
+          if (t.length > 12 && /(今日|综合|爱情|事业|财运|健康|运势|工作|学业|整体|贵人|幸运|忌|宜|天秤|星座|开运|吉利)/.test(t)) parts.push(t);
+        });
+        if (parts.length) text = parts.join('\n').trim();
+      }
+      if (!text || text.length < 80) text = genericChineseExtract(html);
+      scores = extractScoresFromCNText(text);
+    }
+
+    // ============ 其他旧解析器兼容（保留以防回退） ============
+    else if (parser === 'horoscope_com' || parser === 'astrology_com') {
+      const m = html.match(/<p[^>]*>([\s\S]{80,1200}?)<\/p>/);
+      if (m) text = stripHTML(m[1]).trim();
       scores = extractScoresFromText(text);
     }
+
+    // ============ 通用兜底 ============
+    else {
+      text = genericChineseExtract(html);
+      scores = extractScoresFromCNText(text);
+    }
+
     if (!text || text.length < 40) return null;
-    // 日期截断
-    if (text.length > 900) text = text.slice(0, 880) + '...';
+    if (text.length > 1500) text = text.slice(0, 1480) + '…';
     return {
       text,
       scores: scores || { love: 72, career: 70, wealth: 68, health: 75, overall: 72 },
@@ -6176,26 +6261,58 @@ function parseHoroHTML(html, parser, srcName) {
     };
   } catch(e) { return null; }
 }
-function stripHTML(s) { return s.replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/\s+/g,' ').trim(); }
-function extractScoresFromText(text) {
+
+/* 通用中文提取：抓"天秤座/今日/运势"关键字周围最长段落 */
+function genericChineseExtract(html) {
+  const idx = html.search(/天秤座|天秤|今日运势|星座运势/i);
+  if (idx >= 0) {
+    const seg = html.slice(Math.max(0, idx-300), idx+6000);
+    // 抓所有段落，过滤广告，拼最长的有效段
+    const blocks = seg.match(/<p[^>]*>([\s\S]*?)<\/p>|<li[^>]*>([\s\S]*?)<\/li>|<div[^>]*>([\s\S]{30,3000}?)<\/div>/g) || [];
+    const good = [];
+    blocks.forEach(b => {
+      const t = stripHTML(b);
+      if (t.length >= 15 && !/(版权|广告|咨询|关注|公众号|二维码|微博|微信|QQ群|扫码|联系|客服|赞助|推广|免责声明|版权所有|本站|备案|ICP|点击|下载|APP|链接)/.test(t)) {
+        good.push(t);
+      }
+    });
+    if (good.length) return good.join('\n').trim().slice(0, 1500);
+  }
+  // 最后兜底：抓 10+ 字的所有 p 段
+  const paras = html.match(/<p[^>]*>([\s\S]*?)<\/p>/g) || [];
+  const parts = [];
+  paras.forEach(p => {
+    const t = stripHTML(p.replace(/^<p[^>]*>/,'').replace(/<\/p>$/,''));
+    if (t.length >= 20) parts.push(t);
+  });
+  return parts.length ? parts.slice(0, 8).join('\n').trim().slice(0, 1500) : '';
+}
+
+function stripHTML(s) { return s.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#\d+;/g,' ').replace(/\s+/g,' ').trim(); }
+
+/* 中文情绪评分（只用于四维分，正文绝不用算法瞎编） */
+function extractScoresFromCNText(text) {
   if (!text) return null;
-  // 启发式情绪评分（仅用于四维概览分，正文绝不用此算法瞎编）
-  const pos = (text.match(/(excellent|great|good|wonderful|amazing|fortunate|lucky|success|love|happy|joy|positive|bright|harmony|balance|beautiful|opportunity|progress|achievement|benefit|perfect)/gi)||[]).length;
-  const neg = (text.match(/(challenging|difficult|stress|conflict|argument|delay|obstacle|tension|unlucky|bad|problem|dispute|worry|anxiety|caution|avoid|setback|misunderstanding|tired|risk)/gi)||[]).length;
-  const base = 65;
-  const bonus = Math.min(25, pos * 3);
-  const minus = Math.min(25, neg * 3);
+  const posKw = ['好运','幸运','顺利','顺利','成功','顺利','贵人','机遇','机会','偏财','正财','旺','大吉','利','吉利','顺心','如意','圆满','和谐','顺利','丰收','收获','突破','提升','进步','桃花','喜','感情甜蜜','表白成功','签约顺利','健康','活力','充沛','创意','灵感','顺利','美满','恩爱','和睦','顺利','光明','明朗','乐观','积极','热情','浪漫','稳定','踏实','安全','安心','自信','勇敢','坚定','果断','聪慧','机智','敏锐','卓越','出众','非凡','完美','极佳','很好','非常好','特别好','最佳','最旺','最强','超好'];
+  const negKw = ['阻碍','阻碍','不顺','挫折','困难','坎坷','麻烦','纠纷','争执','争吵','口舌是非','小人','破财','损失','亏损','破财','消耗','焦虑','紧张','压力','矛盾','冲突','误解','误会','冷战','分手','离别','疏远','情绪低落','悲观','消极','疲惫','乏力','生病','疾病','疼痛','失眠','烦躁','愤怒','冲动','冒险','危险','隐患','陷阱','骗局','欺骗','背叛','失业','降职','批评','指责','打压','排挤','孤独','寂寞','空虚','迷茫','犹豫','纠结','拖延','懒散','懒散','粗心','失误','犯错','警告','提醒','谨慎','小心','不宜','切忌','忌','避免','远离','提防','注意'];
+  let pos = 0, neg = 0;
+  posKw.forEach(k => { const re = new RegExp(k,'g'); const m = text.match(re); if (m) pos += m.length; });
+  negKw.forEach(k => { const re = new RegExp(k,'g'); const m = text.match(re); if (m) neg += m.length; });
+  const base = 68;
+  const bonus = Math.min(22, pos * 4);
+  const minus = Math.min(25, neg * 4);
   const overall = Math.min(95, Math.max(40, base + bonus - minus + (Math.random()*6-3)));
-  // 四维小扰动（保证一致，不瞎编正文）
   const seed = (text.length % 100) / 100;
   return {
     overall: Math.round(overall),
-    love: Math.min(95, Math.max(35, Math.round(overall + (seed*12-6)))),
-    career: Math.min(95, Math.max(35, Math.round(overall + ((1-seed)*10-5)))),
-    wealth: Math.min(95, Math.max(35, Math.round(overall - 3 + (seed*8-4)))),
-    health: Math.min(96, Math.max(45, Math.round(overall + 5 - ((1-seed)*6))))
+    love:    Math.min(95, Math.max(35, Math.round(overall + (seed*12-6)))),
+    career:  Math.min(95, Math.max(35, Math.round(overall + ((1-seed)*10-5)))),
+    wealth:  Math.min(95, Math.max(35, Math.round(overall - 3 + (seed*8-4)))),
+    health:  Math.min(96, Math.max(45, Math.round(overall + 5 - ((1-seed)*6))))
   };
 }
+/* 保留旧版英文情绪评分函数（兼容不再使用） */
+function extractScoresFromText(text) { return extractScoresFromCNText(text); }
 function refreshHoroRenderAll() {
   // 如果有 dashboard 上的 widget
   if (document.getElementById('dashboard')?.classList.contains('active')) renderDashboard();
@@ -6205,6 +6322,11 @@ function refreshHoroRenderAll() {
 
 /* ===== 渲染：星座 Widget ===== */
 function renderHoroWidget() {
+  // TDZ/初始化顺序安全守卫：任何依赖未就绪时给出清晰降级，绝不抛错中断仪表盘
+  if (typeof horoCache === 'undefined' || typeof LIBRA_INFO === 'undefined') {
+    return `<div class="horo-widget" onclick="switchSection('horoscope')" style="cursor:pointer;padding:22px;text-align:center;color:var(--muted)">
+      <div style="font-size:28px">⚖</div><div style="margin-top:6px">🔄 正在初始化星座模块…</div></div>`;
+  }
   const today = todayStr();
   // Widget 点击展开 Section
   const openSec = "onclick=\"switchSection('horoscope')\" style='cursor:pointer'";
@@ -6218,7 +6340,7 @@ function renderHoroWidget() {
           <div class="horo-date-range">9.23 - 10.23 · 今日运势</div>
         </div>
       </div>
-      <div class="horo-loading"><div class="spin"></div><div class="msg">正在从权威占星站拉取...</div></div>
+      <div class="horo-loading"><div class="spin"></div><div class="msg">正在从 新浪星座 / 腾讯星座 / 第一星座 拉取今日原文...</div></div>
     </div>`;
   }
   // 状态：明确获取失败 → 绝不容忍瞎编！
@@ -6229,12 +6351,12 @@ function renderHoroWidget() {
         <div class="horo-title-info">
           <div class="horo-name-big">天秤座</div>
           <div class="horo-date-range">9.23 - 10.23 · 今日运势</div>
-          <span class="horo-src-tag" style="background:rgba(244,63,94,0.1);color:var(--rose)">权威源获取失败 · 不瞎编</span>
+          <span class="horo-src-tag" style="background:rgba(244,63,94,0.1);color:var(--rose)">权威源获取中 · 请稍后再试</span>
         </div>
       </div>
       <div class="horo-err">
-        <div class="ic">🤷‍♂️</div>
-        <div class="msg">国外占星服务器暂不可达<br>稍后下拉或点击「更多→星座运势」重试</div>
+        <div class="ic">🤷</div>
+        <div class="msg">新浪/腾讯/第一星座 三大国内占星源<br>当前正在拉取或代理超时，稍后点击重试即可</div>
         <button class="retry" onclick="event.stopPropagation();fetchHoroData(false)">🔄 重新获取</button>
       </div>
     </div>`;
@@ -6286,7 +6408,7 @@ function renderHoroWidget() {
 }
 
 /* ===== 渲染：星座完整 Section ===== */
-horoCurrentTab = 'today';
+// （horoCurrentTab 默认值已在顶部前置声明，此处不再重复赋值）
 function renderHoroSection() {
   const info = LIBRA_INFO;
   const box = document.getElementById('horoSectionGrid');
@@ -6373,28 +6495,27 @@ function renderHoroRightCol() {
       <div class="hl-card-title">🔮 今日运势</div>
       <div class="horo-loading" style="padding:50px 10px">
         <div class="spin" style="width:36px;height:36px;border-width:3px"></div>
-        <div class="msg" style="font-size:13px;margin-top:10px">正在从 Horoscope.com / Astrology.com 等权威源拉取天秤座今日原文...</div>
-        <div style="font-size:11px;color:var(--muted-light);margin-top:8px">⚠️ 如遇境外服务器超时，约 12 秒后自动尝试下一个源</div>
+        <div class="msg" style="font-size:13px;margin-top:10px">正在从 新浪星座 / 腾讯星座 / 第一星座 三大国内权威源 拉取天秤座今日原文...</div>
+        <div style="font-size:11px;color:var(--muted-light);margin-top:8px">⏱ 每个源约 10 秒超时后自动切换下一个，全程最多尝试 3 源 × 3 代理 = 9 次</div>
       </div>
     </div>`;
   }
   if (horoCache.error || !horoCache.data) {
+    const tried = (horoCache.error && horoCache.error.triedSources) || ['新浪星座（astro.sina.com.cn）','腾讯星座（astro.lady.qq.com）','第一星座网（d1xz.net）'];
     return `<div class="hr-card hr-scores-card">
       <div class="hl-card-title">🔮 今日运势</div>
       <div class="horo-err" style="padding:40px 20px">
-        <div class="ic" style="font-size:42px">🤷‍♂️</div>
+        <div class="ic" style="font-size:42px">🤷</div>
         <div class="msg" style="font-size:14px;margin-bottom:14px;line-height:1.7">
-          境外权威占星源暂不可达。<br>
+          三大国内权威源 当前网络响应超时。<br>
           <b style="color:var(--rose)">本功能恪守承诺：运势正文绝不瞎编。</b><br>
-          请检查网络后点击「重新拉取」按钮重试。
+          请点击「重新拉取原文」按钮重试。
         </div>
         <button class="btn btn-primary" onclick="fetchHoroData(false)">🔄 重新拉取原文</button>
         <div style="font-size:11px;color:var(--muted);margin-top:18px;padding:12px 14px;background:var(--rule-soft);border-radius:var(--radius-sm);line-height:1.6;text-align:left">
-          <b>尝试过的数据源：</b><br>
-          ✓ Horoscope.com (美国老牌占星)<br>
-          ✓ Astrology.com (iAstrology 旗下)<br>
-          ✓ OMTimes 心灵占星专栏<br>
-          <span style="color:var(--muted-light)">所有源均响应失败 / 超时 / CORS 被拦截</span>
+          <b>尝试过的国内权威数据源：</b><br>
+          ${tried.map(n=>`✓ ${escHtml(n)}`).join('<br>')}<br>
+          <span style="color:var(--muted-light)">所有源均响应失败 / 超时 / CORS 代理被拦截（通常 30 秒后刷新即可恢复）</span>
         </div>
       </div>
     </div>`;
@@ -6490,6 +6611,13 @@ function scoreLevelLabel(s) {
   if (s >= 50) return '😐 平常之日';
   return '🌧 韬光养晦';
 }
+
+/* ======================================================================
+ * 【最后执行】初始化入口 init() —— 放在整个 <script> 块最末尾
+ * 确保所有 const/let/function（LUNAR_INFO、GAN_ZHI、calcHuangLi 等）
+ * 都已脱离 TDZ 暂时性死区，黄历&星座 Widget 不再报 TDZ 错误
+ * ====================================================================== */
+init();
 </script>
 </body>
 </html>
