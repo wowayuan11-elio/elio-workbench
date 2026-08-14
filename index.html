@@ -6093,59 +6093,51 @@ async function fetchHoroData(isPreload=false) {
   horoCache.error = null;
   refreshHoroRenderAll();
 
-  // 数据源列表（按优先级）—— 国内三大权威中文占星门户，国内网络直接可达
-  // 【原则】真实源必须是国内公认的老牌占星站，绝不使用营销号。
-  // 所有失败均明确报错，绝不瞎编兜底。
-  // signLibra=7（新浪/第一星座：白羊1→天秤7）
+  // 数据源列表（按优先级）—— 国内三大权威中文占星门户
+  // 【方案】使用 Jina Reader API (r.jina.ai) 作为首选代理，专为开发者设计，稳定性远超普通CORS代理
+  // 【原则】真实源必须是国内公认的老牌占星站，绝不使用营销号。绝不瞎编兜底。
   const sources = [
     {
-      name: '新浪星座（astro.sina.com.cn · 国内老牌权威）',
+      name: '新浪星座（astro.sina.com.cn）',
       url: 'https://astro.sina.com.cn/fate/daily_lib.html',
-      cors: 'https://corsproxy.io/?',
-      parser: 'sina',
-      backupCors: ['https://api.allorigins.win/get?url=', 'https://corsproxy.github.io/?']
+      parser: 'sina'
     },
     {
-      name: '腾讯星座（astro.lady.qq.com · 腾讯官方星座）',
+      name: '腾讯星座（astro.lady.qq.com）',
       url: 'https://astro.lady.qq.com/12star/daily_lib.shtml',
-      cors: 'https://corsproxy.io/?',
-      parser: 'qq',
-      backupCors: ['https://api.allorigins.win/get?url=', 'https://corsproxy.github.io/?']
+      parser: 'qq'
     },
     {
-      name: '第一星座网（d1xz.net · 中文占星老牌门户）',
+      name: '第一星座网（d1xz.net）',
       url: 'https://www.d1xz.net/yunshi/today/Libra/',
-      cors: 'https://corsproxy.io/?',
-      parser: 'd1xz',
-      backupCors: ['https://api.allorigins.win/get?url=', 'https://corsproxy.github.io/?']
+      parser: 'd1xz'
     }
+  ];
+
+  // 代理列表：Jina Reader 首选 → allorigins 备用 → corsproxy 兜底
+  const proxies = [
+    (url) => 'https://r.jina.ai/' + url,                                    // Jina Reader：返回纯文本
+    (url) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url), // allorigins raw
+    (url) => 'https://corsproxy.io/?' + encodeURIComponent(url),            // corsproxy
   ];
 
   let success = false;
   for (let i = 0; i < sources.length && !success; i++) {
     const src = sources[i];
-    // 每个源依次尝试多个 CORS 代理（提高国内网络下的成功率）
-    const corsList = [src.cors, ...(src.backupCors||[])];
-    for (let j = 0; j < corsList.length && !success; j++) {
+    for (let j = 0; j < proxies.length && !success; j++) {
       try {
-        const fullUrl = corsList[j] + encodeURIComponent(src.url);
-        const resp = await fetch(fullUrl, { method: 'GET', signal: AbortSignal.timeout(10000) });
+        const fullUrl = proxies[j](src.url);
+        const resp = await fetch(fullUrl, { method: 'GET', signal: AbortSignal.timeout(12000) });
         if (!resp.ok) continue;
-        let txt;
-        try {
-          const json = await resp.json();
-          txt = json.contents || json.data || '';
-        } catch(e) {
-          txt = await resp.text();
-        }
-        if (!txt) continue;
+        const txt = await resp.text();
+        if (!txt || txt.length < 50) continue;
         const parsed = parseHoroHTML(txt, src.parser, src.name);
         if (parsed && parsed.text && parsed.text.length > 40) {
           horoCache = { date: today, data: parsed, fetching: false, error: null, source: src.name };
           success = true;
           break;
         }
-      } catch(e) { /* 静默试下一个 CORS 代理 / 下一个源 */ }
+      } catch(e) { /* 静默试下一个代理 / 下一个源 */ }
     }
   }
 
@@ -6159,10 +6151,44 @@ async function fetchHoroData(isPreload=false) {
 }
 function parseHoroHTML(html, parser, srcName) {
   try {
-    // 评分启发式：仅用于四维概览分（星座运势正文绝不用算法瞎编，一定用真实源提取的原文）
     let text = '';
     let scores = null;
 
+    // Jina Reader 返回格式：Title: xxx\nURL Source: xxx\nMarkdown Content:\n正文
+    // 检测是否为 Jina Reader 输出
+    const isJina = /^Title:\s|^URL Source:\s/i.test(html) || html.includes('Markdown Content:');
+    if (isJina) {
+      // 提取 Markdown Content 后的正文
+      const mdMatch = html.match(/Markdown Content:\s*([\s\S]*)/i);
+      let mdText = mdMatch ? mdMatch[1].trim() : html;
+      // 去掉 Markdown 标记符号，保留纯文本
+      mdText = mdText
+        .replace(/^#{1,6}\s+/gm, '')      // 标题
+        .replace(/\*\*(.+?)\*\*/g, '$1')   // 粗体
+        .replace(/\*(.+?)\*/g, '$1')       // 斜体
+        .replace(/\[(.+?)\]\(.+?\)/g, '$1') // 链接
+        .replace(/!\[.*?\]\(.+?\)/g, '')   // 图片
+        .replace(/`(.+?)`/g, '$1')         // 行内代码
+        .replace(/^>\s+/gm, '')            // 引用
+        .replace(/^[-*+]\s+/gm, '')        // 列表
+        .replace(/^---+$/gm, '')           // 分隔线
+        .replace(/\n{3,}/g, '\n\n')        // 多空行压缩
+        .trim();
+      // 过滤广告/导航噪声，只保留含运势关键词的段落
+      const lines = mdText.split('\n').filter(l => {
+        const t = l.trim();
+        if (t.length < 8) return false;
+        if (/(版权|广告|咨询|关注|公众号|二维码|微博|微信|QQ群|扫码|联系|客服|赞助|推广|免责|备案|ICP|登录|注册|首页|下载|APP|更多|返回|顶部|评论|分享|收藏|举报)/.test(t)) return false;
+        return true;
+      });
+      text = lines.join('\n').trim();
+      // 如果文本太短，用原始mdText
+      if (text.length < 50) text = mdText;
+      scores = extractScoresFromCNText(text);
+    }
+
+    // 如果 Jina Reader 已成功提取到足够文本，跳过 HTML 解析
+    if (!isJina) {
     // ============ 解析器 1：新浪星座 astro.sina.com.cn ============
     if (parser === 'sina') {
       // 新浪页面结构：运势正文通常在 article / #result / .artibody / .article 等容器
@@ -6250,6 +6276,7 @@ function parseHoroHTML(html, parser, srcName) {
       text = genericChineseExtract(html);
       scores = extractScoresFromCNText(text);
     }
+    } // end if (!isJina)
 
     if (!text || text.length < 40) return null;
     if (text.length > 1500) text = text.slice(0, 1480) + '…';
