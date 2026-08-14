@@ -2189,6 +2189,81 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
 .hl-tuzhu-note .cnt { font-size:12.5px; color:var(--ink-soft); line-height:1.7; }
 .hl-tuzhu-note .cnt b { color:var(--ink); }
 
+/* ===== 麻将运势 Widget / Section ===== */
+.mj-widget { padding: 4px 0; }
+.mj-head { display:flex; align-items:center; gap:10px; padding:4px 4px 10px; border-bottom:1px solid var(--rule-soft); }
+.mj-icon-big { font-size:24px; }
+.mj-head-info { flex:1; min-width:0; }
+.mj-head-title { font-size:14px; font-weight:700; color:var(--ink); }
+.mj-head-sub { font-size:11px; color:var(--muted); margin-top:3px; }
+.mj-best-seat {
+  padding:10px 12px; border-radius:var(--radius); margin:10px 0;
+  background:linear-gradient(135deg, rgba(234,179,8,0.12), rgba(245,158,11,0.08));
+  border:1px solid rgba(234,179,8,0.25);
+}
+.mj-best-seat .label { font-size:10.5px; color:var(--muted); letter-spacing:0.06em; }
+.mj-best-seat .dir { font-size:18px; font-weight:800; color:#b45309; margin-top:3px; display:flex; align-items:center; gap:6px; }
+.mj-best-seat .desc { font-size:11.5px; color:var(--ink-soft); margin-top:5px; line-height:1.5; }
+.mj-table {
+  position:relative; width:100%; aspect-ratio:1/1; max-width:220px; margin:12px auto;
+  background:linear-gradient(135deg, #064e3b, #065f46); border-radius:16px;
+  display:grid; grid-template-columns:1fr 1.2fr 1fr; grid-template-rows:1fr 1.2fr 1fr;
+  box-shadow:0 6px 20px rgba(6,78,59,0.25), inset 0 2px 8px rgba(255,255,255,0.05);
+}
+.mj-table-cell { display:flex; flex-direction:column; align-items:center; justify-content:center; color:rgba(255,255,255,0.7); font-size:10px; }
+.mj-table-cell .dir-name { font-size:12px; font-weight:700; }
+.mj-table-cell .dir-sub { font-size:8px; opacity:0.7; margin-top:1px; }
+.mj-table-cell.best { color:#fbbf24; }
+.mj-table-cell.best .dir-name { font-size:13px; text-shadow:0 0 10px rgba(251,191,36,0.6); }
+.mj-table-cell.worst { color:#f87171; opacity:0.6; text-decoration:line-through; }
+.mj-table-center { grid-column:2; grid-row:2; display:flex; align-items:center; justify-content:center; font-size:22px; color:rgba(255,255,255,0.15); }
+.mj-dir-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin:10px 0; }
+.mj-dir-card { padding:10px 12px; border-radius:var(--radius-sm); background:var(--surface); border:1px solid var(--rule); }
+.mj-dir-card .mj-dc-label { font-size:10px; color:var(--muted); letter-spacing:0.04em; }
+.mj-dir-card .mj-dc-value { font-size:14px; font-weight:700; color:var(--ink); margin-top:3px; }
+.mj-dir-card .mj-dc-desc { font-size:10px; color:var(--muted); margin-top:2px; }
+.mj-dir-card.wealth { border-left:3px solid #f59e0b; background:rgba(245,158,11,0.04); }
+.mj-dir-card.wealth .mj-dc-value { color:#b45309; }
+.mj-dir-card.happy { border-left:3px solid #ec4899; background:rgba(236,72,153,0.04); }
+.mj-dir-card.happy .mj-dc-value { color:#be185d; }
+.mj-dir-card.fortune { border-left:3px solid #10b981; background:rgba(16,185,129,0.04); }
+.mj-dir-card.fortune .mj-dc-value { color:#047857; }
+.mj-dir-card.noble { border-left:3px solid #6366f1; background:rgba(99,102,241,0.04); }
+.mj-dir-card.noble .mj-dc-value { color:#4338ca; }
+.mj-avoid-card { padding:10px 12px; border-radius:var(--radius-sm); background:rgba(244,63,94,0.06); border:1px solid rgba(244,63,94,0.15); border-left:3px solid #ef4444; margin-top:8px; }
+.mj-avoid-card .mj-dc-label { color:#be123c; }
+.mj-avoid-card .mj-dc-value { color:#e11d48; }
+.mj-shichen-row { display:flex; gap:4px; overflow-x:auto; padding:4px 0 6px; }
+.mj-sc-pill { flex-shrink:0; padding:6px 8px; border-radius:10px; font-size:10px; text-align:center; background:var(--surface); border:1px solid var(--rule); min-width:48px; }
+.mj-sc-pill .sc-n { font-weight:700; color:var(--ink); }
+.mj-sc-pill .sc-t { font-size:8px; color:var(--muted); margin-top:1px; }
+.mj-sc-pill.lucky { background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.25); }
+.mj-sc-pill.lucky .sc-n { color:#047857; }
+.mj-sc-pill.avoid { background:rgba(244,63,94,0.06); border-color:rgba(244,63,94,0.15); }
+.mj-sc-pill.avoid .sc-n { color:#be123c; }
+.mj-zodiac-row { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; }
+.mj-zodiac-tag { padding:4px 10px; border-radius:999px; font-size:11px; font-weight:500; display:flex; align-items:center; gap:4px; }
+.mj-zodiac-tag.good { background:rgba(16,185,129,0.1); color:#047857; border:1px solid rgba(16,185,129,0.2); }
+.mj-zodiac-tag.bad { background:rgba(244,63,94,0.08); color:#be123c; border:1px solid rgba(244,63,94,0.15); }
+.mj-tip-box { padding:10px 12px; border-radius:var(--radius); background:linear-gradient(135deg, rgba(99,102,241,0.06), rgba(236,72,153,0.04)); border:1px solid var(--rule); margin-top:8px; font-size:11.5px; line-height:1.6; color:var(--ink-soft); }
+.mj-tip-box b { color:var(--accent); font-weight:600; }
+.mj-section-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:16px; }
+@media (max-width: 768px) {
+  .mj-section-grid { grid-template-columns:1fr; gap:14px; }
+  .mj-table { max-width:180px; }
+  .mj-dir-grid { grid-template-columns:1fr 1fr; }
+  .mj-best-seat .dir { font-size:16px; }
+  .mj-icon-big { font-size:22px; }
+}
+@media (max-width: 380px) {
+  .mj-table { max-width:160px; border-radius:12px; }
+  .mj-table-cell .dir-name { font-size:11px; }
+  .mj-table-cell.best .dir-name { font-size:12px; }
+  .mj-table-center { font-size:18px; }
+  .mj-dir-grid { grid-template-columns:1fr; }
+  .mj-sc-pill { min-width:42px; padding:5px 6px; }
+}
+
 /* ===== 星座运势 Widget / Section ===== */
 .horo-widget { padding: 4px 0; }
 .horo-head-row { display:flex; align-items:center; gap:14px; padding:6px 4px 12px; }
@@ -2349,6 +2424,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
       <div class="nav-item" data-section="achievements"><span class="nav-icon">🏆</span> 成就徽章</div>
       <div class="nav-item" data-section="huangli"><span class="nav-icon">📜</span> 黄道吉日</div>
       <div class="nav-item" data-section="horoscope"><span class="nav-icon">⚖</span> 星座运势</div>
+      <div class="nav-item" data-section="mahjong"><span class="nav-icon">🀄</span> 麻将运势</div>
       <div class="nav-item" data-section="settings"><span class="nav-icon">⚙</span> 设置</div>
     </div>
     <div class="sidebar-footer">
@@ -2695,6 +2771,13 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
         <!-- 由 JS 渲染 -->
       </div>
     </section>
+    <section class="section" id="mahjong">
+      <h1 class="page-title">🀄 麻将运势</h1>
+      <p class="page-sub">基于《玉匣记》· 财神方位 · 吉时推算 · 属相宜忌</p>
+      <div class="mj-section-grid" id="mahjongSectionGrid">
+        <!-- 由 JS 渲染 -->
+      </div>
+    </section>
     <section class="section" id="settings">
       <h1 class="page-title">设置</h1>
       <p class="page-sub">数据管理 · 主题 · 壁纸 · 导出备份</p>
@@ -2769,6 +2852,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
       <div class="ms-item" data-section="review"><span class="ms-icon">❏</span><span class="ms-label">每日复盘</span></div>
       <div class="ms-item" data-section="stats"><span class="ms-icon">▤</span><span class="ms-label">数据统计</span></div>
       <div class="ms-item" data-section="achievements"><span class="ms-icon">🏆</span><span class="ms-label">成就徽章</span></div>
+      <div class="ms-item" data-section="mahjong"><span class="ms-icon">🀄</span><span class="ms-label">麻将运势</span></div>
       <div class="ms-item" data-section="settings"><span class="ms-icon">⚙</span><span class="ms-label">设置</span></div>
     </div>
   </div>
@@ -2927,7 +3011,8 @@ const WIDGET_CATALOG = [
   { id:'xp', icon:'⭐', name:'等级进度', desc:'XP等级与今日获得', defaultSpan:'span-2' },
   { id:'moodTrend', icon:'📈', name:'心情趋势', desc:'近7天心情轨迹', defaultSpan:'span-2' },
   { id:'huangli', icon:'📜', name:'黄道吉日', desc:'老黄历宜忌·干支·属兔冲合', defaultSpan:'span-2' },
-  { id:'horoscope', icon:'⚖', name:'星座运势', desc:'天秤座今日运势·四维评分', defaultSpan:'span-2' }
+  { id:'horoscope', icon:'⚖', name:'星座运势', desc:'天秤座今日运势·四维评分', defaultSpan:'span-2' },
+  { id:'mahjong', icon:'🀄', name:'麻将运势', desc:'财神方位·吉时·属相宜忌', defaultSpan:'span-2' }
 ];
 const ACHIEVEMENTS = [
   { id:'streak7', icon:'🔥', name:'七日连战', desc:'连续打卡7天' },
@@ -2988,6 +3073,7 @@ let widgetOrder = Array.isArray(rawWidgetOrder) && rawWidgetOrder.length && type
     if (i !== 1) { const [w] = widgetOrder.splice(i,1); w.span = 'span-2'; widgetOrder.splice(1, 0, w); changed = true; }
     else if (widgetOrder[1].span !== 'span-2') { widgetOrder[1].span = 'span-2'; changed = true; }
   }
+  if (!has('mahjong')) { widgetOrder.splice(2, 0, {type:'mahjong', span:'span-2'}); changed = true; }
   if (changed) { DB.set('widgetOrder', widgetOrder); }
 })();
 // 星座运势变量前置声明+完整默认值（解决 init() 执行时的初始化顺序/TDZ问题）
@@ -3224,7 +3310,7 @@ const SECTION_NAMES = {
   dashboard:'仪表盘', tasks:'任务管理', pomodoro:'番茄钟', habits:'习惯打卡',
   life:'生活管理', feynman:'费曼练习', media:'自媒体', topics:'热点追踪',
   news:'资讯日报', review:'每日复盘', stats:'数据统计', achievements:'成就徽章',
-  huangli:'黄道吉日', horoscope:'星座运势', settings:'设置'
+  huangli:'黄道吉日', horoscope:'星座运势', mahjong:'麻将运势', settings:'设置'
 };
 function updateTopbarBadge() {
   const today = todayStr();
@@ -3634,6 +3720,7 @@ function switchSection(name) {
   if (name === 'settings') renderSettingsPage();
   if (name === 'huangli') renderHuangliSection();
   if (name === 'horoscope') renderHoroSection();
+  if (name === 'mahjong') renderMahjongSection();
   if (name === 'tasks') { renderTaskProjectSelect(); renderTasks(); renderSavedFiltersBar(); }
   window.scrollTo(0, 0);
 }
@@ -4040,6 +4127,13 @@ function renderWidget(type, span, idx) {
       inner = renderHoroWidget();
       inner = `<div class="widget-head">
         <div class="wh-title"><span class="wh-icon">⚖</span> 天秤运势</div>
+        <span class="drag-handle">⠿</span></div>` + inner;
+      break;
+    }
+    case 'mahjong': {
+      inner = renderMahjongWidget();
+      inner = `<div class="widget-head">
+        <div class="wh-title"><span class="wh-icon">🀄</span> 麻将运势</div>
         <span class="drag-handle">⠿</span></div>` + inner;
       break;
     }
@@ -6685,6 +6779,298 @@ function renderHoroSection() {
     });
   }, 0);
 }
+
+/* ===== 麻将运势：推算 + 渲染 ===== */
+// 方位数据：8个方向
+const MJ_DIRECTIONS = [
+  { name:'正北', compass:'坎', emoji:'⬆' }, { name:'东北', compass:'艮', emoji:'↗' },
+  { name:'正东', compass:'震', emoji:'➡' }, { name:'东南', compass:'巽', emoji:'↘' },
+  { name:'正南', compass:'离', emoji:'⬇' }, { name:'西南', compass:'坤', emoji:'↙' },
+  { name:'正西', compass:'兑', emoji:'⬅' }, { name:'西北', compass:'乾', emoji:'↖' }
+];
+
+// 《玉匣记》财神方位歌：甲乙东北是财神，丙丁向在西南寻，戊己正北坐方位，庚辛正东去安身，壬癸原来正南坐
+const MJ_CAISHEN = { '甲':'东北','乙':'东北','丙':'西南','丁':'西南','戊':'正北','己':'正北','庚':'正东','辛':'正东','壬':'正南','癸':'正南' };
+// 喜神方位歌：甲己在艮乙庚乾，丙辛坤位喜神安，丁壬只在离中坐，戊癸原在巽中间
+const MJ_XISHEN = { '甲':'东北','己':'东北','乙':'西北','庚':'西北','丙':'西南','辛':'西南','丁':'正南','壬':'正南','戊':'东南','癸':'东南' };
+// 福神方位歌：甲己正北是福神，丙辛西北乾宫存，乙庚坤位戊癸艮，丁壬巽上妙追寻
+const MJ_FUSHEN = { '甲':'正北','己':'正北','丙':'西北','辛':'西北','乙':'西南','庚':'西南','戊':'东北','癸':'东北','丁':'东南','壬':'东南' };
+// 阳贵神：甲戊庚牛羊（丑未），乙己鼠猴乡（子申），丙丁猪鸡位（亥酉），壬癸蛇兔藏（巳卯），六辛逢虎马（寅午）
+const MJ_YANGGUI = { '甲':'西南','戊':'东北','庚':'东北','乙':'西南','己':'正北','丙':'正西','丁':'西北','壬':'正东','癸':'东南','辛':'东北' };
+// 阴贵神
+const MJ_YINGUI = { '甲':'东北','戊':'西南','庚':'西南','乙':'正北','己':'西南','丙':'西北','丁':'正西','壬':'东南','癸':'正东','辛':'正南' };
+
+// 煞方：子午卯酉→煞南北东西（正方向冲煞）
+const MJ_SHAFANG = { '子':'煞南','午':'煞北','卯':'煞西','酉':'煞东','寅':'煞南','申':'煞北','巳':'煞东','亥':'煞西','辰':'煞南','戌':'煞北','丑':'煞东','未':'煞西' };
+
+function calcMahjongLuck() {
+  if (typeof calcHuangLi !== 'function') return null;
+  const hl = calcHuangLi();
+  const tg = hl.dayGZ.tg;
+  const dz = hl.dayGZ.dz;
+  const dzIdx = hl.dayGZ.dzIdx;
+  // 财神方位 = 最佳座位
+  const caishen = MJ_CAISHEN[tg] || '正北';
+  const xishen = MJ_XISHEN[tg] || '东北';
+  const fushen = MJ_FUSHEN[tg] || '正北';
+  // 白天用阳贵，晚上用阴贵
+  const hour = new Date().getHours();
+  const isDaytime = hour >= 5 && hour < 19;
+  const guishen = isDaytime ? (MJ_YANGGUI[tg] || '东北') : (MJ_YINGUI[tg] || '东北');
+  // 煞方 = 最差座位
+  const shafang = MJ_SHAFANG[dz] || '煞南';
+  const shafangDir = shafang.replace('煞','');
+  // 属相冲合（基于日支）
+  const SX_NAMES = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
+  const chongIdx = (dzIdx + 6) % 12; // 六冲
+  const chongSX = SX_NAMES[chongIdx];
+  // 三合：申子辰、亥卯未、寅午戌、巳酉丑
+  const sanheGroups = [[8,0,4],[11,3,7],[2,6,10],[5,9,1]];
+  let sanhe = [];
+  for (const g of sanheGroups) { if (g.includes(dzIdx)) { sanhe = g.filter(i => i !== dzIdx).map(i => SX_NAMES[i]); break; } }
+  // 六合
+  const liuheMap = [5,6,7,8,9,0,1,2,3,10,11,4]; // 子丑合、寅亥合...
+  const liuheSX = SX_NAMES[liuheMap[dzIdx]];
+  // 吉时（从12时辰中选吉）
+  const shichenData = hl.shichen || [];
+  const luckyHours = shichenData.filter(s => s.吉凶 === '吉' || s.吉凶 === '吉').slice(0, 4);
+  const avoidHours = shichenData.filter(s => s.吉凶 === '凶').slice(0, 3);
+  // 今日干支五行
+  const wxDay = hl.wuXing.day.tg;
+  // 方位→座位方向映射（麻将桌：你坐什么位置，面朝该方向）
+  const dirObj = MJ_DIRECTIONS.find(d => d.name === caishen) || MJ_DIRECTIONS[0];
+  // 麻将小贴士（基于日柱特征）
+  const tips = genMahjongTips(hl, tg, dz, wxDay);
+  return {
+    caishen, xishen, fushen, guishen, guishenType: isDaytime ? '阳贵' : '阴贵',
+    shafang, shafangDir, chongSX, sanhe, liuheSX,
+    luckyHours, avoidHours, wxDay, dirObj, tips, hl,
+    tg, dz
+  };
+}
+
+function genMahjongTips(hl, tg, dz, wxDay) {
+  const tips = [];
+  // 基于建除
+  const jc = hl.jianChu?.name || '';
+  const jcMap = {
+    '建':'今日建日，万物初始，宜主动出击但切忌贪心，见好就收。',
+    '除':'今日除日，除旧布新之象，牌局中宜果断出牌，不宜犹豫。',
+    '满':'今日满日，丰收圆满之象，财运较旺，但需防乐极生悲。',
+    '平':'今日平日，平淡稳定之象，不宜大注，小赌怡情即可。',
+    '定':'今日定日，安定守成之象，宜守不宜攻，耐心等待时机。',
+    '执':'今日执日，执着坚定之象，认准的牌路坚持到底必有收获。',
+    '破':'今日破日，破败消耗之象，今日不宜参与牌局，容易破财。',
+    '危':'今日危日，危机四伏之象，牌局中需格外谨慎，步步为营。',
+    '成':'今日成日，成就通达之象，今日牌运较佳，宜把握机会。',
+    '收':'今日收日，收获敛聚之象，宜见好就收，赢牌后及时收手。',
+    '开':'今日开日，开拓通达之象，宜积极出牌，主动创造机会。',
+    '闭':'今日闭日，闭塞阻滞之象，今日不宜牌局，宜静待时机。'
+  };
+  if (jcMap[jc]) tips.push(jcMap[jc]);
+  // 基于五行
+  const wxMap = {
+    '金':'今日日主属金，金主义、果断。牌局中宜快刀斩乱麻，不宜拖泥带水。',
+    '木':'今日日主属木，木主仁、生长。牌局中宜稳扎稳打，循序渐进。',
+    '水':'今日日主属水，水主智、灵活。牌局中宜随机应变，不拘一格。',
+    '火':'今日日主属火，火主礼、热情。牌局中宜气势如虹，但需防冲动。',
+    '土':'今日日主属土，土主信、厚重。牌局中宜稳守阵地，以不变应万变。'
+  };
+  if (wxMap[wxDay]) tips.push(wxMap[wxDay]);
+  // 通用建议
+  tips.push('麻将之道，三分运气七分技巧。方位仅为参考，心态平和方为上策。');
+  return tips;
+}
+
+function renderMahjongWidget() {
+  if (typeof calcHuangLi !== 'function') {
+    return `<div class="mj-widget" onclick="switchSection('mahjong')" style="cursor:pointer;padding:22px;text-align:center;color:var(--muted)">
+      <div style="font-size:28px">🀄</div><div style="margin-top:6px">正在初始化麻将模块…</div></div>`;
+  }
+  const mj = calcMahjongLuck();
+  if (!mj) return '<div class="mj-widget">加载中...</div>';
+  return `<div class="mj-widget" onclick="switchSection('mahjong')" style="cursor:pointer">
+    <div class="mj-head">
+      <div class="mj-icon-big">🀄</div>
+      <div class="mj-head-info">
+        <div class="mj-head-title">${mj.hl.solar.m}月${mj.hl.solar.d}日 · ${mj.hl.dayGZ.tg}${mj.hl.dayGZ.dz}日</div>
+        <div class="mj-head-sub">${mj.hl.jianChu.name}日 · 五行${mj.wxDay} · ${mj.hl.lunar.monthCN}${mj.hl.lunar.dayCN}</div>
+      </div>
+    </div>
+    <div class="mj-best-seat">
+      <div class="label">🪙 今日财神方位（最佳座位）</div>
+      <div class="dir">${mj.dirObj.emoji} ${mj.caishen} <span style="font-size:13px;color:var(--muted);font-weight:400">（${mj.dirObj.compass}宫）</span></div>
+      <div class="desc">面朝<b style="color:#b45309">${mj.caishen}</b>方向落座，迎财神之气，利财运聚财。${mj.hl.solar.week === '六' || mj.hl.solar.week === '日' ? '周末牌运加成。' : ''}</div>
+    </div>
+    <div class="mj-dir-grid">
+      <div class="mj-dir-card happy"><div class="mj-dc-label">😊 喜神</div><div class="mj-dc-value">${mj.xishen}</div><div class="mj-dc-desc">增喜气·利人缘</div></div>
+      <div class="mj-dir-card fortune"><div class="mj-dc-label">🍀 福神</div><div class="mj-dc-value">${mj.fushen}</div><div class="mj-dc-desc">增福气·利运势</div></div>
+      <div class="mj-dir-card noble"><div class="mj-dc-label">🤝 ${mj.guishenType}贵</div><div class="mj-dc-value">${mj.guishen}</div><div class="mj-dc-desc">${mj.guishenType==='阳贵'?'白日·贵人助':'夜间·贵人助'}</div></div>
+      <div class="mj-avoid-card"><div class="mj-dc-label">⚠ 今日煞方</div><div class="mj-dc-value">${mj.shafang}</div><div class="mj-dc-desc">忌面朝此方落座</div></div>
+    </div>
+  </div>`;
+}
+
+function renderMahjongSection() {
+  const mj = calcMahjongLuck();
+  const box = document.getElementById('mahjongSectionGrid');
+  if (!box || !mj) return;
+  const hl = mj.hl;
+  // 麻将桌方位布局：grid 3x3，中心是桌
+  // 北在上，南在下，东在右，西在左
+  const dirs8 = {
+    '正北':{r:1,c:2}, '东北':{r:1,c:3}, '正东':{r:2,c:3}, '东南':{r:3,c:3},
+    '正南':{r:3,c:2}, '西南':{r:3,c:1}, '正西':{r:2,c:1}, '西北':{r:1,c:1}
+  };
+  const isBest = (d) => d === mj.caishen;
+  const isWorst = (d) => d === mj.shafangDir;
+  const isHappy = (d) => d === mj.xishen;
+  const isFortune = (d) => d === mj.fushen;
+  const isNoble = (d) => d === mj.guishen;
+
+  box.innerHTML = `
+    <!-- 左栏：方位详解 -->
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="hl-card">
+        <div class="hl-card-title">🪙 今日财神方位</div>
+        <div class="mj-best-seat" style="margin:0">
+          <div class="label">最佳座位方向</div>
+          <div class="dir">${mj.dirObj.emoji} ${mj.caishen} <span style="font-size:14px;color:var(--muted);font-weight:400">（八卦${mj.dirObj.compass}宫）</span></div>
+          <div class="desc">依据《玉匣记·财神方位歌》推算：日干为<b style="color:#b45309">${mj.tg}</b>，财神居<b style="color:#b45309">${mj.caishen}</b>方。面朝此方落座，可迎财神之气，利于聚财纳福。</div>
+        </div>
+        <div style="margin-top:14px;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:12px;color:var(--muted);line-height:1.6">
+          <b style="color:var(--ink)">推算口诀：</b>甲乙东北是财神，丙丁向在西南寻，戊己正北坐方位，庚辛正东去安身，壬癸原来正南坐。
+        </div>
+      </div>
+
+      <div class="hl-card">
+        <div class="hl-card-title">四方吉神方位</div>
+        <div class="mj-dir-grid" style="grid-template-columns:repeat(2,1fr)">
+          <div class="mj-dir-card wealth">
+            <div class="mj-dc-label">🪙 财神方位</div>
+            <div class="mj-dc-value">${mj.caishen}</div>
+            <div class="mj-dc-desc">主财运·最佳座位</div>
+          </div>
+          <div class="mj-dir-card happy">
+            <div class="mj-dc-label">😊 喜神方位</div>
+            <div class="mj-dc-value">${mj.xishen}</div>
+            <div class="mj-dc-desc">主喜庆·利人缘牌运</div>
+          </div>
+          <div class="mj-dir-card fortune">
+            <div class="mj-dc-label">🍀 福神方位</div>
+            <div class="mj-dc-value">${mj.fushen}</div>
+            <div class="mj-dc-desc">主福气·增添运势</div>
+          </div>
+          <div class="mj-dir-card noble">
+            <div class="mj-dc-label">🤝 ${mj.guishenType}神方位</div>
+            <div class="mj-dc-value">${mj.guishen}</div>
+            <div class="mj-dc-desc">${mj.guishenType==='阳贵'?'白天有效·贵人相助':'夜间有效·贵人相助'}</div>
+          </div>
+        </div>
+        <div class="mj-avoid-card">
+          <div class="mj-dc-label">⚠ 今日煞方（忌坐）</div>
+          <div class="mj-dc-value">${mj.shafang}</div>
+          <div class="mj-dc-desc">日支${mj.dz}·冲煞此方·面朝此方落座易破财</div>
+        </div>
+      </div>
+
+      <div class="hl-card">
+        <div class="hl-card-title">🀄 麻将桌方位图</div>
+        <div class="mj-table">
+          <div class="mj-table-cell ${isBest('西北')?'best':''} ${isWorst('西北')?'worst':''}" style="grid-row:1;grid-column:1">
+            <div class="dir-name">西北</div><div class="dir-sub">${isBest('西北')?'财神':''}${isHappy('西北')?'喜':''}${isFortune('西北')?'福':''}${isNoble('西北')?'贵':''}</div>
+          </div>
+          <div class="mj-table-cell ${isBest('正北')?'best':''} ${isWorst('正北')?'worst':''}" style="grid-row:1;grid-column:2">
+            <div class="dir-name">北</div><div class="dir-sub">${isBest('正北')?'财神':''}${isHappy('正北')?'喜':''}${isFortune('正北')?'福':''}${isNoble('正北')?'贵':''}</div>
+          </div>
+          <div class="mj-table-cell ${isBest('东北')?'best':''} ${isWorst('东北')?'worst':''}" style="grid-row:1;grid-column:3">
+            <div class="dir-name">东北</div><div class="dir-sub">${isBest('东北')?'财神':''}${isHappy('东北')?'喜':''}${isFortune('东北')?'福':''}${isNoble('东北')?'贵':''}</div>
+          </div>
+          <div class="mj-table-cell ${isBest('正西')?'best':''} ${isWorst('正西')?'worst':''}" style="grid-row:2;grid-column:1">
+            <div class="dir-name">西</div><div class="dir-sub">${isBest('正西')?'财神':''}${isHappy('正西')?'喜':''}${isFortune('正西')?'福':''}${isNoble('正西')?'贵':''}</div>
+          </div>
+          <div class="mj-table-center">🀄</div>
+          <div class="mj-table-cell ${isBest('正东')?'best':''} ${isWorst('正东')?'worst':''}" style="grid-row:2;grid-column:3">
+            <div class="dir-name">东</div><div class="dir-sub">${isBest('正东')?'财神':''}${isHappy('正东')?'喜':''}${isFortune('正东')?'福':''}${isNoble('正东')?'贵':''}</div>
+          </div>
+          <div class="mj-table-cell ${isBest('西南')?'best':''} ${isWorst('西南')?'worst':''}" style="grid-row:3;grid-column:1">
+            <div class="dir-name">西南</div><div class="dir-sub">${isBest('西南')?'财神':''}${isHappy('西南')?'喜':''}${isFortune('西南')?'福':''}${isNoble('西南')?'贵':''}</div>
+          </div>
+          <div class="mj-table-cell ${isBest('正南')?'best':''} ${isWorst('正南')?'worst':''}" style="grid-row:3;grid-column:2">
+            <div class="dir-name">南</div><div class="dir-sub">${isBest('正南')?'财神':''}${isHappy('正南')?'喜':''}${isFortune('正南')?'福':''}${isNoble('正南')?'贵':''}</div>
+          </div>
+          <div class="mj-table-cell ${isBest('东南')?'best':''} ${isWorst('东南')?'worst':''}" style="grid-row:3;grid-column:3">
+            <div class="dir-name">东南</div><div class="dir-sub">${isBest('东南')?'财神':''}${isHappy('东南')?'喜':''}${isFortune('东南')?'福':''}${isNoble('东南')?'贵':''}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;font-size:11px;color:var(--muted);margin-top:8px">
+          <span style="color:#fbbf24">★ 财神位</span>
+          <span style="color:#ec4899">喜 喜神</span>
+          <span style="color:#10b981">福 福神</span>
+          <span style="color:#6366f1">贵 贵神</span>
+          <span style="color:#f87171;text-decoration:line-through">煞 忌坐</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右栏：吉时+属相+贴士 -->
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="hl-card">
+        <div class="hl-card-title">⏰ 今日吉时</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px">基于十二时辰建除推算</div>
+        <div class="mj-shichen-row">
+          ${(hl.shichen||[]).map(s => `<div class="mj-sc-pill ${s.吉凶==='吉'?'lucky':''} ${s.吉凶==='凶'?'avoid':''}">
+            <div class="sc-n">${s.name}</div>
+            <div class="sc-t">${s.time||''}</div>
+            <div class="sc-t" style="font-weight:700;color:${s.吉凶==='吉'?'#047857':s.吉凶==='凶'?'#be123c':'var(--muted)'}">${s.吉凶||''}</div>
+          </div>`).join('')}
+        </div>
+        <div style="margin-top:10px;padding:10px 12px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:12px;color:var(--ink-soft);line-height:1.6">
+          ${mj.luckyHours.length > 0 ? `<b style="color:#047857">最利时段：</b>${mj.luckyHours.map(s=>s.name+'时('+s.time+')').join('、')}` : '今日无特别吉时。'}
+          ${mj.avoidHours.length > 0 ? `<br><b style="color:#be123c">避忌时段：</b>${mj.avoidHours.map(s=>s.name+'时('+s.time+')').join('、')}` : ''}
+        </div>
+      </div>
+
+      <div class="hl-card">
+        <div class="hl-card-title">🐇 属相宜忌（属兔专属）</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">日支${mj.dz}·与各属相关系</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="padding:14px;border-radius:var(--radius-sm);background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15)">
+            <div style="font-size:11px;color:#047857;font-weight:600;margin-bottom:8px">✓ 宜同桌</div>
+            <div class="mj-zodiac-row">
+              ${mj.sanhe.map(s => `<span class="mj-zodiac-tag good">${s}（三合）</span>`).join('')}
+              <span class="mj-zodiac-tag good">${mj.liuheSX}（六合）</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5">三合六合属相为今日贵人，同桌博弈易得助力。</div>
+          </div>
+          <div style="padding:14px;border-radius:var(--radius-sm);background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.15)">
+            <div style="font-size:11px;color:#be123c;font-weight:600;margin-bottom:8px">✗ 忌同桌</div>
+            <div class="mj-zodiac-row">
+              <span class="mj-zodiac-tag bad">${mj.chongSX}（六冲）</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5">六冲属相今日与日支相冲，同桌易生摩擦破财。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-card">
+        <div class="hl-card-title">📖 今日牌局建议</div>
+        ${mj.tips.map((tip,i) => `<div class="mj-tip-box" ${i>0?'style="margin-top:8px"':''}>${tip}</div>`).join('')}
+      </div>
+
+      <div class="hl-card">
+        <div class="hl-card-title">📜 方位推算依据</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8">
+          <p style="margin-bottom:8px"><b style="color:var(--ink)">数据来源：</b>《玉匣记》《协纪辨方书》</p>
+          <p style="margin-bottom:8px"><b style="color:var(--ink)">推算方法：</b>以当日日柱天干为基准，按古法口诀推算财神、喜神、福神、贵神方位。日支推算冲煞方与属相冲合。</p>
+          <p style="margin-bottom:8px"><b style="color:var(--ink)">今日日柱：</b>${mj.tg}${mj.dz} · 五行${mj.wxDay} · ${hl.jianChu.name}日</p>
+          <p><b style="color:var(--ink)">阳贵/阴贵：</b>卯时（5-7点）起为昼用阳贵，酉时（17-19点）起为夜用阴贵。当前为${mj.guishenType}神时段。</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderHoroRightCol() {
   // 3种状态：加载中 / 失败 / 成功
   if (horoCache.fetching) {
