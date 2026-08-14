@@ -2206,15 +2206,15 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
 .mj-best-seat .desc { font-size:11.5px; color:var(--ink-soft); margin-top:5px; line-height:1.5; }
 .mj-table {
   position:relative; width:100%; aspect-ratio:1/1; max-width:220px; margin:12px auto;
-  background:linear-gradient(135deg, #064e3b, #065f46); border-radius:16px;
+  background:#065f46; border-radius:16px;
   display:grid; grid-template-columns:1fr 1.2fr 1fr; grid-template-rows:1fr 1.2fr 1fr;
-  box-shadow:0 6px 20px rgba(6,78,59,0.25), inset 0 2px 8px rgba(255,255,255,0.05);
+  box-shadow:0 2px 6px rgba(0,0,0,0.12);
 }
 .mj-table-cell { display:flex; flex-direction:column; align-items:center; justify-content:center; color:rgba(255,255,255,0.7); font-size:10px; }
 .mj-table-cell .dir-name { font-size:12px; font-weight:700; }
 .mj-table-cell .dir-sub { font-size:8px; opacity:0.7; margin-top:1px; }
 .mj-table-cell.best { color:#fbbf24; }
-.mj-table-cell.best .dir-name { font-size:13px; text-shadow:0 0 10px rgba(251,191,36,0.6); }
+.mj-table-cell.best .dir-name { font-size:13px; font-weight:800; }
 .mj-table-cell.worst { color:#f87171; opacity:0.6; text-decoration:line-through; }
 .mj-table-center { grid-column:2; grid-row:2; display:flex; align-items:center; justify-content:center; font-size:22px; color:rgba(255,255,255,0.15); }
 .mj-dir-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin:10px 0; }
@@ -3768,15 +3768,31 @@ function getGreeting() {
   if (h < 6) return '夜深了'; if (h < 9) return '早上好'; if (h < 12) return '上午好';
   if (h < 14) return '中午好'; if (h < 18) return '下午好'; if (h < 22) return '晚上好'; return '夜深了';
 }
+// 【性能优化】updateClock：只有值变化才写入DOM，减少浏览器重排
+var __clockCache = { hour:-1, min:-1, sec:-1, date:-1 };
 function updateClock() {
   const now = new Date();
-  const days = ['日','一','二','三','四','五','六'];
-  document.getElementById('greeting').textContent = getGreeting();
-  document.getElementById('dashDate').textContent = `${now.getMonth()+1}月${now.getDate()}日 星期${days[now.getDay()]}`;
-  document.getElementById('dashClock').textContent =
-    [now.getHours(), now.getMinutes()].map(n => String(n).padStart(2,'0')).join(':');
-  const cw = document.getElementById('widgetClockDisplay');
-  if (cw) cw.textContent = [now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+  const d = now.getDate();
+  // 欢迎语和日期：只有日期或小时跨天时才更新（跨小时问候语会变）
+  if (__clockCache.hour !== h || __clockCache.date !== d) {
+    __clockCache.hour = h; __clockCache.date = d;
+    const days = ['日','一','二','三','四','五','六'];
+    const gEl = document.getElementById('greeting'); if (gEl) gEl.textContent = getGreeting();
+    const dEl = document.getElementById('dashDate'); if (dEl) dEl.textContent = `${now.getMonth()+1}月${d}日 星期${days[now.getDay()]}`;
+  }
+  // 分钟变化时更新仪表盘时钟（格式 HH:MM）
+  if (__clockCache.min !== m) {
+    __clockCache.min = m;
+    const cEl = document.getElementById('dashClock');
+    if (cEl) cEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  }
+  // 秒针：仅在 widget 时钟控件存在且秒变化时写 DOM
+  if (__clockCache.sec !== s) {
+    __clockCache.sec = s;
+    const cw = document.getElementById('widgetClockDisplay');
+    if (cw) cw.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
 }
 function renderWidget(type, span, idx) {
   const today = todayStr();
@@ -4574,9 +4590,11 @@ function togglePomo() {
     pomoData.running = false;
     clearInterval(pomoInterval); pomoInterval = null;
     document.getElementById('pomoStartBtn').textContent = '▶';
+    if (window.__setPomoTimerActive) window.__setPomoTimerActive(false);
   } else {
     pomoData.running = true;
     document.getElementById('pomoStartBtn').textContent = '⏸';
+    if (window.__setPomoTimerActive) window.__setPomoTimerActive(true);
     pomoInterval = setInterval(() => {
       pomoData.timeLeft--;
       if (pomoData.timeLeft <= 0) {
@@ -4593,8 +4611,10 @@ function togglePomo() {
         }
         saveAll(); return;
       }
-      updatePomoDisplay();
-      if (pomoData.timeLeft % 5 === 0) saveAll();
+      // 【性能优化】后台标签页不做DOM更新，但时间继续走
+      if (isTabVisible()) updatePomoDisplay();
+      // 每 15 秒保存一次（原5秒太频繁，localStorage写操作是同步IO耗CPU）
+      if (pomoData.timeLeft % 15 === 0) saveAll();
     }, 1000);
   }
   saveAll();
@@ -4603,6 +4623,7 @@ function resetPomo() {
   pomoData.running = false;
   if (pomoInterval) { clearInterval(pomoInterval); pomoInterval = null; }
   document.getElementById('pomoStartBtn').textContent = '▶';
+  if (window.__setPomoTimerActive) window.__setPomoTimerActive(false);
   const d = { work: pomoData.settings.work*60, short: pomoData.settings.short*60, long: pomoData.settings.long*60 };
   pomoData.timeLeft = d[pomoData.mode];
   saveAll(); updatePomoDisplay();
@@ -4611,6 +4632,7 @@ function skipPomo() {
   pomoData.running = false;
   if (pomoInterval) { clearInterval(pomoInterval); pomoInterval = null; }
   document.getElementById('pomoStartBtn').textContent = '▶';
+  if (window.__setPomoTimerActive) window.__setPomoTimerActive(false);
   if (pomoData.mode === 'work') { pomoData.session++; setPomoMode(pomoData.session % 4 === 0 ? 'long' : 'short'); }
   else setPomoMode('work');
   saveAll();
@@ -5695,9 +5717,24 @@ document.querySelectorAll('.hot-tab').forEach(tab => {
     tab.addEventListener('click', () => toggleHotTab(tab.dataset.platform));
   }
 });
+// ===== 性能工具：标签页可见性检查 =====
+function isTabVisible() {
+  return !document.hidden;
+}
+
 function init() {
   updateClock();
-  setInterval(updateClock, 1000);
+  // 时钟更新：每秒一次但仅在可见时更新秒针显示，每分钟强制一次
+  let _lastMin = -1;
+  setInterval(() => {
+    if (!isTabVisible()) {
+      // 后台 30 秒刷新一次即可，避免高耗电
+      const now = new Date();
+      if (now.getMinutes() !== _lastMin) { updateClock(); _lastMin = now.getMinutes(); }
+      return;
+    }
+    updateClock();
+  }, 1000);
   const wm = document.getElementById('workMin'); if (wm) wm.value = pomoData.settings.work;
   const sm = document.getElementById('shortMin'); if (sm) sm.value = pomoData.settings.short;
   const lm = document.getElementById('longMin'); if (lm) lm.value = pomoData.settings.long;
@@ -5718,15 +5755,46 @@ function init() {
   renderSectionMetrics('dashboard');
   setTimeout(() => fetchHotData(false), 1500);
   window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; setTimeout(() => document.getElementById('pwaBanner')?.classList.add('show'), 3000); });
-  setInterval(() => { if (document.getElementById('dashboard')?.classList.contains('active')) renderDashboard(); }, 30000);
+  // ===== 【性能优化】移除 30 秒整仪表盘重渲染（最大的CPU/GPU消耗源）=====
+  // 原逻辑：每30秒销毁并重建所有widget DOM，触发大量JS计算+浏览器重排+重绘
+  // 新逻辑：仅在可见时，5 分钟做一次轻量刷新（时钟/番茄钟/数据指标自更新即可）
+  let _dashLastRenderHour = -1;
   setInterval(() => {
-    if (document.getElementById('dashboard')?.classList.contains('active')) {
+    const now = new Date();
+    // 整小时才刷新一次仪表盘（日期跨天、小时变化时必要）
+    if (isTabVisible() && document.getElementById('dashboard')?.classList.contains('active')
+        && now.getHours() !== _dashLastRenderHour) {
+      _dashLastRenderHour = now.getHours();
+      try {
+        // 仅重绘时钟/统计指标相关的小部件，不全量重渲染
+        renderDashXPBar();
+        updateTopbarBadge();
+      } catch(e) {}
+    }
+  }, 60000); // 1 分钟检查一次是否整点
+  // 番茄钟：仅在 running 且可见时更新 widget 上的倒计时
+  let _pomoTimerRunning = false;
+  function _pomoTick() {
+    if (!_pomoTimerRunning) return;
+    if (isTabVisible() && document.getElementById('dashboard')?.classList.contains('active')) {
       const circle = document.getElementById('widgetPomoCircle');
       if (circle) { const m = Math.floor(pomoData.timeLeft / 60), s = pomoData.timeLeft % 60; circle.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
     }
-  }, 1000);
+  }
+  const pomoSectionInterval = setInterval(_pomoTick, 1000);
+  // 暴露给 togglePomo：只在真正开始番茄钟时激活 tick，暂停就跳过
+  window.__setPomoTimerActive = (active) => { _pomoTimerRunning = !!active; };
   // 预取星座运势（不阻塞首屏）
   setTimeout(() => { fetchHoroData(true); }, 2500);
+  // 页面回到前台时强制刷新一次时钟和数据
+  document.addEventListener('visibilitychange', () => {
+    if (isTabVisible()) {
+      updateClock();
+      // 如果缓存超过 15 分钟，顺便刷新一下热点
+      const needHotRefresh = !Object.keys(hotCache).length || (Date.now() - (Object.values(hotCache)[0]?.time || 0) > 900000);
+      if (needHotRefresh && document.getElementById('hotGrid')) fetchHotData(false);
+    }
+  });
 }
 // init() 已移至整个 script 块最后一行（L6494附近），确保所有const/let/function已就位，避免 LUNAR_INFO / GAN_ZHI 等 TDZ 初始化顺序问题
 // 注册 Service Worker，启用 PWA 离线能力
