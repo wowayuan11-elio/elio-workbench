@@ -3110,16 +3110,18 @@ const HOT_SOURCES = {
     url: 'https://top.baidu.com/api/board?platform=wise&tab=realtime',
     search: 'https://www.baidu.com/s?wd=',
     parse: (json) => {
-      // 百度热搜结构：{ success:true, data:{ cards:[{ content:[{ word, hotScore, url, desc }] }] } }
+      // 百度热搜结构（双层嵌套）：{ data:{ cards:[{ content:[{ content:[{ word, url, hotScore }] }] }] } }
       const cards = json?.data?.cards || [];
       const items = [];
       cards.forEach(c => {
-        (c.content || []).forEach(it => {
-          if (it.word) items.push({
-            title: it.word,
-            hot: it.hotScore || it.hot || '',
-            url: it.url || it.rawUrl || '',
-            desc: it.desc || it.description || ''
+        (c.content || []).forEach(group => {
+          (group.content || []).forEach(it => {
+            if (it.word) items.push({
+              title: it.word,
+              hot: it.hotScore || it.hot || it.hotTag || '',
+              url: it.url || it.rawUrl || '',
+              desc: it.desc || it.description || ''
+            });
           });
         });
       });
