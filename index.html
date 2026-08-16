@@ -3011,7 +3011,7 @@ const WIDGET_CATALOG = [
   { id:'mediaQuick', icon:'📰', name:'自媒体统计', desc:'选题看板数据一览', defaultSpan:'span-2', hide:true },
   { id:'calendarMini', icon:'📅', name:'迷你月历', desc:'本月日历+任务标注', defaultSpan:'span-2' },
   { id:'achievementQuick', icon:'🏆', name:'最近成就', desc:'3个最新获得成就', defaultSpan:'span-2', hide:true },
-  { id:'xp', icon:'⭐', name:'等级进度', desc:'XP等级与今日获得', defaultSpan:'span-2' },
+  { id:'xp', icon:'⭐', name:'等级进度', desc:'XP等级与今日获得', defaultSpan:'span-2', hide:true },
   { id:'moodTrend', icon:'📈', name:'心情趋势', desc:'近7天心情轨迹', defaultSpan:'span-2' },
   { id:'huangli', icon:'📜', name:'黄道吉日', desc:'老黄历宜忌·干支·属兔冲合', defaultSpan:'span-2' },
   { id:'horoscope', icon:'⚖', name:'星座运势', desc:'天秤座今日运势·四维评分', defaultSpan:'span-2' },
@@ -3397,12 +3397,10 @@ function renderSectionMetrics(name) {
   } else if (name === 'dashboard') {
     const todayTasks = tasks.filter(t => t.date === today || (!t.date && (t.createdAt||'').slice(0,10) === today));
     const habitToday = habits.filter(h => h.records && h.records[today]).length;
-    const xpToday = xpData.dailyXP[today] || 0;
     html = `<div class="page-metrics stagger" style="margin-top:20px">
       <div class="pm-card"><div class="pm-val info">${todayTasks.length}</div><div class="pm-lbl">今日待办</div><div class="pm-sub"><span class="up">${todayTasks.filter(t=>t.done).length}</span> 已完成</div></div>
       <div class="pm-card"><div class="pm-val ${habitToday===habits.length?'acc':'warn'}">${habitToday}/${habits.length}</div><div class="pm-lbl">习惯打卡</div><div class="pm-sub">${habits.length>0?Math.round(habitToday/habits.length*100):0}% 今日进度</div></div>
       <div class="pm-card"><div class="pm-val">${pomoData.todayCount||0}</div><div class="pm-lbl">今日番茄</div><div class="pm-sub">累计 ${pomoData.totalCount||0} 个</div></div>
-      <div class="pm-card"><div class="pm-val warn">+${xpToday}</div><div class="pm-lbl">今日 XP</div><div class="pm-sub">等级 Lv ${xpData.currentLevel||1}</div></div>
     </div>`;
   } else if (name === 'life') {
     const sport = (lifeData.sportLog||[]).filter(s => s.date === today).length;
@@ -3456,11 +3454,13 @@ function addXP(amount, reason) {
   const oldLevel = xpData.currentLevel;
   if (newLevel > oldLevel) {
     xpData.currentLevel = newLevel;
-    showCelebration(newLevel);
+    // XP/成就已隐藏：静默升级，不再弹窗
+    // showCelebration(newLevel);
   }
-  showXPToast(amount, reason);
+  // XP/成就已隐藏：不再显示 +XP toast
+  // showXPToast(amount, reason);
   DB.set('xp', xpData);
-  renderDashXPBar();
+  // renderDashXPBar();
 }
 function showCelebration(level) {
   const colors = ['#8b7e6e','#8a9a82','#b8a07e','#b89a96','#7b95b8','#a08ab8'];
@@ -5518,7 +5518,7 @@ function exportMarkdown() {
   const sportToday = (lifeData.sportLog||[]).filter(s => s.date === today);
   const sportNames = { swim:'游泳', pushup:'俯卧撑', clap:'胯下击掌', walk:'散步', run:'跑步' };
   let md = `# elio工作台日报 ${today}\n\n`;
-  md += `## 📊 效率概览\n- 任务：${doneTasks.length}/${todayTasks.length}\n- 习惯：${doneHabits.length}/${habits.length}\n- 番茄：${pomoData.todayCount}个 / ${pomoData.todayCount * pomoData.settings.work}分钟\n- XP：今日 +${xpData.dailyXP[today]||0}，总 ${xpData.totalXP}（Lv${xpData.currentLevel}）\n\n`;
+  md += `## 📊 效率概览\n- 任务：${doneTasks.length}/${todayTasks.length}\n- 习惯：${doneHabits.length}/${habits.length}\n- 番茄：${pomoData.todayCount}个 / ${pomoData.todayCount * pomoData.settings.work}分钟\n\n`;
   md += `## ✓ 今日任务\n`;
   todayTasks.forEach(t => {
     md += `- [${t.done?'x':' '}] ${t.text} (${t.priority})`;
