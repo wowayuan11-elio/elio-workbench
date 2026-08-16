@@ -2417,14 +2417,14 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
       <div class="nav-item" data-section="tasks"><span class="nav-icon">✓</span> 任务管理</div>
       <div class="nav-item" data-section="pomodoro"><span class="nav-icon">◐</span> 番茄钟</div>
       <div class="nav-item" data-section="habits"><span class="nav-icon">◉</span> 习惯打卡</div>
-      <div class="nav-item" data-section="life"><span class="nav-icon">★</span> 生活管理</div>
-      <div class="nav-item" data-section="feynman"><span class="nav-icon">✦</span> 费曼练习</div>
-      <div class="nav-item" data-section="media"><span class="nav-icon">◈</span> 自媒体</div>
-      <div class="nav-item" data-section="topics"><span class="nav-icon">◆</span> 热点追踪</div>
-      <div class="nav-item" data-section="news"><span class="nav-icon">❖</span> 资讯日报</div>
-      <div class="nav-item" data-section="review"><span class="nav-icon">❏</span> 每日复盘</div>
-      <div class="nav-item" data-section="stats"><span class="nav-icon">▤</span> 数据统计</div>
-      <div class="nav-item" data-section="achievements"><span class="nav-icon">🏆</span> 成就徽章</div>
+      <div class="nav-item" data-section="life" style="display:none"><span class="nav-icon">★</span> 生活管理</div>
+      <div class="nav-item" data-section="feynman" style="display:none"><span class="nav-icon">✦</span> 费曼练习</div>
+      <div class="nav-item" data-section="media" style="display:none"><span class="nav-icon">◈</span> 自媒体</div>
+      <div class="nav-item" data-section="topics" style="display:none"><span class="nav-icon">◆</span> 热点追踪</div>
+      <div class="nav-item" data-section="news" style="display:none"><span class="nav-icon">❖</span> 资讯日报</div>
+      <div class="nav-item" data-section="review" style="display:none"><span class="nav-icon">❏</span> 每日复盘</div>
+      <div class="nav-item" data-section="stats" style="display:none"><span class="nav-icon">▤</span> 数据统计</div>
+      <div class="nav-item" data-section="achievements" style="display:none"><span class="nav-icon">🏆</span> 成就徽章</div>
       <div class="nav-item" data-section="huangli"><span class="nav-icon">📜</span> 黄道吉日</div>
       <div class="nav-item" data-section="horoscope"><span class="nav-icon">⚖</span> 星座运势</div>
       <div class="nav-item" data-section="mahjong"><span class="nav-icon">🀄</span> 麻将运势</div>
@@ -2440,7 +2440,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
         <div class="dash-top-left">
           <div class="dash-greeting" id="greeting">下午好</div>
           <div class="dash-date" id="dashDate">--</div>
-          <div class="dash-xp-bar" id="dashXPBar"></div>
+          <div class="dash-xp-bar" id="dashXPBar" style="display:none"></div>
         </div>
         <div>
           <div class="dash-clock" id="dashClock">00:00</div>
@@ -2529,7 +2529,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
       </div>
       <div class="habit-list" id="habitList"></div>
     </section>
-    <section class="section" id="topics">
+    <section class="section" id="topics" style="display:none">
       <h1 class="page-title">全网热点</h1>
       <p class="page-sub">实时聚合各平台热门内容，一键查看当前最火动态</p>
       <div class="hot-toolbar">
@@ -2581,7 +2581,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
         <div class="topic-list" id="topicList"></div>
       </div>
     </section>
-    <section class="section" id="news">
+    <section class="section" id="news" style="display:none">
       <h1 class="page-title">资讯日报</h1>
       <p class="page-sub">多源资讯聚合 · 每日更新</p>
       <div class="news-toolbar">
@@ -2608,7 +2608,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
       </div>
       <div class="news-load-more" id="newsLoadMore" style="display:none" onclick="toggleNewsExpand()">▼ 展开剩余 10 条</div>
     </section>
-    <section class="section" id="review">
+    <section class="section" id="review" style="display:none">
       <h1 class="page-title">每日复盘</h1>
       <p class="page-sub">回顾今天，规划明天</p>
       <div class="review-box">
@@ -2645,7 +2645,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
         <div id="reviewHistory"></div>
       </div>
     </section>
-    <section class="section" id="life">
+    <section class="section" id="life" style="display:none">
       <h1 class="page-title">生活管理</h1>
       <p class="page-sub">作息打卡 · 运动记录 · 体重喝水 · 求职进度</p>
       <div class="card-title" style="margin-bottom:14px"><span class="ct-icon">⏰</span> 每日作息打卡 <span class="schedule-streak" id="lifeStreakBadge"></span></div>
@@ -2698,7 +2698,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
         <div class="life-log" id="jobLog" style="margin-top:10px"></div>
       </div>
     </section>
-    <section class="section" id="feynman">
+    <section class="section" id="feynman" style="display:none">
       <h1 class="page-title">费曼练习</h1>
       <p class="page-sub">用大白话讲清楚每个AI概念 · PREP结构练习</p>
       <div class="feyn-concept" id="feynConcept"></div>
@@ -2709,7 +2709,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
       </div>
       <div class="feyn-grid" id="feynGrid"></div>
     </section>
-    <section class="section" id="media">
+    <section class="section" id="media" style="display:none">
       <h1 class="page-title">自媒体运营</h1>
       <p class="page-sub">选题看板 · 分平台草稿 · 发布追踪</p>
       <div class="card-title" style="margin-bottom:14px"><span class="ct-icon">📋</span> 选题看板</div>
@@ -2730,7 +2730,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
       <div class="publish-stats" id="publishStats"></div>
       <div class="publish-list" id="publishList"></div>
     </section>
-    <section class="section" id="stats">
+    <section class="section" id="stats" style="display:none">
       <h1 class="page-title">数据统计</h1>
       <p class="page-sub">效率趋势 · 习惯热力图 · 番茄分布 · 心情轨迹</p>
       <div class="chart-container">
@@ -2751,7 +2751,7 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
         <div id="pomoChart"></div>
       </div>
     </section>
-    <section class="section" id="achievements">
+    <section class="section" id="achievements" style="display:none">
       <h1 class="page-title">成就徽章</h1>
       <p class="page-sub">解锁成就，见证成长</p>
       <div class="achievements-header">
@@ -2846,15 +2846,15 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
     <div class="more-sheet-title">所有模块</div>
     <div class="more-sheet-grid" id="moreSheetGrid">
       <div class="ms-item" data-section="pomodoro"><span class="ms-icon">◐</span><span class="ms-label">番茄钟</span></div>
-      <div class="ms-item" data-section="news"><span class="ms-icon">❖</span><span class="ms-label">资讯日报</span></div>
-      <div class="ms-item" data-section="topics"><span class="ms-icon">◆</span><span class="ms-label">热点追踪</span></div>
+      <div class="ms-item" data-section="news" style="display:none"><span class="ms-icon">❖</span><span class="ms-label">资讯日报</span></div>
+      <div class="ms-item" data-section="topics" style="display:none"><span class="ms-icon">◆</span><span class="ms-label">热点追踪</span></div>
       <div class="ms-item" data-section="habits"><span class="ms-icon">◉</span><span class="ms-label">习惯打卡</span></div>
-      <div class="ms-item" data-section="life"><span class="ms-icon">★</span><span class="ms-label">生活管理</span></div>
-      <div class="ms-item" data-section="feynman"><span class="ms-icon">✦</span><span class="ms-label">费曼练习</span></div>
-      <div class="ms-item" data-section="media"><span class="ms-icon">◈</span><span class="ms-label">自媒体</span></div>
-      <div class="ms-item" data-section="review"><span class="ms-icon">❏</span><span class="ms-label">每日复盘</span></div>
-      <div class="ms-item" data-section="stats"><span class="ms-icon">▤</span><span class="ms-label">数据统计</span></div>
-      <div class="ms-item" data-section="achievements"><span class="ms-icon">🏆</span><span class="ms-label">成就徽章</span></div>
+      <div class="ms-item" data-section="life" style="display:none"><span class="ms-icon">★</span><span class="ms-label">生活管理</span></div>
+      <div class="ms-item" data-section="feynman" style="display:none"><span class="ms-icon">✦</span><span class="ms-label">费曼练习</span></div>
+      <div class="ms-item" data-section="media" style="display:none"><span class="ms-icon">◈</span><span class="ms-label">自媒体</span></div>
+      <div class="ms-item" data-section="review" style="display:none"><span class="ms-icon">❏</span><span class="ms-label">每日复盘</span></div>
+      <div class="ms-item" data-section="stats" style="display:none"><span class="ms-icon">▤</span><span class="ms-label">数据统计</span></div>
+      <div class="ms-item" data-section="achievements" style="display:none"><span class="ms-icon">🏆</span><span class="ms-label">成就徽章</span></div>
       <div class="ms-item" data-section="mahjong"><span class="ms-icon">🀄</span><span class="ms-label">麻将运势</span></div>
       <div class="ms-item" data-section="settings"><span class="ms-icon">⚙</span><span class="ms-label">设置</span></div>
     </div>
@@ -2996,8 +2996,8 @@ const WIDGET_CATALOG = [
   { id:'tasks', icon:'✓', name:'今日任务', desc:'今日任务进度与列表', defaultSpan:'span-2' },
   { id:'pomo', icon:'◐', name:'番茄钟', desc:'番茄钟运行状态', defaultSpan:'' },
   { id:'habits', icon:'◉', name:'习惯打卡', desc:'习惯进度与状态', defaultSpan:'' },
-  { id:'topics', icon:'◆', name:'全网热点', desc:'实时热点与收藏', defaultSpan:'span-2' },
-  { id:'score', icon:'◈', name:'效率指数', desc:'今日效率评分', defaultSpan:'' },
+  { id:'topics', icon:'◆', name:'全网热点', desc:'实时热点与收藏', defaultSpan:'span-2', hide:true },
+  { id:'score', icon:'◈', name:'效率指数', desc:'今日效率评分', defaultSpan:'', hide:true },
   { id:'quote', icon:'💬', name:'每日一言', desc:'每天一句励志名言', defaultSpan:'' },
   { id:'weather', icon:'☀️', name:'天气', desc:'城市天气（可设置）', defaultSpan:'' },
   { id:'countdown', icon:'⏳', name:'倒计时', desc:'目标日期倒计时', defaultSpan:'' },
@@ -3007,10 +3007,10 @@ const WIDGET_CATALOG = [
   { id:'waterQuick', icon:'💧', name:'喝水打卡', desc:'快速记录喝水+1杯', defaultSpan:'' },
   { id:'dailyGoal', icon:'🎯', name:'今日目标', desc:'3个今日重点目标', defaultSpan:'span-2' },
   { id:'quickLinks', icon:'🔗', name:'快捷链接', desc:'6个常用网址按钮', defaultSpan:'span-2' },
-  { id:'feynmanQuick', icon:'✦', name:'费曼今日', desc:'今日费曼概念卡', defaultSpan:'' },
-  { id:'mediaQuick', icon:'📰', name:'自媒体统计', desc:'选题看板数据一览', defaultSpan:'span-2' },
+  { id:'feynmanQuick', icon:'✦', name:'费曼今日', desc:'今日费曼概念卡', defaultSpan:'', hide:true },
+  { id:'mediaQuick', icon:'📰', name:'自媒体统计', desc:'选题看板数据一览', defaultSpan:'span-2', hide:true },
   { id:'calendarMini', icon:'📅', name:'迷你月历', desc:'本月日历+任务标注', defaultSpan:'span-2' },
-  { id:'achievementQuick', icon:'🏆', name:'最近成就', desc:'3个最新获得成就', defaultSpan:'span-2' },
+  { id:'achievementQuick', icon:'🏆', name:'最近成就', desc:'3个最新获得成就', defaultSpan:'span-2', hide:true },
   { id:'xp', icon:'⭐', name:'等级进度', desc:'XP等级与今日获得', defaultSpan:'span-2' },
   { id:'moodTrend', icon:'📈', name:'心情趋势', desc:'近7天心情轨迹', defaultSpan:'span-2' },
   { id:'huangli', icon:'📜', name:'黄道吉日', desc:'老黄历宜忌·干支·属兔冲合', defaultSpan:'span-2' },
@@ -3056,16 +3056,16 @@ let widgetOrder = Array.isArray(rawWidgetOrder) && rawWidgetOrder.length && type
       return { type: t, span: def ? def.defaultSpan : '' };
     }) : [
       {type:'horoscope',span:'span-2'},{type:'huangli',span:'span-2'},
-      {type:'clock',span:'span-2'},{type:'tasks',span:'span-2'},
-      {type:'topics',span:'span-2'},{type:'pomo',span:''},
-      {type:'habits',span:''},{type:'score',span:''}
+      {type:'mahjong',span:'span-2'},{type:'tasks',span:'span-2'},
+      {type:'pomo',span:''},{type:'habits',span:''},{type:'dailyGoal',span:'span-2'},
+      {type:'quickLinks',span:'span-2'},{type:'clock',span:'span-2'}
     ]);
-// 老用户布局迁移：如果不含星座&黄历，自动前置（不破坏原有顺序）
+// 老用户布局迁移：确保三大运势卡在最前（不破坏原有顺序）
 (function migrateOldWidgetLayout() {
   const has = t => widgetOrder.some(w => w.type === t);
   let changed = false;
   if (!has('horoscope')) { widgetOrder.unshift({type:'horoscope', span:'span-2'}); changed = true; }
-  else { // 已存在但可能不在最前 → 移动到第1位（span-2大卡）
+  else {
     const i = widgetOrder.findIndex(w => w.type==='horoscope');
     if (i > 0) { const [w] = widgetOrder.splice(i,1); w.span = 'span-2'; widgetOrder.unshift(w); changed = true; }
     else if (widgetOrder[0].span !== 'span-2') { widgetOrder[0].span = 'span-2'; changed = true; }
@@ -3678,7 +3678,8 @@ function checkAchievements() {
   ACHIEVEMENTS.forEach(a => {
     if (!achievements[a.id] && checks[a.id] && checks[a.id]()) {
       achievements[a.id] = { unlockedAt: Date.now() };
-      showToast(`🎉 解锁成就：${a.name}`);
+      // 成就模块已隐藏：静默记录，不再弹窗打扰
+      // showToast(`🎉 解锁成就：${a.name}`);
     }
   });
 }
@@ -4184,7 +4185,7 @@ function openAddWidgetModal() { openModal('widgetPickerModal'); renderWidgetCata
 function renderWidgetCatalog() {
   const usedTypes = widgetOrder.map(w => w.type);
   const grid = document.getElementById('widgetPickerGrid');
-  grid.innerHTML = WIDGET_CATALOG.map(w => `
+  grid.innerHTML = WIDGET_CATALOG.filter(w => !w.hide).map(w => `
     <div class="widget-catalog-item">
       <div class="wci-icon">${w.icon}</div>
       <div class="wci-name">${w.name}</div>
@@ -4199,7 +4200,8 @@ function addWidget(type, span) {
 function renderDashboard() {
   const today = todayStr();
   if (pomoData.todayDate !== today) { pomoData.todayCount = 0; pomoData.todayDate = today; saveAll(); }
-  renderDashXPBar();
+  // XP等级条已隐藏：跳过渲染，省一次DOM写入
+  // renderDashXPBar();
   const grid = document.getElementById('widgetGrid');
   if (!grid) { console.error('[renderDashboard] widgetGrid 不存在'); return; }
   // Fail-soft：单个widget渲染失败绝不中断整个仪表盘
