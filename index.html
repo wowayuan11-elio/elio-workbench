@@ -1896,15 +1896,43 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
   max-width: 340px; flex: 1; position: relative;
 }
 .topbar-search input {
-  width: 100%; height: 34px; padding: 0 12px 0 34px; border-radius: 10px;
+  width: 100%; height: 34px; padding: 0 34px 0 34px; border-radius: 10px;
   background: var(--surface-2); border: 1px solid var(--rule); font-size: 13px; color: var(--ink);
   transition: all var(--transition); outline: none;
 }
 .topbar-search input:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px var(--accent-bg); }
 .topbar-search::before {
   content: '⌕'; position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
-  color: var(--muted); font-size: 14px;
+  color: var(--muted); font-size: 14px; z-index: 1;
 }
+.topbar-search .sb-clear {
+  position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+  width: 24px; height: 24px; border-radius: 8px; border: none; background: transparent;
+  color: var(--muted); font-size: 14px; cursor: pointer; display: none;
+  align-items: center; justify-content: center; z-index: 2;
+  transition: all 0.15s ease;
+}
+.topbar-search .sb-clear:hover { color: var(--ink); background: var(--surface-2); }
+.topbar-search.has-value .sb-clear { display: flex; }
+/* 搜索下拉建议框 */
+.sb-suggest {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 200;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.10); padding: 6px; display: none;
+  max-height: 360px; overflow-y: auto;
+}
+.sb-suggest.show { display: block; }
+.sb-sg-group { padding: 4px 8px 2px; font-size: 11px; color: var(--muted); letter-spacing: 0.5px; }
+.sb-sg-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px;
+  cursor: pointer; font-size: 13px; color: var(--ink); transition: background 0.12s;
+}
+.sb-sg-item:hover, .sb-sg-item.active { background: var(--accent-bg); color: var(--accent); }
+.sb-sg-item .sg-icon { font-size: 15px; width: 22px; text-align: center; flex-shrink: 0; }
+.sb-sg-item .sg-name { flex: 1; }
+.sb-sg-item .sg-name b { color: var(--accent); font-weight: 600; }
+.sb-sg-item .sg-hint { font-size: 11px; color: var(--muted); }
+.sb-sg-empty { padding: 12px; font-size: 12px; color: var(--muted); text-align: center; }
 .topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .tb-icon-btn {
   width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
@@ -2389,8 +2417,11 @@ body.dark .topbar { background: rgba(45,42,38,0.82); }
         <span class="tb-sep">/</span>
         <span class="tb-current" id="topbarCurrent">仪表盘</span>
       </div>
-      <div class="topbar-search">
-        <input type="text" id="globalSearch" placeholder="搜索任务、习惯、资讯… （⌘K）" oninput="handleGlobalSearch(this.value)">
+      <div class="topbar-search" id="topbarSearchWrap">
+        <input type="text" id="globalSearch" placeholder="搜索模块、任务、习惯、资讯… （⌘K）"
+               oninput="handleGlobalSearch(this.value)" onkeydown="onGlobalSearchKey(event)">
+        <button class="sb-clear" onclick="clearGlobalSearch()" title="清空（Esc）">✕</button>
+        <div class="sb-suggest" id="sbSuggest" onmousedown="event.preventDefault()"></div>
       </div>
     </div>
     <div class="topbar-right">
@@ -3324,32 +3355,248 @@ function updateTopbarBadge() {
     else b.style.display = 'none';
   }
 }
-function handleGlobalSearch(q) {
+// ====== 全局搜索：侧边栏模块优先 + 下拉建议 + 键盘操作 ======
+// 侧边栏模块索引（别名可以让「黄」匹配「黄道吉日」，「复盘」匹配「每日复盘」）
+const SEARCH_SECTIONS = [
+  { id:'dashboard', name:'仪表盘', icon:'◈', aliases:['首页','dash','概览','home'] },
+  { id:'tasks',     name:'任务管理', icon:'✓', aliases:['任务','待办','todo','task','事项','工作'] },
+  { id:'pomodoro',  name:'番茄钟',   icon:'◐', aliases:['番茄','专注','pomo','计时','倒计时'] },
+  { id:'habits',    name:'习惯打卡', icon:'◉', aliases:['习惯','打卡','habit','健身','跑步','喝水','运动'] },
+  { id:'life',      name:'生活管理', icon:'★', aliases:['生活','life','水','睡眠','作息','个人'] },
+  { id:'feynman',   name:'费曼练习', icon:'✦', aliases:['费曼','feynman','学习','笔记','概念'] },
+  { id:'media',     name:'自媒体',   icon:'◈', aliases:['自媒体','media','选题','内容','公众号','文章'] },
+  { id:'topics',    name:'热点追踪', icon:'◆', aliases:['热点','热搜','抖音','百度','话题','hot','排行'] },
+  { id:'news',      name:'资讯日报', icon:'❖', aliases:['资讯','新闻','日报','news','科技','AI','苹果','融资'] },
+  { id:'review',    name:'每日复盘', icon:'❏', aliases:['复盘','review','日记','日报','总结','回顾'] },
+  { id:'stats',     name:'数据统计', icon:'▤', aliases:['统计','数据','stats','报表','分析','图表'] },
+  { id:'huangli',   name:'黄道吉日', icon:'📜', aliases:['黄历','黄','吉日','宜忌','黄道','万年历','日历','择日'] },
+  { id:'horoscope', name:'星座运势', icon:'⚖', aliases:['星座','运势','星运','horo','libra','天秤','占星'] },
+  { id:'mahjong',   name:'麻将运势', icon:'🀄', aliases:['麻将','牌局','mahjong','财神','方位','打麻将','吉时'] },
+  { id:'settings',  name:'设置',     icon:'⚙', aliases:['设置','setting','配置','偏好','齿轮'] },
+];
+// 搜索下拉：当前展示的可选项目（扁平数组，每项含 kind:'section'|'inline' 等）
+let _sgItems = [];
+let _sgActive = -1;
+
+// 渲染下拉建议
+function renderSuggest() {
+  const el = document.getElementById('sbSuggest');
+  if (!el) return;
+  if (!_sgItems || _sgItems.length === 0) {
+    el.classList.remove('show'); el.innerHTML = ''; return;
+  }
+  const wrap = document.createElement('div');
+  // 分组：先侧边栏模块，再内容搜索快捷入口
+  let lastGroup = '';
+  _sgItems.forEach((it, idx) => {
+    if (it.group !== lastGroup) {
+      const g = document.createElement('div'); g.className = 'sb-sg-group'; g.textContent = it.group;
+      wrap.appendChild(g); lastGroup = it.group;
+    }
+    const row = document.createElement('div');
+    row.className = 'sb-sg-item' + (idx === _sgActive ? ' active' : '');
+    row.innerHTML = `<span class="sg-icon">${it.icon||'⌕'}</span>
+      <span class="sg-name">${it.hlName || it.name}</span>
+      <span class="sg-hint">${it.hint||''}</span>`;
+    row.addEventListener('mouseenter', () => { _sgActive = idx; renderSuggest(); });
+    row.addEventListener('mousedown', (e) => { e.preventDefault(); pickSuggest(idx); });
+    wrap.appendChild(row);
+  });
+  el.innerHTML = ''; el.appendChild(wrap); el.classList.add('show');
+}
+// 选中某条建议（点击或 Enter）
+function pickSuggest(idx) {
+  const it = _sgItems[idx]; if (!it) return;
+  if (it.kind === 'section') {
+    hideSuggest();
+    clearGlobalSearch(true); // keepFocus=false 直接跳转
+    switchSection(it.id);
+    showToast(`已跳转至「${it.name}」`);
+  } else if (it.kind === 'search-inline') {
+    // 在对应模块里做内容过滤
+    hideSuggest();
+    const s = document.getElementById('globalSearch');
+    if (s) s.blur();
+    doInlineContentSearch(it.raw, it.target);
+  }
+}
+function hideSuggest() {
+  const el = document.getElementById('sbSuggest');
+  if (el) { el.classList.remove('show'); el.innerHTML = ''; }
+  _sgItems = []; _sgActive = -1;
+}
+// 切换 has-value 类控制清空按钮显隐
+function syncSearchClearBtnState() {
+  const wrap = document.getElementById('topbarSearchWrap');
+  const s = document.getElementById('globalSearch');
+  if (!wrap || !s) return;
+  wrap.classList.toggle('has-value', !!s.value.trim());
+}
+// 清空搜索：清空值、恢复所有列表
+function clearGlobalSearch(keepFocus) {
+  const s = document.getElementById('globalSearch');
+  if (!s) return;
+  s.value = '';
+  syncSearchClearBtnState();
+  hideSuggest();
+  // 重置任务/习惯/资讯/热点的 display（取消过滤）
+  const selAll = '.task-item,.kanban-card,.habit-item,.news-item,.hot-item';
+  document.querySelectorAll(selAll).forEach(el => el.style.display = '');
+  if (!keepFocus && document.activeElement === s) s.blur();
+}
+// 搜索框键盘：Esc=清空失焦  ↑↓=选择建议  Enter=跳转当前选中
+function onGlobalSearchKey(e) {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    if (_sgItems.length > 0 && document.getElementById('sbSuggest')?.classList.contains('show')) {
+      hideSuggest();
+    } else {
+      clearGlobalSearch();
+    }
+  } else if (e.key === 'ArrowDown') {
+    if (!_sgItems.length) return;
+    e.preventDefault();
+    _sgActive = (_sgActive + 1) % _sgItems.length;
+    renderSuggest();
+  } else if (e.key === 'ArrowUp') {
+    if (!_sgItems.length) return;
+    e.preventDefault();
+    _sgActive = (_sgActive - 1 + _sgItems.length) % _sgItems.length;
+    renderSuggest();
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    // 有选中的下拉项 → 跳转选中
+    if (_sgActive >= 0 && _sgItems[_sgActive]) {
+      pickSuggest(_sgActive);
+      return;
+    }
+    const s = document.getElementById('globalSearch');
+    const q = (s && s.value || '').trim();
+    if (!q) return;
+    // 无选中时：第一个侧边栏命中就跳转，否则走内容过滤
+    handleGlobalSearch(q, { enter: true });
+  }
+}
+// 把文字中的关键字加<b>高亮
+function hlName(name, q) {
+  const lower = name.toLowerCase();
+  const idx = lower.indexOf(q.toLowerCase());
+  if (idx < 0) return name;
+  return name.slice(0, idx) + '<b>' + name.slice(idx, idx+q.length) + '</b>' + name.slice(idx+q.length);
+}
+// 主入口：用户输入后走这里
+function handleGlobalSearch(qOrEvent, opts={}) {
+  let q = typeof qOrEvent === 'string' ? qOrEvent : (qOrEvent?.target?.value || '');
+  q = (q || '').trim();
+  const s = document.getElementById('globalSearch');
+  // 如果 onfocus 触发但没输入内容，且不是用户主动要求 → 不做过滤
+  syncSearchClearBtnState();
+  _sgItems = []; _sgActive = -1;
+
+  // ===== 第一步：匹配侧边栏模块（优先） =====
+  const ql = q.toLowerCase();
+  const secHits = [];
+  if (q) {
+    SEARCH_SECTIONS.forEach(sec => {
+      const name = sec.name.toLowerCase();
+      const names = [name, ...(sec.aliases||[]).map(a=>a.toLowerCase())];
+      // 1. 完全匹配（权重100）
+      if (names.some(n => n === ql)) secHits.push({ s:sec, score:100 });
+      // 2. 前缀匹配（权重80）比如 黄 → 黄道吉日
+      else if (names.some(n => n.startsWith(ql))) secHits.push({ s:sec, score:80 });
+      // 3. 任意字符包含（权重50）比如 道 → 黄道吉日
+      else if (names.some(n => n.includes(ql))) secHits.push({ s:sec, score:50 });
+      // 4. 文字逐字都出现（权重30，顺序无关）比如 黄日 → 黄道吉日
+      else {
+        const chs = Array.from(new Set(q.split('').filter(c=>/\S/.test(c))));
+        if (chs.length>0 && chs.every(c => names.some(n => n.includes(c.toLowerCase())))) {
+          secHits.push({ s:sec, score:30 });
+        }
+      }
+    });
+    secHits.sort((a,b)=>b.score-a.score);
+    secHits.slice(0,6).forEach((h, i) => {
+      _sgItems.push({
+        kind:'section', group:'跳转到模块',
+        id:h.s.id, icon:h.s.icon, name:h.s.name,
+        hlName: hlName(h.s.name, q),
+        hint:'打开 ' + h.s.name,
+        raw:q
+      });
+    });
+  }
+  // ===== 第二步：内容快捷搜索入口（保底） =====
+  if (q) {
+    const hints = [
+      { target:'tasks',   name:'在 任务管理 中搜索', icon:'✓' },
+      { target:'habits',  name:'在 习惯打卡 中搜索', icon:'◉' },
+      { target:'news',    name:'在 资讯日报 中搜索', icon:'❖' },
+      { target:'topics',  name:'在 热点追踪 中搜索', icon:'◆' },
+    ];
+    hints.forEach(h => {
+      _sgItems.push({
+        kind:'search-inline', group:'在内容中查找',
+        target:h.target, icon:h.icon, name:h.name,
+        hlName: h.name,
+        hint: '查找包含「' + q + '」的内容',
+        raw:q
+      });
+    });
+  }
+  renderSuggest();
+
+  // 如果是 Enter 触发 → 自动挑第一个跳转
+  if (opts.enter && _sgItems.length > 0) {
+    pickSuggest(0);
+    return;
+  }
+}
+// 在模块内做任务/习惯/资讯/热点的纯内容过滤（不切模块、不走 handleGlobalSearch 避免死循环）
+function doInlineContentSearch(q, target) {
   q = (q || '').trim().toLowerCase();
   if (!q) return;
-  // 快捷跳转任务模块 + 过滤
-  switchSection('tasks');
+  switchSection(target);
   setTimeout(() => {
-    const box = document.getElementById('taskContainer');
-    if (!box) return;
-    const items = box.querySelectorAll('.task-item, .kanban-card');
-    let hit = 0;
+    let selector = '', containerId = '';
+    if (target === 'tasks')   { selector = '.task-item, .kanban-card'; containerId = 'taskContainer'; }
+    if (target === 'habits')  { selector = '.habit-item';              containerId = 'habitList'; }
+    if (target === 'news')    { selector = '.news-item';               containerId = 'newsList'; }
+    if (target === 'topics')  { selector = '.hot-item';                containerId = 'hotList'; }
+    const box = document.getElementById(containerId);
+    const items = box ? box.querySelectorAll(selector) : document.querySelectorAll(selector);
+    let firstHit = null, hit = 0;
     items.forEach(el => {
       const txt = (el.textContent || '').toLowerCase();
       const match = txt.includes(q);
       el.style.display = match ? '' : 'none';
-      if (match) { hit++; el.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+      if (match && !firstHit) firstHit = el;
+      if (match) hit++;
     });
-    if (hit === 0) showToast('未找到匹配内容', 'warn');
-    else showToast(`找到 ${hit} 条相关结果`);
-  }, 120);
+    const nm = sectionName(target);
+    if (hit === 0) showToast(`在「${nm}」未找到「${q}」相关内容`, 'warn');
+    else {
+      showToast(`在「${nm}」找到 ${hit} 条`);
+      if (firstHit) setTimeout(()=>firstHit.scrollIntoView({behavior:'smooth', block:'center'}), 50);
+    }
+  }, 150);
 }
+function sectionName(id){
+  return ({tasks:'任务管理',habits:'习惯打卡',news:'资讯日报',topics:'热点追踪',
+    dashboard:'仪表盘',pomodoro:'番茄钟',life:'生活管理',feynman:'费曼练习',
+    media:'自媒体',review:'每日复盘',stats:'数据统计',huangli:'黄道吉日',
+    horoscope:'星座运势',mahjong:'麻将运势',settings:'设置'})[id]||'工作台';
+}
+// 点击页面其他地方时收起下拉
+document.addEventListener('click', function(e){
+  const wrap = document.getElementById('topbarSearchWrap');
+  if (wrap && !wrap.contains(e.target)) hideSuggest();
+});
 // 快捷键：⌘K / Ctrl+K 聚焦搜索
 document.addEventListener('keydown', function(e) {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
     e.preventDefault();
     const s = document.getElementById('globalSearch');
-    if (s) { s.focus(); s.select(); }
+    if (s) { s.focus(); s.select(); syncSearchClearBtnState(); }
   }
 });
 
