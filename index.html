@@ -3385,24 +3385,34 @@ function renderSuggest() {
   if (!_sgItems || _sgItems.length === 0) {
     el.classList.remove('show'); el.innerHTML = ''; return;
   }
-  const wrap = document.createElement('div');
+  let html = '';
   // 分组：先侧边栏模块，再内容搜索快捷入口
   let lastGroup = '';
   _sgItems.forEach((it, idx) => {
     if (it.group !== lastGroup) {
-      const g = document.createElement('div'); g.className = 'sb-sg-group'; g.textContent = it.group;
-      wrap.appendChild(g); lastGroup = it.group;
+      html += `<div class="sb-sg-group">${it.group}</div>`;
+      lastGroup = it.group;
     }
-    const row = document.createElement('div');
-    row.className = 'sb-sg-item' + (idx === _sgActive ? ' active' : '');
-    row.innerHTML = `<span class="sg-icon">${it.icon||'⌕'}</span>
+    const cls = 'sb-sg-item' + (idx === _sgActive ? ' active' : '');
+    html += `<div class="${cls}" data-idx="${idx}" onmouseover="selectSuggest(${idx})"
+         onmousedown="event.preventDefault();pickSuggest(${idx});return false;"
+         onclick="pickSuggest(${idx});return false;">
+      <span class="sg-icon">${it.icon||'⌕'}</span>
       <span class="sg-name">${it.hlName || it.name}</span>
-      <span class="sg-hint">${it.hint||''}</span>`;
-    row.addEventListener('mouseenter', () => { _sgActive = idx; renderSuggest(); });
-    row.addEventListener('mousedown', (e) => { e.preventDefault(); pickSuggest(idx); });
-    wrap.appendChild(row);
+      <span class="sg-hint">${it.hint||''}</span>
+    </div>`;
   });
-  el.innerHTML = ''; el.appendChild(wrap); el.classList.add('show');
+  el.innerHTML = html; el.classList.add('show');
+}
+function selectSuggest(idx) {
+  if (_sgActive !== idx) { _sgActive = idx;
+    // 只更新 class，不重建 DOM，避免打断 hover/click
+    const el = document.getElementById('sbSuggest');
+    if (!el) return;
+    el.querySelectorAll('.sb-sg-item').forEach((n,i)=>{
+      n.classList.toggle('active', i === idx);
+    });
+  }
 }
 // 选中某条建议（点击或 Enter）
 function pickSuggest(idx) {
