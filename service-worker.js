@@ -1,5 +1,5 @@
 // elio工作台 Service Worker — 离线缓存核心
-const CACHE_NAME = 'elio-workbench-v4-20260814';
+const CACHE_NAME = 'elio-workbench-v4-logo01';
 const ASSETS = [
   './',
   './index.html',
@@ -8,14 +8,14 @@ const ASSETS = [
   './icon-512.svg'
 ];
 
-// 安装：预缓存核心资源 + 立即跳过等待
+// 安装：预缓存核心资源
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())
   );
 });
 
-// 激活：清理所有旧版本缓存 + 立即接管
+// 激活：清理旧缓存
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -24,19 +24,23 @@ self.addEventListener('activate', e => {
   );
 });
 
-// 请求拦截：网络优先（确保更新后立即生效），网络失败才用缓存
+// 请求拦截：缓存优先，网络回退
 self.addEventListener('fetch', e => {
+  // 只处理 GET 请求
   if (e.request.method !== 'GET') return;
 
   e.respondWith(
-    fetch(e.request).then(response => {
-      if (response && response.status === 200 && e.request.url.startsWith(self.location.origin)) {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-      }
-      return response;
-    }).catch(() => {
-      return caches.match(e.request).then(cached => cached || new Response('离线模式', { status: 503 }));
+    caches.match(e.request).then(cached => {
+      // 有缓存先用缓存，同时后台更新
+      const fetchPromise = fetch(e.request).then(response => {
+        // 只缓存同源的成功响应
+        if (response && response.status === 200 && e.request.url.startsWith(self.location.origin)) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        }
+        return response;
+      }).catch(() => cached);
+      return cached || fetchPromise;
     })
   );
 });
