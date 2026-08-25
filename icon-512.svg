@@ -1,13 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366f1"/>
-      <stop offset="100%" stop-color="#8b5cf6"/>
-    </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="8" stdDeviation="20" flood-opacity="0.15"/>
+    <filter id="cShadow" x="-22%" y="-22%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="28" stdDeviation="32" flood-color="#050216" flood-opacity=".22"/>
     </filter>
   </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)" filter="url(#shadow)"/>
-  <text x="256" y="350" font-size="260" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, sans-serif" font-weight="700">e</text>
+  <rect width="512" height="512" rx="124" fill="#141235"/>
+  <rect x="16" y="16" width="480" height="256" rx="112"
+        fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/>
+  <g filter="url(#cShadow)">
+    <text x="256" y="330" text-anchor="middle"
+          font-family="SF Mono, SF Pro Display, Inter, Consolas, Menlo, monospace"
+          font-size="230" font-weight="700" fill="#ffffff" letter-spacing="-8">01</text>
+  </g>
 </svg>

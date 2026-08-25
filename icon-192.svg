@@ -1,13 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366f1"/>
-      <stop offset="100%" stop-color="#8b5cf6"/>
-    </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.15"/>
+    <!-- 1 层极淡接触影（放 01 文字上） -->
+    <filter id="cShadow" x="-22%" y="-22%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#050216" flood-opacity=".20"/>
     </filter>
   </defs>
-  <rect width="192" height="192" rx="44" fill="url(#bg)" filter="url(#shadow)"/>
-  <text x="96" y="132" font-size="100" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, sans-serif" font-weight="700">e</text>
+
+  <!-- 深紫底方块 V6 #141235，圆角 46 -->
+  <rect width="192" height="192" rx="46" fill="#141235"/>
+  <!-- 1 条极细顶高光（V6 的光感，不让方块像死黑） -->
+  <rect x="6" y="6" width="180" height="96" rx="42"
+        fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1.5"/>
+
+  <!-- V1 的白色等宽 01 粗字：SF Mono / Consolas 等宽字体
+       用 text 标签 + 系统字体，几何 100% 整齐，不歪！ -->
+  <g filter="url(#cShadow)">
+    <text x="96" y="124" text-anchor="middle"
+          font-family="SF Mono, SF Pro Display, Inter, Consolas, Menlo, monospace"
+          font-size="86" font-weight="700" fill="#ffffff" letter-spacing="-3">01</text>
+  </g>
 </svg>
