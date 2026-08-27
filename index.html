@@ -2476,6 +2476,71 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .hl-tuzhu-note .cnt { font-size:12.5px; color:var(--ink-soft); line-height:1.7; }
 .hl-tuzhu-note .cnt b { color:var(--ink); }
 
+/* ===== 黄历 · 白话翻译模式 ===== */
+.hl-mode-switch {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px; border-radius:999px;
+  background:var(--surface-2); border:1px solid var(--rule);
+  font-size:12px; font-weight:600;
+}
+.hl-mode-switch button {
+  border:none; background:transparent; cursor:pointer;
+  padding:5px 11px; border-radius:999px; color:var(--muted);
+  font-size:12px; font-weight:600; transition:all 0.2s;
+}
+.hl-mode-switch button.active {
+  background:linear-gradient(135deg,#6b5bff,#3bb0f6);
+  color:#fff; box-shadow:0 2px 6px rgba(107,91,255,0.3);
+}
+.hl-tip {
+  position:relative; display:inline-flex; align-items:center; justify-content:center;
+  width:14px; height:14px; border-radius:50%; margin-left:4px;
+  background:var(--muted-light); color:#fff; font-size:10px;
+  font-weight:700; line-height:1; cursor:help; flex-shrink:0;
+  transform:translateY(-2px);
+}
+.hl-tag .hl-tip { transform:translateY(0); margin-left:5px; background:rgba(255,255,255,0.85); color:inherit; opacity:0.65; }
+.hl-tip:hover { opacity:1; }
+.hl-tip::after {
+  content:attr(data-tip); position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%);
+  min-width:180px; max-width:260px; padding:10px 12px; border-radius:10px;
+  background:rgba(22,18,45,0.96); color:#f5f5fa; font-size:11.5px; line-height:1.55; font-weight:500;
+  text-align:left; letter-spacing:normal; white-space:normal;
+  box-shadow:0 10px 28px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.08);
+  opacity:0; visibility:hidden; transition:all 0.18s ease; z-index:50;
+  pointer-events:none;
+}
+.hl-tip::before {
+  content:''; position:absolute; left:50%; bottom:calc(100% + 2px); transform:translateX(-50%);
+  width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent;
+  border-top:6px solid rgba(22,18,45,0.96);
+  opacity:0; visibility:hidden; transition:all 0.18s ease; z-index:51;
+}
+.hl-tip:hover::after, .hl-tip:hover::before { opacity:1; visibility:visible; }
+
+.hl-desc {
+  font-size:11.5px; color:var(--muted); margin-top:5px; line-height:1.6;
+  padding:8px 10px; background:var(--surface-2); border-radius:8px; display:none;
+}
+.hl-mode-dual .hl-desc, .hl-mode-bailan .hl-desc { display:block; }
+.hl-mode-bailan .hl-original { opacity:0.55; }
+.hl-bailan-text { display:none; font-weight:600; }
+.hl-mode-dual .hl-bailan-text, .hl-mode-bailan .hl-bailan-text { display:inline; color:var(--accent); }
+.hl-mode-bailan .hl-original-text { display:none; }
+.hl-mode-bailan .hl-pengzu b { opacity:0.5; }
+
+.hl-card-title { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.hl-card-title .title-wrap { display:flex; align-items:center; gap:6px; min-width:0; }
+.hl-section-grid-inner { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+
+@media (max-width: 768px) {
+  .hl-section-grid-inner { grid-template-columns:1fr !important; }
+  .hl-mode-switch { font-size:11px; }
+  .hl-mode-switch button { padding:5px 9px; }
+  .hl-tip::after { min-width:160px; font-size:11px; }
+  .hl-gz-b .hl-desc { font-size:10px !important; padding:5px 6px !important; }
+}
+
 /* ===== 麻将运势 Widget / Section ===== */
 .mj-widget { padding: 4px 0; }
 .mj-head { display:flex; align-items:center; gap:10px; padding:4px 4px 12px; border-bottom:1px solid var(--rule-soft); }
@@ -6888,22 +6953,294 @@ function renderHuangliWidget() {
 }
 
 /* ===== 渲染：老黄历完整 Section ===== */
+/* ============================================================
+ * 黄历白话翻译词典 + 模式切换工具
+ * ============================================================ */
+const HL_DICT = {
+  // ===== 宜 / 忌标签翻译 =====
+  yi_ji: {
+    '出行':       '🚗 出远门、旅行、出差、搬家当天的路上',
+    '栽种':       '🌱 种树、种菜、种花、种庄稼，搞园艺相关',
+    '教牛马':     '🐎 训练宠物、教小狗新技能、驯马训牛',
+    '祭祀':       '🙏 祭祖、去寺庙烧香拜佛、上供、举行仪式',
+    '祈福':       '🌟 求福、许愿、拜佛求平安、做善事积德',
+    '求嗣':       '👶 求子、备孕、做试管、祈求生孩子顺利',
+    '开光':       '✨ 佛像/神像/物品第一次启用前的仪式（新买的佛珠手串等）',
+    '塑绘':       '🎨 画画、雕塑、设计、装修画图、做美术相关',
+    '订婚':       '💍 订婚仪式、办酒席、求婚',
+    '领证':       '📝 领结婚证、领房产证、签合同拿证',
+    '嫁娶':       '👰 结婚、办婚礼、娶亲、嫁女儿',
+    '纳采':       '🎁 男方送聘礼到女方家（订婚的正式一步）',
+    '问名':       '📛 古代合八字、问对方姓名生日（合婚流程）',
+    '沐剃':       '💇 洗头、剃头、剪头发、做发型',
+    '除服':       '⚰️ 脱去丧服、守孝结束、办解孝仪式',
+    '疗病':       '🏥 治病、看医生、做治疗、手术',
+    '就医':       '🩺 去医院、看门诊、找专家挂号',
+    '解除':       '🧹 去掉不好的东西、辞掉旧工作、解除合同、大扫除去霉运',
+    '扫舍':       '🧹 家里大扫除、清理东西、扔垃圾、打扫卫生',
+    '整手足甲':   '💅 剪指甲、剪手脚指甲、做美甲、修脚',
+    '求医治病':   '💊 求医问药、看中医抓药、去医院治病',
+    '破屋坏垣':   '🔨 拆房子、拆墙、砸旧装修、搞破坏性装修',
+    '沐浴':       '🛁 洗澡、泡澡、做 SPA、清洁身体',
+    '剃头':       '💈 剪头发、理发、烫头、剃光头',
+    '扫除':       '🧹 大扫除、搞卫生、清理杂物',
+    '纳畜':       '🐱 买宠物、养宠物、买家禽家畜、领养猫狗',
+    '牧养':       '🐄 放牧、养牛羊、养殖业相关',
+    '纳财':       '💰 进钱、收账、领工资、收租、投资入账',
+    '开市':       '🏪 开业、开张、新公司第一天营业、商店开门',
+    '立券':       '📄 签合同、签协议、立字据、签约、买股票开仓',
+    '交易':       '🤝 买卖、做生意、成交、买贵重物品',
+    '订货':       '📦 下订单、订货、打定金、预售',
+    '收债':       '🧾 催债、讨债、要账、收别人欠的钱',
+    '进人口':     '👪 生小孩、领养孩子、接新人回家、雇保姆/月嫂',
+    '修造':       '🏗️ 装修房子、修房子、盖房子、搞建造',
+    '动土':       '⛏️ 打地基、挖坑、开工、土建施工、装修动工',
+    '平治道涂':   '🛣️ 修路、铺路、平整路面、搞市政道路',
+    '装修':       '🔨 房屋装修、翻新、刷墙、软装硬装',
+    '修饰垣墙':   '🧱 修墙、刷墙、补外墙、围墙维护',
+    '涂泥':       '🪣 抹墙泥、刷水泥、抹灰',
+    '置产':       '🏠 买房、买地、买商铺、买固定资产、投资房产',
+    '买田':       '🌾 买田地、买地皮、买农业用地',
+    '平路':       '🚧 修路、铺平道路、路面养护',
+    '安床':       '🛏️ 买新床、安装床、挪床、铺床、放床垫',
+    '安置':       '📦 搬家入住、放家具、安置东西、安家',
+    '安家':       '🏡 入住新家、搬新家、安顿家庭、装大门',
+    '起基':       '🧱 打地基、建筑开工奠基、挖坑',
+    '定磉':       '⚒️ 放柱子底下的石墩（房屋建筑立顶梁柱的仪式）',
+    '开柱眼':     '🪵 给柱子打眼、木结构施工、立前的准备',
+    '上梁':       '🏠 盖房子上大梁（封顶/上主梁，古代大喜事要放鞭炮）',
+    '竖柱':       '🏗️ 立柱子、安装立柱、立顶梁柱',
+    '盖屋':       '🏠 盖房顶、封顶、盖屋顶、做屋面',
+    '合寿木':     '⚰️ 做棺材（给长辈准备后事棺材/骨灰盒）',
+    '入学':       '🎒 开学、上学第一天、入学仪式、去学校报到',
+    '赴任':       '💼 去新岗位上任、第一天上班、走马上任',
+    '捕捉':       '🪤 抓害虫、打老鼠、抓小偷、抓坏人、捕猎',
+    '畋猎':       '🦌 打猎、上山打猎、钓鱼抓野生动物',
+    '结网':       '🕸️ 织渔网、做网、安纱窗、装防护网、装网线',
+    '取渔':       '🎣 钓鱼、捕鱼、抓海鲜、下海打鱼',
+    '造畜稠':     '🏚️ 做牲口棚、搭狗窝猫窝、建宠物笼、建鸡舍',
+    '修坟':       '🪦 修祖坟、修墓碑、墓地整修、补祖坟',
+    '安葬':       '⚰️ 下葬、办丧事、入土为安、埋棺材/骨灰盒',
+    '塞穴':       '🕳️ 堵洞、填坑、堵鼠洞、填蚂蚁窝、填地基坑',
+    '断蚁':       '🐜 灭蚂蚁、灭白蚁、除虫、害虫防治',
+    '执捉':       '✋ 抓东西、逮人、抓宠物、擒拿格斗、捉奸',
+    '防盗':       '🔒 装防盗锁、装监控、做防盗措施、换锁',
+    '破煞':       '💥 去晦气、化解凶神、做法事除煞、打小人',
+    '拆除':       '🏚️ 拆房、拆旧、拆装修、拆违建',
+    '破坏':       '💣 拆东西、破坏性工程、砸墙拆除',
+    '打官司':     '⚖️ 起诉、应诉、出庭、走诉讼程序',
+    '诉讼':       '⚖️ 同上，打官司、法院起诉、走法律程序',
+    '登高行船':   '⛵ 不建议爬高和坐船，爬山/坐渡轮/高空作业要小心',
+    '乘船渡水':   '🚢 坐船、过河、坐轮渡、过水路',
+    '谨慎行事':   '⚠️ 凡事谨慎、别冲动决策、不做冒险的事',
+    '安静修养':   '🧘 宜休息、静养、睡觉、别操劳、慢节奏',
+    '开仓':       '🏪 开市、开门做生意、打开仓库出货、开盘',
+    '出货财':     '📤 发货、出货、卖东西、卖库存、清仓',
+    '见贵':       '🤵 见贵人、见长辈、见大人物、拜见重要客户',
+    '入宅':       '🚪 搬家进新房、乔迁入伙、搬进新家（火盘仪式）',
+    '移徙':       '🚚 搬家、搬迁、搬公司、搬住所',
+    '求官':       '🎖️ 求升职、求提拔、考公考编、找关系升官',
+    '上任':       '👔 新官上任、第一天到新职位、就职',
+    '藏宝':       '🗝️ 存贵重物品、放保险柜、开保险箱、藏值钱东西',
+    '囤货':       '📦 进货囤仓库、采购库存、备货',
+    '买车':       '🚗 提新车、买汽车、交车、过户车',
+    '买物':       '🛒 买大件东西、购物消费、购物',
+    '筑堤防':     '🧱 修堤坝、做防水、修地基、搞抗洪相关',
+    '修造仓库':   '🏚️ 建仓库、建储藏室、修库房、建阁楼',
+    '立碑':       '🪦 立墓碑、立纪念碑、挂牌匾、立门头碑',
+    '安机械':     '⚙️ 装设备、装空调、装洗衣机、安装大型机械',
+    '造车器':     '🚗 提车、做车相关、买车（古代造车现在延伸）',
+    '闭储':       '🔒 关仓储存、封闭保存、封存东西、收藏',
+    '收藏':       '📦 收东西、收藏物品、存进仓库、收起来不碰',
+    '酝酿':       '🍶 酿酒、做酱、做泡菜、发酵类食品制作',
+    '破土':       '⛏️ 动土（特指阴宅墓地挖坑）、挖坟墓、破土动工',
+    '开仓':       '🏪 开门营业、开仓库出货、股市开盘',
+    '伐木':       '🪓 砍树、锯木头、砍竹子、木伐作业',
+    '行丧':       '🕯️ 办丧事、出殡、送葬、走丧礼流程',
+    '词讼':       '⚖️ 打官司、起诉、走法律诉讼',
+    '作灶':       '🍳 安灶台、打新灶、修厨房、装灶台/集成灶',
+    '出师':       '⚔️ 出兵打仗（延伸：做大事启动、开项目）',
+    '打仗':       '💥 开战、打群架、冲突对抗（大事不宜）',
+    '行船':       '⛴️ 开船、坐船、跑船运、过水路',
+    '大兴土木':   '🏗️ 搞大工程、搞大装修、大拆大建、大规模施工',
+    '合寿木（部分情况）': '⚰️ 做棺材（具体看当天细节，一般'成'日宜）',
+    '开张':       '🎉 新店开业、开张营业、剪彩仪式',
+    '诸事不宜':   '⛔ 这一天最好啥大事都别干，适合躺平休息'
+  },
+
+  // ===== 彭祖百忌 · 天干 =====
+  pengZuTG: {
+    '甲不开仓财物耗散': '【白话】甲日这天别打开仓库往外发货、别大笔花钱，否则钱像撒沙子一样很快没了。简单理解：别大出血，别做大额支出。',
+    '乙不栽植千株不长': '【白话】乙日别栽树别种花种庄稼，就算种一千棵也活不了、长不大。简单理解：不搞园艺/种植相关。',
+    '丙不修灶必见灾殃': '【白话】丙日不要修灶台、换厨房、修天然气灶，否则容易出事故（火灾/漏气）。简单理解：别碰灶台和厨房维修。',
+    '丁不剃头主生疮疥': '【白话】丁日别剪头发别剃头，剪了容易长痘痘、皮肤过敏、长癣。简单理解：这天不剪头发，尤其别去理发店。',
+    '戊不受田土主不祥': '【白话】戊日不要买田地、买房产、签土地合同，会不吉利。简单理解：别买房、别买地、别签租房/买房合同。',
+    '己不破券二比并亡': '【白话】己日别签合同、别撕合同、别立字据、别销毁凭证，否则两方都倒霉。简单理解：不签约、不毁约、不借钱不打借条。',
+    '庚不经络织机虚张': '【白话】庚日别缝衣服、别做裁缝、别开机器搞纺织。延伸：别在这天做精密的手工活/开精密设备。简单理解：别做缝补、修东西、维修这类。',
+    '辛不合酱主人不尝': '【白话】辛日别做酱料、腌菜、泡菜、酿酒发酵，做出来也不好吃会浪费。简单理解：不做饭菜腌制发酵相关。',
+    '壬不水沥更防贼盗': '【白话】壬日别随意倒水、漏水不关，还要防小偷。延伸：这天要管好现金和贵重物品。简单理解：关好门窗、不随便撒钱、防盗。',
+    '癸不词讼理弱敌强': '【白话】癸日别打官司别起诉，你会理由不足、打不过对方。简单理解：这天不吵架、不告状、不撕破脸。'
+  },
+
+  // ===== 彭祖百忌 · 地支 =====
+  pengZuDZ: {
+    '子不问卜自惹祸殃': '【白话】子时（23点~凌晨1点）别算命、别占卜、别打卦问事，会越问越乱，自己招来霉运。简单理解：子时不问事不算命。',
+    '丑不冠带主不还乡': '【白话】丑日（生肖牛日）别穿新衣、别带首饰、别正式打扮穿戴，穿了新衣后可能回不了家（古代指出门遇凶险）。简单理解：不穿新衣服、不买新首饰佩戴。',
+    '寅不祭祀神祇不享': '【白话】寅日（虎日）别去寺庙烧香、别祭祀祭祖，神仙和祖宗都不领你的情。简单理解：不去寺庙、不烧香不上供。',
+    '卯不穿井泉水不香': '【白话】卯日（兔日）别打井、别钻深井、别修水管。打出来的水味道不好。简单理解：不修水管、不装净水器、不打深水井。',
+    '辰不哭泣必主重丧': '【白话】辰日（龙日）别哭泣、别伤心、别看悲情电影。大哭会引来更大的丧事。简单理解：这天要开心、不要哭不要emo。',
+    '巳不远行财物伏藏': '【白话】巳日（蛇日）别出远门、别出市别出省，会丢钱丢行李丢贵重物品。简单理解：不远行、不携带大额现金出门。',
+    '午不苫盖屋主更张': '【白话】午日（马日）别盖屋顶、别搭雨棚、别装遮阳棚。装了之后房子会经常换主人（家宅不安）。简单理解：这天不搞封顶、盖屋、搭帐篷工程。',
+    '未不服药水气必伤': '【白话】未日（羊日）别乱吃药、别乱喝保健品、别打针、别去医院开药吃了容易过敏或出问题。简单理解：不新开药物、不盲目保健。',
+    '申不安床鬼祟入房': '【白话】申日（猴日）别买新床、别挪床、别安装床架，否则招邪祟。简单理解：这天别换床、别挪动床位、别装床。',
+    '酉不会客醉卧癫狂': '【白话】酉日（鸡日）别请客、别去聚会、别喝酒聚餐，容易喝醉酒发疯出丑。简单理解：不赴宴、不喝大酒、不狂欢。',
+    '戌不吃犬作怪上床': '【白话】戌日（狗日）别吃狗肉，吃了会有邪祟上床（古代说法，延伸：别吃奇怪的野味狗肉）。简单理解：别吃狗肉，爱护狗狗。',
+    '亥不嫁娶不利新郎': '【白话】亥日（猪日）别结婚办婚礼，对新郎尤其不利。简单理解：这天不结婚、不订婚、不办婚礼酒席。'
+  },
+
+  // ===== 专业术语大词典 =====
+  term: {
+    '年柱':  '📖 你出生那年的"天干+地支"，比如你是1999己卯年，己卯就是你的年柱。代表你整体命盘的底色、家庭长辈运。',
+    '月柱':  '📖 你出生那月的"天干+地支"，代表你的事业、兄弟姐妹、30岁前的运势。',
+    '日柱':  '📖 今天的"天干+地支"（黄历最核心的一条）。在八字里，日柱的天干=你自己，代表你当日的能量状态。',
+    '建除':  '📖 建除十二神：古代选日子的12个标签（建/除/满/平/定/执/破/危/成/收/开/闭）。每12天循环一次，今天轮到哪个字，宜忌就按这个字算。简单理解：日子的"心情"标签。',
+    '28宿':  '📖 28星宿：古代把天上星星分成28组，像中国的24节气。每天对应一个星宿，有吉有凶。简单理解：天上星座值班的是谁。',
+    '纳音':  '📖 纳音五行：在"金木水火土"之上再加一层细化描述（比如"海中金""炉中火"），比单纯五行更形象。简单理解：五行的"性格说明"。',
+    '日主':  '📖 日主=今天天干那个字代表的人/事。比如今天"甲"日，甲属木，日主就是木。算命时"日主"通常代指你本人在这天的五行。',
+    '六合':  '📖 六合：两个生肖最合得来，像最好的朋友。合作、谈事、交友如果遇到六合生肖，成功率翻倍。属兔（卯）的六合是狗（戌）。',
+    '三合':  '📖 三合：三个生肖组成黄金铁三角，像稳固的团队。做事遇到三合生肖的人帮忙，会特别顺。属兔三合：猪+兔+羊。',
+    '六冲':  '📖 六冲：两个生肖互相冲撞，最不对付。跟六冲生肖一起容易吵架、失误、出问题。属兔六冲：鸡（酉），酉卯冲。',
+    '相害':  '📖 相害：暗中受伤、被坑、背后小人。不一定明面吵架，但容易吃亏。属兔相害：龙（辰）。',
+    '相刑':  '📖 相刑：互相折腾、内耗、纠结、法律纠纷。做事容易卡壳出问题。属兔相刑：自己（卯）+ 鼠（子）。',
+    '冲':    '📖 冲=犯冲：今天这个生肖的人容易不顺、出差错、犯小人。大事别选冲自己的日子办。',
+    '煞':    '📖 煞=凶神方位：今天坏运气集中在哪个方向。比如"煞南"就别往南出门、别坐南向北、别在南边搞大事。',
+    '煞方':  '📖 凶神在哪一边。煞东=东边不顺；煞南=南边不顺；煞西=西边不顺；煞北=北边不顺。简单理解：出门办事避开这个方向。',
+    '财神':  '📖 今天财神爷在哪个位置。面向这个方向坐，打牌、做生意、谈钱容易成。（麻将页有详细方位）',
+    '喜神':  '📖 今天喜神在哪个方向。约会、表白、面试、见人面向这个方向，容易讨喜。',
+    '福神':  '📖 今天福气在哪个方向。面向这个方向能蹭好运、遇贵人。',
+    '贵神':  '📖 今天贵人在哪。求人办事、面试、见客户面向这个方向，更容易得到帮助。',
+    '吉神方位':'📖 喜神/财神/福神/贵神这4个好神仙的位置，具体去麻将页看详细图解。',
+    '金·肺·大肠':'📖 五行"金"对应人的肺和大肠。今日金旺/金弱时，容易在这两个器官出状况。建议：少吸烟、多喝水、注意大便通畅。',
+    '木·肝·胆':  '📖 五行"木"对应肝和胆。今日木旺/木弱：别熬夜、少喝酒、少吃油腻，肝胆更容易出问题。',
+    '水·肾·膀胱':'📖 五行"水"对应肾和膀胱。今日水旺/水弱：多喝水、别憋尿、别太操劳房事，养肾。',
+    '火·心·小肠':'📖 五行"火"对应心和小肠。今日火旺/火弱：别大喜大悲、少剧烈运动、注意心脏和消化。',
+    '土·脾·胃':  '📖 五行"土"对应脾和胃。今日土旺/土弱：饮食清淡、别暴饮暴食、少冰饮，养胃。',
+    '青龙':   '📖 黄道六神之首 · 大吉：主喜庆、升官、喜事。办事顺利、有贵人。',
+    '明堂':   '📖 黄道六神 · 大吉：主明亮、公开、文化。适合开会、演讲、见大人物。',
+    '金匮':   '📖 黄道六神 · 大吉：主金银财库。谈钱、签合同、领工资、收款最吉。',
+    '天德':   '📖 黄道六神 · 大贵：主贵人、化解灾祸。有再大的事也有人帮你摆平。',
+    '玉堂':   '📖 黄道六神 · 吉：主安家、住宅、婚姻。适合搬家、装修、约会、结婚。',
+    '司命':   '📖 黄道六神 · 吉：主长寿、神佛、长辈。适合见长辈、求神、做大事的祈福。',
+    '天刑':   '📖 黑道六神 · 凶：主刑罚、受伤、口舌。容易吵架、出小伤、打官司。',
+    '朱雀':   '📖 黑道六神 · 凶：主口舌、是非、小人。容易被人说闲话、朋友圈吵架、沟通误会。',
+    '白虎':   '📖 黑道六神 · 大凶：主血光、车祸、事故。尤其别开车、别登高、别做危险事。',
+    '天牢':   '📖 黑道六神 · 凶：主关押、束缚、卡住。办事容易被卡、被拘留、遇到瓶颈。',
+    '玄武':   '📖 黑道六神 · 凶：主偷盗、暧昧、小人。丢东西、被骗、暧昧对象搞事、暗中小人。',
+    '勾陈':   '📖 黑道六神 · 凶：主拖延、纠缠、官司。事情会拖很久、旧账翻出、纠纷难断。',
+    '黄道六神':'📖 6个好神仙（青龙·明堂·金匮·天德·玉堂·司命）。轮到他们值班的时辰=吉时，做大事选这些时辰。',
+    '黑道六神':'📖 6个凶神（天刑·朱雀·白虎·天牢·玄武·勾陈）。轮到他们值班的时辰=凶时，尽量不办大事。',
+    '属兔运势':'📖 根据你1999己卯年生（属兔）和今天的生肖做"冲合害刑"关系对比，得出来今天对你好不好。',
+    '与日支关系':'📖 属兔的"卯"和今天的日支（比如今天是戌日=狗）是六合、三合、六冲还是别的关系。决定今天你整体顺不顺。',
+    '节气':   '📖 24节气（立春/清明/立夏…），节气一变，黄历五行能量会大幅切换。'
+  },
+
+  // ===== 建除12字翻译 =====
+  jianChu: {
+    '建': '一切开始的日子 · 宜启动新事（上班、出差、做新项目开头）',
+    '除': '清除去旧的日子 · 宜打扫、治病、洗澡、剪头发、摆脱旧东西',
+    '满': '圆满丰收的日子 · 宜进钱、囤货、买东西、养宠物、收获',
+    '平': '平稳中庸的日子 · 宜修修补补、装修、铺路、不搞大动作',
+    '定': '定下来的日子 · 宜签合同、定计划、买床、安家、上任（但不宜交易）',
+    '执': '抓住不放的日子 · 宜抓人、抓捕猎物、修坟下葬、防盗（不宜开市）',
+    '破': '大破大立的日子 · 只宜破墙拆除、打官司、治病（诸事不宜，除了破坏性的事）',
+    '危': '危险的日子 · 要谨慎、小心、修养、不登高不坐船，安静度过',
+    '成': '万事成就的日子 · 最棒的日子！宜开市、结婚、搬家、签约、几乎啥都宜',
+    '收': '收获收回的日子 · 宜进账、收债、买车、囤货（但不宜出门搬家）',
+    '开': '开放开启的日子 · 宜开学、开市、开光、见贵、出行（但不宜丧葬）',
+    '闭': '关闭封闭的日子 · 宜建仓库、存东西、下葬、酝酿（不宜开业出行办事）'
+  },
+
+  // ===== 28宿吉凶翻译 =====
+  xiu28: {
+    '吉':'这个值日星宿是吉祥的，做事容易顺利',
+    '凶':'这个值日星宿是凶险的，做大事要小心，尽量不办大事',
+    '中':'这个值日星宿不吉不凶，平平无奇，正常做事就行'
+  }
+};
+
+// 给一个词查白话，找不到返回空
+function hlTip(word, type='yi_ji') {
+  const dict = HL_DICT[type] || {};
+  const val = dict[word];
+  if (!val) return '';
+  return `<span class="hl-tip" data-tip="${val.replace(/"/g,'&quot;')}">?</span>`;
+}
+function hlDesc(word, type='yi_ji') {
+  const dict = HL_DICT[type] || {};
+  const val = dict[word];
+  if (!val) return '';
+  return `<div class="hl-desc">🔎 ${val}</div>`;
+}
+// 模式切换：origin（原版）/ dual（双语）/ bailan（纯大白话）
+let HL_MODE = localStorage.getItem('hl_mode') || 'origin';
+function setHLMode(m) {
+  HL_MODE = m;
+  localStorage.setItem('hl_mode', m);
+  renderHuangliSection();
+}
+
 function renderHuangliSection() {
   const hl = calcHuangLi();
   const box = document.getElementById('huangliSectionGrid');
   if (!box) return;
   const wxEmoji = {'金':'🪙','木':'🌳','水':'💧','火':'🔥','土':'🟤'};
+  const mode = HL_MODE;
+  const outerClass = mode === 'origin' ? 'hl-mode-origin' : (mode === 'dual' ? 'hl-mode-dual' : 'hl-mode-bailan');
+
+  // 宜/忌标签渲染（每个标签+一个ⓘ，dual/bailan下加描述行）
+  const renderTags = (arr, cls='') => {
+    return arr.map(t => {
+      const tip = hlTip(t, 'yi_ji');
+      const desc = hlDesc(t, 'yi_ji');
+      const bailan = HL_DICT.yi_ji[t] ? `<span class="hl-bailan-text">（${HL_DICT.yi_ji[t].split(' ').slice(1).join(' ').split('，')[0]}）</span>` : '';
+      return `<span class="hl-tag ${cls}"><span class="hl-original-text">${t}</span>${bailan}${tip}</span>${desc}`;
+    }).join('');
+  };
+
+  // 彭祖百忌渲染：原版 + 白话
+  const renderPengZu = (key, text) => {
+    const dict = key.length === 1 ? HL_DICT.pengZuTG : HL_DICT.pengZuDZ;
+    const bl = dict[key + text] || '';
+    return `
+      <div class="hl-original"><b>【${key}】</b>${text}</div>
+      <div class="hl-desc">🔎 ${bl}</div>
+    `;
+  };
+
+  const switchHTML = `
+    <div class="hl-mode-switch" role="tablist" title="显示模式">
+      <button onclick="setHLMode('origin')" class="${mode==='origin'?'active':''}">原版</button>
+      <button onclick="setHLMode('dual')"   class="${mode==='dual'?'active':''}">双语</button>
+      <button onclick="setHLMode('bailan')" class="${mode==='bailan'?'active':''}">白话</button>
+    </div>
+  `;
+
   box.innerHTML = `
+  <div class="hl-section-grid-inner ${outerClass}">
     <!-- 左栏：基本信息 -->
     <div style="display:flex;flex-direction:column;gap:18px">
       <div class="hl-card">
-        <div class="hl-card-title">今日</div>
+        <div class="hl-card-title">
+          <div class="title-wrap">今日${hlTip('节气','term')}</div>
+          ${switchHTML}
+        </div>
         <div class="hl-big-date">
           <div class="hl-big-solar">${hl.solar.d}</div>
           <div class="hl-big-info">
             <div class="m">${hl.solar.y}年${hl.solar.m}月 · 星期${hl.solar.week}</div>
             <div class="d">${hl.lunar.monthCN}${hl.lunar.dayCN} · ${hl.yearGZ.sx}年</div>
-            <div class="l">${hl.yearGZ.tg}${hl.yearGZ.dz}年 · ${hl.monthGZ.tg}${hl.monthGZ.dz}月 · ${hl.dayGZ.tg}${hl.dayGZ.dz}日</div>
+            <div class="l hl-original">${hl.yearGZ.tg}${hl.yearGZ.dz}年 · ${hl.monthGZ.tg}${hl.monthGZ.dz}月 · ${hl.dayGZ.tg}${hl.dayGZ.dz}日</div>
+            <div class="hl-desc" style="margin-top:6px">📖 <b>${hl.yearGZ.tg}${hl.yearGZ.dz}</b>年=你属兔的己卯年，<b>${hl.monthGZ.tg}${hl.monthGZ.dz}</b>月=本月，<b>${hl.dayGZ.tg}${hl.dayGZ.dz}</b>日=今天。这3组就是今日八字盘。</div>
           </div>
           <div class="hl-lunar-stamp">
             <div class="top">${hl.yearGZ.tg}${hl.yearGZ.dz} ${hl.yearGZ.sx}</div>
@@ -6911,47 +7248,85 @@ function renderHuangliSection() {
             <div class="mon">${hl.lunar.monthCN}</div>
           </div>
         </div>
-        ${hl.solarTerm ? `<div style="padding:10px 14px;background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent);border-radius:var(--radius-sm);font-size:12.5px;color:#047857;font-weight:600">🌿 ${hl.solarTerm}</div>` : ''}
+        ${hl.solarTerm ? `<div style="padding:10px 14px;background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent);border-radius:var(--radius-sm);font-size:12.5px;color:#047857;font-weight:600">🌿 ${hl.solarTerm}${hlTip('节气','term')}</div>` : ''}
       </div>
 
       <div class="hl-card">
-        <div class="hl-card-title">干支 · 五行 · 星宿</div>
+        <div class="hl-card-title">
+          <div class="title-wrap">干支 · 五行 · 星宿 ${hlTip('年柱','term')}${hlTip('月柱','term')}${hlTip('日柱','term')}</div>
+        </div>
         <div class="hl-ganzhi-big">
-          <div class="hl-gz-b"><div class="lb">年柱</div><div class="vl">${hl.yearGZ.tg}${hl.yearGZ.dz}</div><div style="font-size:10px;color:var(--muted);margin-top:3px">${hl.wuXing.year.tg}${hl.wuXing.year.dz}</div></div>
-          <div class="hl-gz-b"><div class="lb">月柱</div><div class="vl">${hl.monthGZ.tg}${hl.monthGZ.dz}</div><div style="font-size:10px;color:var(--muted);margin-top:3px">${hl.wuXing.month.tg}${hl.wuXing.month.dz}</div></div>
-          <div class="hl-gz-b"><div class="lb">日柱</div><div class="vl" style="background:var(--accent-bg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${hl.dayGZ.tg}${hl.dayGZ.dz}</div><div style="font-size:10px;color:var(--muted);margin-top:3px">${hl.wuXing.day.tg}${hl.wuXing.day.dz} · ${hl.naYinDay}</div></div>
-          <div class="hl-gz-b"><div class="lb">建除</div><div class="vl">${hl.jianChu.name}日</div><div style="font-size:10px;color:var(--muted);margin-top:3px">${hl.xiu28.name}宿${hl.xiu28.吉凶}</div></div>
+          <div class="hl-gz-b">
+            <div class="lb">年柱 ${hlTip('年柱','term')}</div>
+            <div class="vl">${hl.yearGZ.tg}${hl.yearGZ.dz}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">${hl.wuXing.year.tg}${hl.wuXing.year.dz}</div>
+            <div class="hl-desc" style="font-size:10.5px;padding:6px 8px;margin-top:6px">1999己卯·你的本命年柱</div>
+          </div>
+          <div class="hl-gz-b">
+            <div class="lb">月柱 ${hlTip('月柱','term')}</div>
+            <div class="vl">${hl.monthGZ.tg}${hl.monthGZ.dz}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">${hl.wuXing.month.tg}${hl.wuXing.month.dz}</div>
+            <div class="hl-desc" style="font-size:10.5px;padding:6px 8px;margin-top:6px">本月能量·主管事业</div>
+          </div>
+          <div class="hl-gz-b">
+            <div class="lb">日柱 ${hlTip('日柱','term')}</div>
+            <div class="vl" style="background:var(--accent-bg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${hl.dayGZ.tg}${hl.dayGZ.dz}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">${hl.wuXing.day.tg}${hl.wuXing.day.dz} · ${hl.naYinDay}${hlTip('纳音','term')}</div>
+            <div class="hl-desc" style="font-size:10.5px;padding:6px 8px;margin-top:6px">今日核心·日主=${hl.dayGZ.tg}${hl.wuXing.day.tg}</div>
+          </div>
+          <div class="hl-gz-b">
+            <div class="lb">建除 ${hlTip('建除','term')}</div>
+            <div class="vl">${hl.jianChu.name}日</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">${hl.xiu28.name}宿${hl.xiu28.吉凶}${hlTip(hl.xiu28.吉凶,'xiu28')}${hlTip('28宿','term')}</div>
+            <div class="hl-desc" style="font-size:10.5px;padding:6px 8px;margin-top:6px">${HL_DICT.jianChu[hl.jianChu.name] || ''}</div>
+          </div>
         </div>
         <div class="hl-wuxing-card">
           <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px">今日五行能量</div>
-          <div style="font-size:11px;color:var(--muted)">天干 · 地支 · 纳音</div>
+          <div style="font-size:11px;color:var(--muted)">天干 · 地支 · 纳音${hlTip('纳音','term')}</div>
           <div class="hl-wuxing-grid">
-            <div class="hl-wx-item jin"><div class="e">${wxEmoji['金']}</div><div class="n">金</div><div class="s">肺·大肠</div></div>
-            <div class="hl-wx-item mu"><div class="e">${wxEmoji['木']}</div><div class="n">木</div><div class="s">肝·胆</div></div>
-            <div class="hl-wx-item shui"><div class="e">${wxEmoji['水']}</div><div class="n">水</div><div class="s">肾·膀胱</div></div>
-            <div class="hl-wx-item huo"><div class="e">${wxEmoji['火']}</div><div class="n">火</div><div class="s">心·小肠</div></div>
-            <div class="hl-wx-item tu"><div class="e">${wxEmoji['土']}</div><div class="n">土</div><div class="s">脾·胃</div></div>
+            <div class="hl-wx-item jin"><div class="e">${wxEmoji['金']}</div><div class="n">金${hlTip('金·肺·大肠','term')}</div><div class="s">肺·大肠</div></div>
+            <div class="hl-wx-item mu"><div class="e">${wxEmoji['木']}</div><div class="n">木${hlTip('木·肝·胆','term')}</div><div class="s">肝·胆</div></div>
+            <div class="hl-wx-item shui"><div class="e">${wxEmoji['水']}</div><div class="n">水${hlTip('水·肾·膀胱','term')}</div><div class="s">肾·膀胱</div></div>
+            <div class="hl-wx-item huo"><div class="e">${wxEmoji['火']}</div><div class="n">火${hlTip('火·心·小肠','term')}</div><div class="s">心·小肠</div></div>
+            <div class="hl-wx-item tu"><div class="e">${wxEmoji['土']}</div><div class="n">土${hlTip('土·脾·胃','term')}</div><div class="s">脾·胃</div></div>
           </div>
           <div style="margin-top:12px;padding:10px 12px;background:var(--rule-soft);border-radius:var(--radius-sm);font-size:11.5px;color:var(--ink-soft);line-height:1.6">
-            今日日主为 <b style="color:var(--ink)">${hl.dayGZ.tg}${hl.wuXing.day.tg}</b>，生于
-            <b>${hl.monthGZ.tg}${hl.monthGZ.dz}</b> 月，纳音 <b style="color:var(--accent)">${hl.naYinDay}</b>。
+            <span class="hl-original">今日日主为 <b style="color:var(--ink)">${hl.dayGZ.tg}${hl.wuXing.day.tg}</b>，生于
+            <b>${hl.monthGZ.tg}${hl.monthGZ.dz}</b> 月，纳音 <b style="color:var(--accent)">${hl.naYinDay}</b>。${hlTip('日主','term')}</span>
+            <div class="hl-desc">🔎 日主=今天最主打的五行能量（${hl.wuXing.day.tg}），在"${hl.monthGZ.tg}${hl.monthGZ.dz}"这个月份里生/克关系。纳音"${hl.naYinDay}"=更形象的五行描述，比如海中金=藏在海里的贵金。</div>
           </div>
         </div>
       </div>
 
       <div class="hl-card">
-        <div class="hl-card-title">🐇 属兔（己卯 1999）专属冲合</div>
+        <div class="hl-card-title">
+          <div class="title-wrap">🐇 属兔（己卯 1999）专属冲合 ${hlTip('属兔运势','term')}</div>
+        </div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px">
-          <div class="huangli-cs-card rabbit"><div class="t">今日运势</div><div class="v" style="color:${hl.tuZK.todayStatus[0].color}">${hl.tuZK.todayStatus[0].lv}</div></div>
-          <div class="huangli-cs-card"><div class="t">与日支关系</div><div class="v">${hl.tuZK.todayStatus[0].text.split('，')[0]}</div></div>
+          <div class="huangli-cs-card rabbit">
+            <div class="t">今日运势${hlTip('属兔运势','term')}</div>
+            <div class="v" style="color:${hl.tuZK.todayStatus[0].color}">${hl.tuZK.todayStatus[0].lv}</div>
+          </div>
+          <div class="huangli-cs-card">
+            <div class="t">与日支关系${hlTip('与日支关系','term')}</div>
+            <div class="v">${hl.tuZK.todayStatus[0].text.split('，')[0]}</div>
+          </div>
         </div>
         ${hl.tuZK.todayStatus.slice(1).map(s => `<div style="font-size:12px;color:${s.color};padding:4px 0">${s.lv} ${s.text}</div>`).join('')}
         <div class="hl-tuzhu-note">
           <div class="ttl">📖 属兔专属 · 今日参考</div>
           <div class="cnt">
-            <b>六合：</b>${hl.tuZK.he} · <b>三合：</b>亥猪 · 卯兔 · 未羊<br>
-            <b>六冲：</b>${hl.tuZK.chong} · <b>相害：</b>${hl.tuZK.hai} · <b>相刑：</b>${hl.tuZK.xing}<br>
+            <b>六合：</b>${hl.tuZK.he}${hlTip('六合','term')} · <b>三合：</b>亥猪 · 卯兔 · 未羊${hlTip('三合','term')}<br>
+            <b>六冲：</b>${hl.tuZK.chong}${hlTip('六冲','term')} · <b>相害：</b>${hl.tuZK.hai}${hlTip('相害','term')} · <b>相刑：</b>${hl.tuZK.xing}${hlTip('相刑','term')}<br>
             <b>建议：</b>${genRabbitAdvice(hl)}
+          </div>
+          <div class="hl-desc" style="margin-top:10px">
+            🔎 <b>白话总结：</b><br>
+            · 六合(${hl.tuZK.he})=今天最合的贵人属相，遇到这个属相的人要抓紧搭话<br>
+            · 三合(猪·兔·羊)=今天适合和这些属相合作<br>
+            · 六冲(${hl.tuZK.chong})=今天最容易起冲突的属相，尽量别一起做大事<br>
+            · 相害(${hl.tuZK.hai})=今天别得罪这个属相的人，暗中小人多
           </div>
         </div>
       </div>
@@ -6960,58 +7335,83 @@ function renderHuangliSection() {
     <!-- 右栏：宜忌+时辰+彭祖 -->
     <div style="display:flex;flex-direction:column;gap:18px">
       <div class="hl-card">
-        <div class="hl-card-title">宜 · 忌</div>
+        <div class="hl-card-title">
+          <div class="title-wrap">宜 · 忌 ${hlTip('建除','term')}</div>
+        </div>
         <div class="hl-yiji-big">
           <div class="hl-yiji-block yi">
             <div class="head">
               <div class="hl-yiji-circle">宜</div>
-              <div><div class="head-title">今日宜做</div><div class="head-sub">基于建除十二神 · ${hl.jianChu.name}日</div></div>
+              <div><div class="head-title">今日宜做</div><div class="head-sub">基于建除十二神 · ${hl.jianChu.name}日${hlTip('建除','term')}</div></div>
             </div>
-            <div class="hl-tags">${hl.yi.map(t=>`<span class="hl-tag">${t}</span>`).join('')}</div>
+            <div class="hl-tags">${renderTags(hl.yi)}</div>
           </div>
           <div class="hl-yiji-block ji" style="margin-top:4px">
             <div class="head">
               <div class="hl-yiji-circle">忌</div>
               <div><div class="head-title">今日忌做</div><div class="head-sub">彭祖百忌 + 建除综合</div></div>
             </div>
-            <div class="hl-tags">${hl.ji.map(t=>`<span class="hl-tag">${t}</span>`).join('')}</div>
+            <div class="hl-tags">${renderTags(hl.ji)}</div>
           </div>
         </div>
       </div>
 
       <div class="hl-card">
-        <div class="hl-card-title">彭祖百忌</div>
+        <div class="hl-card-title">
+          <div class="title-wrap">彭祖百忌 ${hlTip('彭祖百忌', 'term') || ''}<span class="hl-tip" data-tip="📖 彭祖=商朝老寿星。百忌=10天干+12地支共22条禁忌，每天按今日干支挑2条对应，千年流传的'日子禁忌手册'。简单理解：这天别做这2件事。">?</span></div>
+        </div>
         <div class="hl-pengzu">
-          <div><b>【${hl.dayGZ.tg}】</b>${hl.pengZu.tg}</div>
-          <div style="margin-top:8px"><b>【${hl.dayGZ.dz}】</b>${hl.pengZu.dz}</div>
+          ${renderPengZu(hl.dayGZ.tg, hl.pengZu.tg)}
+          <div style="height:4px"></div>
+          ${renderPengZu(hl.dayGZ.dz, hl.pengZu.dz)}
         </div>
       </div>
 
       <div class="hl-card">
-        <div class="hl-card-title">冲煞方位</div>
+        <div class="hl-card-title">
+          <div class="title-wrap">冲煞方位 ${hlTip('冲','term')}${hlTip('煞方','term')}</div>
+        </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
-          <div class="huangli-cs-card"><div class="t">冲</div><div class="v">${hl.chongSha.chongSX}（${hl.chongSha.chongDZ}）</div></div>
-          <div class="huangli-cs-card"><div class="t">煞</div><div class="v">煞${hl.chongSha.shaFang}</div></div>
-          <div class="huangli-cs-card"><div class="t">吉神方位</div><div class="v">喜神·财神（详询通书）</div></div>
+          <div class="huangli-cs-card">
+            <div class="t">冲${hlTip('冲','term')}</div>
+            <div class="v">${hl.chongSha.chongSX}（${hl.chongSha.chongDZ}）</div>
+            <div class="hl-desc" style="margin-top:8px">🔎 今天对属相"<b>${hl.chongSha.chongSX}</b>"的人最不顺，大事别选冲自己的日子。</div>
+          </div>
+          <div class="huangli-cs-card">
+            <div class="t">煞${hlTip('煞方','term')}</div>
+            <div class="v">煞${hl.chongSha.shaFang}</div>
+            <div class="hl-desc" style="margin-top:8px">🔎 今天坏运气在"<b>${hl.chongSha.shaFang}方</b>"。出门/办公座位/打牌尽量避开面向或去往这个方向。</div>
+          </div>
+          <div class="huangli-cs-card">
+            <div class="t">吉神方位${hlTip('吉神方位','term')}</div>
+            <div class="v">喜神·财神</div>
+            <div class="hl-desc" style="margin-top:8px">🔎 具体财神/喜神/福神/贵神位置去🀄<b>麻将运势</b>页看完整罗盘图解。</div>
+          </div>
         </div>
       </div>
 
       <div class="hl-card">
-        <div class="hl-card-title">十二时辰吉凶（今日 ${hl.dayGZ.tg}${hl.dayGZ.dz}日）</div>
+        <div class="hl-card-title">
+          <div class="title-wrap">十二时辰吉凶（今日 ${hl.dayGZ.tg}${hl.dayGZ.dz}日）${hlTip('黄道六神','term')}</div>
+        </div>
         <div class="hl-shichen-big">
-          ${hl.shichen.map(sc => `<div class="hl-shichen-item ${sc.吉凶}">
-            <div class="n">${sc.name}</div>
-            <div class="t">${sc.time}</div>
-            <div class="j">${sc.吉凶} · ${sc.hh.split('·')[1]}</div>
-            <div class="y">${sc.yi.slice(0,2).join('·')}</div>
-          </div>`).join('')}
+          ${hl.shichen.map(sc => {
+            const shenName = sc.hh.split('·')[1];
+            return `<div class="hl-shichen-item ${sc.吉凶}">
+              <div class="n">${sc.name}</div>
+              <div class="t">${sc.time}</div>
+              <div class="j">${sc.吉凶} · ${shenName}${hlTip(shenName,'term')}</div>
+              <div class="y">${sc.yi.slice(0,2).join('·')}</div>
+            </div>`;
+          }).join('')}
         </div>
         <div style="margin-top:14px;padding:10px 12px;background:var(--rule-soft);border-radius:var(--radius-sm);font-size:11px;color:var(--muted);line-height:1.6">
-          黄道六神：青龙·明堂·金匮·天德·玉堂·司命 为吉时 | 黑道六神：天刑·朱雀·白虎·天牢·玄武·勾陈 为凶时
+          <span class="hl-original-text">黄道六神${hlTip('黄道六神','term')}：青龙·明堂·金匮·天德·玉堂·司命 为吉时 | 黑道六神${hlTip('黑道六神','term')}：天刑·朱雀·白虎·天牢·玄武·勾陈 为凶时</span>
+          <div class="hl-desc">🔎 白话：选在【青龙/明堂/金匮】这几个时辰开会、谈事、签合同、约会，成功概率翻倍。尽量避开【白虎】时辰开车登高（最凶）。</div>
         </div>
       </div>
     </div>
-  `;
+  </div>`;
 }
 function genRabbitAdvice(hl) {
   const firstSt = hl.tuZK.todayStatus[0];
