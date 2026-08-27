@@ -4833,13 +4833,19 @@ function renderDashHero() {
     if (hText)  hText.textContent  = '点击查看今日运势详情';
     if (hStars) hStars.textContent = '';
   }
-  // —— 黄历宜忌 ——
+  // —— 黄历宜忌（仪表盘 mini 版 · 同步白话tooltip）——
   const yEl = document.getElementById('dhYi');
   const jEl = document.getElementById('dhJi');
   try {
     const hl = calcHuangLi(todayStr());
-    if (yEl) yEl.textContent = (hl.yi && hl.yi.length) ? hl.yi.slice(0, 6).join(' · ') : '诸事皆宜';
-    if (jEl) jEl.textContent = (hl.ji && hl.ji.length) ? hl.ji.slice(0, 6).join(' · ') : '诸事皆宜';
+    // 迷你版：每个词后面追加 hlTip ⓘ tooltip（如果有白话翻译）
+    const joinWithTips = (arr) => arr.slice(0, 6).map(t => {
+      const dict = (typeof HL_DICT !== 'undefined' && HL_DICT.yi_ji && HL_DICT.yi_ji[t]) || '';
+      const tip = dict ? `<span class="hl-tip" data-tip="${dict.replace(/"/g,'&quot;')}" style="width:13px;height:13px;font-size:9px;margin-left:2px;background:rgba(0,0,0,0.22)">?</span>` : '';
+      return `<span>${t}</span>${tip}`;
+    }).join(' · ');
+    if (yEl) yEl.innerHTML = (hl.yi && hl.yi.length) ? joinWithTips(hl.yi) : '诸事皆宜';
+    if (jEl) jEl.innerHTML = (hl.ji && hl.ji.length) ? joinWithTips(hl.ji) : '诸事皆宜';
   } catch(e) {
     if (yEl) yEl.textContent = '黄历加载中…';
     if (jEl) jEl.textContent = '黄历加载中…';
