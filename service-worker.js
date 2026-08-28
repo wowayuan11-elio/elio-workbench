@@ -1,5 +1,5 @@
 // elio工作台 Service Worker — 离线缓存核心
-const CACHE_NAME = 'elio-workbench-v4-huangli-v4';
+const CACHE_NAME = 'elio-workbench-v4-huangli-v5';
 const ASSETS = [
   './',
   './index.html',
