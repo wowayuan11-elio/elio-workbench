@@ -2419,17 +2419,17 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .shichen-item .sc-yi { font-size:10px; color:var(--ink-soft); margin-top:3px; line-height:1.4; }
 
 /* Section 专属（信息密度更高） */
-.hl-section-grid { display:grid; grid-template-columns: 1.1fr 1fr; gap:18px; }
-.hl-card { background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); border-radius:var(--radius-lg); box-shadow:var(--shadow-glass); padding:24px; border:1px solid var(--glass-border); }
-.hl-card-title { font-size:14px; font-weight:800; color:var(--ink); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.hl-section-grid { display:grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap:18px; }
+.hl-card { min-width:0; background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); border-radius:var(--radius-lg); box-shadow:var(--shadow-glass); padding:clamp(18px, 3vw, 24px); border:1px solid var(--glass-border); }
+.hl-card-title { font-size:14px; font-weight:800; color:var(--ink); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 10px; }
 .hl-card-title::before { content:''; width:3px; height:16px; border-radius:2px; background:linear-gradient(180deg,var(--accent),var(--rose)); }
-.hl-big-date { display:flex; gap:20px; align-items:center; padding:8px 0 18px; }
-.hl-big-solar { font-size:64px; font-weight:800; letter-spacing:-0.04em; line-height:1; background:linear-gradient(135deg,#c0392b,#e67e22); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.hl-big-info { flex:1; }
+.hl-big-date { display:grid; grid-template-columns:minmax(58px, auto) minmax(0, 1fr) minmax(88px, 108px); align-items:center; gap:clamp(12px, 2.2vw, 20px); padding:8px 0 18px; }
+.hl-big-solar { min-width:0; font-size:clamp(42px, 5vw, 64px); font-weight:800; letter-spacing:-0.04em; line-height:1; text-align:center; background:linear-gradient(135deg,#c0392b,#e67e22); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.hl-big-info { min-width:0; }
 .hl-big-info .m { font-size:14px; color:var(--ink-soft); font-weight:500; margin-bottom:4px; }
 .hl-big-info .d { font-size:22px; font-weight:700; color:var(--ink); margin-bottom:6px; }
-.hl-big-info .l { font-size:15px; color:var(--ink-soft); }
-.hl-lunar-stamp { width:110px; height:110px; border-radius:30px; background:linear-gradient(135deg,#8b0000,#c0392b); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; box-shadow:0 14px 34px rgba(139,0,0,0.3); }
+.hl-big-info .l { font-size:clamp(13px, 1.35vw, 15px); color:var(--ink-soft); overflow-wrap:anywhere; }
+.hl-lunar-stamp { min-width:0; width:100%; aspect-ratio:1; border-radius:30px; background:linear-gradient(135deg,#8b0000,#c0392b); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; box-shadow:0 14px 34px rgba(139,0,0,0.3); }
 .hl-lunar-stamp .top { font-size:11px; opacity:0.85; letter-spacing:0.1em; }
 .hl-lunar-stamp .day { font-size:30px; font-weight:800; line-height:1.1; margin-top:2px; }
 .hl-lunar-stamp .mon { font-size:12px; opacity:0.9; margin-top:4px; }
@@ -2478,7 +2478,7 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 
 /* ===== 黄历 · 白话翻译模式 ===== */
 .hl-mode-switch {
-  display:inline-flex; align-items:center; gap:4px;
+  display:inline-flex; align-items:center; gap:4px; max-width:100%;
   padding:4px; border-radius:999px;
   background:var(--surface-2); border:1px solid var(--rule);
   font-size:12px; font-weight:600;
@@ -2529,12 +2529,17 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .hl-mode-bailan .hl-original-text { display:none; }
 .hl-mode-bailan .hl-pengzu b { opacity:0.5; }
 
-.hl-card-title { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-.hl-card-title .title-wrap { display:flex; align-items:center; gap:6px; min-width:0; }
-.hl-section-grid-inner { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.hl-card-title .title-wrap { display:flex; align-items:center; gap:6px; min-width:0; flex:1 1 auto; }
+.hl-section-grid, .hl-section-grid-inner { display:grid; grid-template-columns:minmax(0, 1.08fr) minmax(0, 1fr); gap:18px; }
+.hl-section-grid > *, .hl-section-grid-inner > *, .hl-card > * { min-width:0; }
+.hl-ganzhi-big, .hl-shichen-big, .hl-wx-grid { min-width:0; }
+.hl-ganzhi-big > *, .hl-shichen-big > *, .hl-wx-grid > * { min-width:0; }
 
 @media (max-width: 768px) {
   .hl-section-grid-inner { grid-template-columns:1fr !important; }
+  .hl-section-grid { grid-template-columns:1fr !important; }
+  .hl-big-date { grid-template-columns:minmax(48px, auto) minmax(0, 1fr); }
+  .hl-lunar-stamp { grid-column:1 / -1; width:min(180px, 100%); margin:0 auto; }
   .hl-mode-switch { font-size:11px; }
   .hl-mode-switch button { padding:5px 9px; }
   .hl-tip::after { min-width:160px; font-size:11px; }
@@ -6464,6 +6469,26 @@ function isTabVisible() {
 }
 
 function init() {
+  // ==========【侧边栏导航事件委托】必须最先挂载，后续初始化失败也不影响点击 ==========
+  try {
+    document.addEventListener('click', function(e) {
+      const nav = e.target.closest('.nav-item, .mn-item, .more-item');
+      if (nav && nav.dataset.section) {
+        try { switchSection(nav.dataset.section); } catch(err) {}
+        // 移动端：点完自动关"更多"面板
+        try {
+          const sheet = document.querySelector('.more-sheet');
+          const mask  = document.querySelector('.more-sheet-mask');
+          if (sheet) sheet.classList.remove('active');
+          if (mask)  mask.classList.remove('active');
+        } catch(err) {}
+      }
+    });
+  } catch(navError) {
+    console.error('[elio] 侧边栏导航委托挂载失败：', navError);
+  }
+
+  try {
   updateClock();
   // 时钟更新：每秒一次但仅在可见时更新秒针显示，每分钟强制一次
   let _lastMin = -1;
@@ -6536,11 +6561,18 @@ function init() {
       if (needHotRefresh && document.getElementById('hotGrid')) fetchHotData(false);
     }
   });
+  } catch(initError) {
+    console.error('[elio] 页面初始化部分失败（导航已可用）：', initError);
+  }
 }
 // init() 已移至整个 script 块最后一行（L6494附近），确保所有const/let/function已就位，避免 LUNAR_INFO / GAN_ZHI 等 TDZ 初始化顺序问题
 // 注册 Service Worker，启用 PWA 离线能力
 if ('serviceWorker' in navigator) {
+  if (location.protocol !== 'http:' && location.protocol !== 'https:') {
+    console.info('[elio] file:// 打开时跳过 Service Worker 注册');
+  } else {
   navigator.serviceWorker.register('service-worker.js').catch(() => {});
+  }
 }
 
 /* ============================================================
@@ -7069,7 +7101,7 @@ const HL_DICT = {
     '打仗':       '💥 开战、打群架、冲突对抗（大事不宜）',
     '行船':       '⛴️ 开船、坐船、跑船运、过水路',
     '大兴土木':   '🏗️ 搞大工程、搞大装修、大拆大建、大规模施工',
-    '合寿木（部分情况）': '⚰️ 做棺材（具体看当天细节，一般'成'日宜）',
+    '合寿木（部分情况）': '⚰️ 做棺材（具体看当天细节，一般“成”日宜）',
     '开张':       '🎉 新店开业、开张营业、剪彩仪式',
     '诸事不宜':   '⛔ 这一天最好啥大事都别干，适合躺平休息'
   },
@@ -8347,4 +8379,3 @@ init();
 </script>
 </body>
 </html>
-
