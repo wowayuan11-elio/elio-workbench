@@ -2419,7 +2419,7 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .shichen-item .sc-yi { font-size:10px; color:var(--ink-soft); margin-top:3px; line-height:1.4; }
 
 /* Section 专属（信息密度更高） */
-.hl-section-grid { display:block; }
+.hl-section-grid { display:grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap:18px; }
 .hl-card { min-width:0; background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); border-radius:var(--radius-lg); box-shadow:var(--shadow-glass); padding:clamp(18px, 3vw, 24px); border:1px solid var(--glass-border); }
 .hl-card-title { font-size:14px; font-weight:800; color:var(--ink); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 10px; }
 .hl-card-title::before { content:''; width:3px; height:16px; border-radius:2px; background:linear-gradient(180deg,var(--accent),var(--rose)); }
@@ -2528,16 +2528,16 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .hl-mode-dual .hl-bailan-text, .hl-mode-bailan .hl-bailan-text { display:inline; color:var(--accent); }
 .hl-mode-bailan .hl-original-text { display:none; }
 .hl-mode-bailan .hl-pengzu b { opacity:0.5; }
-.hl-mode-bailan .hl-tags .hl-desc { display:none !important; }
 
 .hl-card-title .title-wrap { display:flex; align-items:center; gap:6px; min-width:0; flex:1 1 auto; }
-.hl-section-grid-inner { display:grid; grid-template-columns:minmax(0, 1.08fr) minmax(0, 1fr); gap:18px; }
+.hl-section-grid, .hl-section-grid-inner { display:grid; grid-template-columns:minmax(0, 1.08fr) minmax(0, 1fr); gap:18px; }
 .hl-section-grid > *, .hl-section-grid-inner > *, .hl-card > * { min-width:0; }
 .hl-ganzhi-big, .hl-shichen-big, .hl-wx-grid { min-width:0; }
 .hl-ganzhi-big > *, .hl-shichen-big > *, .hl-wx-grid > * { min-width:0; }
 
 @media (max-width: 768px) {
   .hl-section-grid-inner { grid-template-columns:1fr !important; }
+  .hl-section-grid { grid-template-columns:1fr !important; }
   .hl-big-date { grid-template-columns:minmax(48px, auto) minmax(0, 1fr); }
   .hl-lunar-stamp { grid-column:1 / -1; width:min(180px, 100%); margin:0 auto; }
   .hl-mode-switch { font-size:11px; }
@@ -7240,9 +7240,8 @@ function renderHuangliSection() {
     return arr.map(t => {
       const tip = hlTip(t, 'yi_ji');
       const desc = hlDesc(t, 'yi_ji');
-      const bailanText = HL_DICT.yi_ji[t] ? HL_DICT.yi_ji[t].split(' ').slice(1).join(' ').split('，')[0] : '';
-      const bailan = bailanText ? `<span class="hl-bailan-text">${mode === 'bailan' ? bailanText : `（${bailanText}）`}</span>` : '';
-      return `<span class="hl-tag ${cls}"><span class="hl-original-text">${t}</span>${bailan}${tip}</span>${mode === 'bailan' ? '' : desc}`;
+      const bailan = HL_DICT.yi_ji[t] ? `<span class="hl-bailan-text">（${HL_DICT.yi_ji[t].split(' ').slice(1).join(' ').split('，')[0]}）</span>` : '';
+      return `<span class="hl-tag ${cls}"><span class="hl-original-text">${t}</span>${bailan}${tip}</span>${desc}`;
     }).join('');
   };
 

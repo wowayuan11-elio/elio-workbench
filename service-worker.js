@@ -1,5 +1,5 @@
 // elio工作台 Service Worker — 离线缓存核心
-const CACHE_NAME = 'elio-workbench-v4-huangli-v6';
+const CACHE_NAME = 'elio-workbench-v4-huangli-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -28,20 +28,6 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   // 只处理 GET 请求
   if (e.request.method !== 'GET') return;
-
-  // 首页始终网络优先：发布新版后普通刷新即可更新，不用强刷
-  if (e.request.mode === 'navigate' || new URL(e.request.url).pathname.endsWith('/index.html')) {
-    e.respondWith(
-      fetch(e.request).then(response => {
-        if (response && response.status === 200 && e.request.url.startsWith(self.location.origin)) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-        }
-        return response;
-      }).catch(() => caches.match(e.request).then(cached => cached || caches.match('./index.html')))
-    );
-    return;
-  }
 
   e.respondWith(
     caches.match(e.request).then(cached => {
