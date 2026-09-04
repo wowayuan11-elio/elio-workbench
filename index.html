@@ -181,11 +181,11 @@ body[data-aes-motion="1.4"]   { --aes-mot: 1.4; }
 /* ========== Variance → 光斑折射联动：越大越狂野 ==========
    默认光斑 float 22/28/34s，通过 --aes-var 乘
 */
-body[data-aes-variance="0.5"] .aurora-glow { animation-duration: 32s, 40s, 48s !important; opacity: 0.4 !important; filter: blur(60px) !important; }
-body[data-aes-variance="1.5"] .aurora-glow { animation-duration: 14s, 18s, 22s !important; opacity: 0.85 !important; filter: blur(110px) !important; }
+body[data-aes-variance="0.5"] .aurora-glow { animation-duration: 32s, 40s, 48s !important; opacity: 0.35 !important; filter: blur(50px) !important; }
+body[data-aes-variance="1.5"] .aurora-glow { animation-duration: 16s, 20s, 24s !important; opacity: 0.55 !important; filter: blur(70px) !important; }
 
-/* widget 错落 margin-top：默认 0/6/12px，随 variance 狂野化 */
-.widget:nth-child(3n) { margin-top: calc(12px * var(--aes-var)); }
+/* widget 错落 margin-top（已移到 3b 微交互区段：L3383，只对 dashboard widget 生效，排除黄历 hl-section-grid 内部）*/
+/* 旧规则已删除：避免 variance 狂野档把黄道吉日信息列挤变形 */
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html {
@@ -3324,12 +3324,19 @@ body.theme-night .hl-tag.ji { background: rgba(251, 113, 133, 0.12); color: #FDA
 }
 .bounce-in { animation: bounce-in 520ms cubic-bezier(.22,1,.36,1) both; }
 
-/* 3. 页面切换缩小放大（section 过渡） */
+/* 3. 页面切换缩小放大（section 过渡）
+   —— ⚠️ 2026-09-04 紧急修复：删掉 fill-mode: both
+   之前 both 会把 0% {scale(0.97)} 在动画前填充，若 Motion 旋钮拉长时长 / 切换页面时动画打断未触发 animationend，
+   会让 section 永久停留在 scale(0.97)，看起来就像"被压缩烂了"。
+   现在改为 forwards（只保留最终状态）+ 关键帧 0% 不再缩 scale，只走 opacity + blur，避免视觉"压扁"感。
+*/
 @keyframes section-pop {
-  0%   { transform: scale(0.97); opacity: 0; filter: blur(3px); }
-  100% { transform: scale(1); opacity: 1; filter: blur(0); }
+  0%   { opacity: 0; filter: blur(4px); transform: translateY(6px); }
+  100% { opacity: 1; filter: blur(0);   transform: translateY(0); }
 }
-.section { animation: section-pop 320ms cubic-bezier(.22,1,.36,1) both; }
+.section { animation: section-pop 320ms cubic-bezier(.22,1,.36,1) forwards; opacity: 0; }
+/* 防止重复渲染时动画失效 */
+.section[style*="display: none"] { animation: none; opacity: 0; }
 
 /* 4. Shine sweep 光扫：按钮 hover 光扫过 */
 .btn-primary, .pomo-main-btn, .neumo-btn {
@@ -3346,15 +3353,35 @@ body.theme-night .hl-tag.ji { background: rgba(251, 113, 133, 0.12); color: #FDA
 }
 .btn-primary:hover::before, .neumo-btn:hover::before { left: 130%; }
 
-/* 5. hl-tag 软糖呼吸 */
+/* 5. hl-tag 软糖呼吸
+   —— ⚠️ 2026-09-04 紧急修复：之前用 transform:scale(1.03)
+   1) scale 会让 flex 父容器重新计算宽高，标签布局被挤换行，视觉"一坨变形"。
+   2) scale(1.08) hover 会把标签撑到父容器外，加上之前的 flex-shrink:0 被动画覆盖，造成"压缩感"。
+   改为纯 box-shadow + 边框 opacity 呼吸，不改变元素物理尺寸。
+*/
 @keyframes candy-breath {
-  0%, 100% { transform: scale(1); box-shadow: 0 2px 4px rgba(20,10,60,0.05); }
-  50%      { transform: scale(1.03); box-shadow: 0 4px 10px rgba(20,10,60,0.08); }
+  0%, 100% { box-shadow: 0 2px 4px rgba(20,10,60,0.05), 0 0 0 0 rgba(93,63,211,0); }
+  50%      { box-shadow: 0 4px 10px rgba(20,10,60,0.08), 0 0 0 2px rgba(93,63,211,0.06); }
 }
-.hl-tag { animation: candy-breath 3.5s ease-in-out infinite; }
-.hl-tag:nth-child(3n) { animation-delay: -1.2s; }
+.hl-tag {
+  animation: candy-breath 3.5s ease-in-out infinite;
+  /* 任何情况下保证标签尺寸不变：禁用所有 transform（之前 3b 覆盖的 scale 全部取消） */
+  transform: none !important;
+}
+.hl-tag:nth-child(3n)   { animation-delay: -1.2s; }
 .hl-tag:nth-child(3n+1) { animation-delay: -2.3s; }
-.hl-tag:hover { animation-play-state: paused; transform: scale(1.08) !important; }
+.hl-tag:hover {
+  animation-play-state: paused;
+  box-shadow: 0 6px 14px rgba(20,10,60,0.1), 0 0 0 3px rgba(93,63,211,0.1) !important;
+}
+
+/* —— variance 狂野档的 widget 错落 margin-top：
+   之前 12px * 1.5 = 18px 错落太夸张，黄历/信息类卡片被挤成"压缩感"
+   降低系数：改为 (6px * var(--aes-var))，
+   且 EXCLUDE .hl-section-grid 内部 .card/.hl-card，防止黄道吉日内部大信息列被挤变形
+*/
+.widget:nth-child(3n):not(.hl-section-grid *) { margin-top: calc(6px * var(--aes-var)); }
+.card[data-protect="1"] { margin-top: 0 !important; transform: none !important; }
 
 /* 6. 任务勾选完成后的"庆祝"——勾选框周围 1 次光晕脉冲 */
 @keyframes halo-pop {
