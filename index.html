@@ -2586,10 +2586,15 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .hl-card { min-width:0; overflow-x:hidden; background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); border-radius:var(--radius-lg); box-shadow:var(--shadow-glass); padding:clamp(18px, 3vw, 24px); border:1px solid var(--glass-border); }
 .hl-card-title { font-size:14px; font-weight:800; color:var(--ink); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 10px; }
 .hl-card-title::before { content:''; width:3px; height:16px; border-radius:2px; background:linear-gradient(180deg,var(--accent),var(--rose)); }
-/* 日期区：三段式grid — 关键修复：中间信息列设最小宽度+取消单字换行（anywhere会把中文压成一字一行） */
+/* 日期区：三段式grid — 关键修复：中间信息列设最小宽度+取消单字换行（anywhere会把中文压成一字一行）
+   —— ⚠️ 2026-09-04 印章溢出修复：第三列印章改成 minmax(112px, 120px)，
+   同时 .hl-lunar-stamp 强制 max-width = 100%（不超过 grid cell），
+   之前印章 max-width:120px 而 grid 第三列 minmax(96px,112px)，
+   在窗口较窄时印章 120px > cell 112px → 右半部分溢出被卡片 hidden 切掉一半。
+*/
 .hl-big-date { 
   display:grid; 
-  grid-template-columns: minmax(70px, auto) minmax(260px, 1fr) minmax(96px, 112px); 
+  grid-template-columns: minmax(70px, auto) minmax(260px, 1fr) minmax(112px, 128px); 
   align-items:center; 
   gap:clamp(14px, 2.4vw, 24px); 
   padding:10px 0 22px;
@@ -2610,24 +2615,61 @@ body.dark .topbar { background: var(--glass-bg-strong); }
   overflow-wrap: normal;
   white-space: normal;
 }
-.hl-lunar-stamp { min-width:0; width:100%; max-width: 120px; aspect-ratio:1; border-radius:34px; background:linear-gradient(135deg,#8b0000,#c0392b); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; box-shadow:0 16px 40px rgba(139,0,0,0.32); }
-.hl-lunar-stamp .top { font-size:12px; opacity:0.9; letter-spacing:0.15em; }
-.hl-lunar-stamp .day { font-size:34px; font-weight:800; line-height:1.1; margin-top:2px; }
-.hl-lunar-stamp .mon { font-size:13px; opacity:0.92; margin-top:5px; }
+/* 🚨 2026-09-04 印章尺寸彻底锁死：不超过 grid cell 宽度 + 100% 适配 */
+.hl-lunar-stamp {
+  min-width:0;
+  width: 100% !important;
+  max-width: 100% !important;
+  aspect-ratio: 1;
+  border-radius: 28px;
+  background:linear-gradient(135deg,#8b0000,#c0392b);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:#fff; box-shadow:0 14px 32px rgba(139,0,0,0.28);
+  overflow:hidden; /* 防止内部字体撑破 */
+  padding: 6px 4px;
+  box-sizing:border-box;
+}
+.hl-lunar-stamp .top { font-size: clamp(11px, 1.1vw, 12px); opacity:0.9; letter-spacing:0.15em; }
+.hl-lunar-stamp .day { font-size: clamp(28px, 3.2vw, 36px); font-weight:800; line-height:1.1; margin-top:2px; }
+.hl-lunar-stamp .mon { font-size: clamp(12px, 1.2vw, 13px); opacity:0.92; margin-top:5px; }
 .hl-ganzhi-big { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:8px 0 4px; }
 .hl-gz-b { text-align:center; padding:12px 6px; background:var(--surface-2); border-radius:var(--radius-sm); }
 .hl-gz-b .lb { font-size:11px; color:var(--ink-soft); font-weight:600; letter-spacing:0.04em; }
 .hl-gz-b .vl { font-size:17px; font-weight:800; color:var(--ink); margin-top:4px; }
 .hl-yiji-big { display:flex; flex-direction:column; gap:20px; }
-.hl-yiji-block .head { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
-.hl-yiji-circle { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; font-weight:800; flex-shrink: 0; }
+.hl-yiji-block .head {
+  /* 🚨 2026-09-04 防"今日宜做"一字一行竖排：
+     - 强制 flex-direction: row（之前断点没覆盖时可能被继承成 column）
+     - 圆圈 flex-shrink:0，不会被挤
+     - 文字区 min-width:0，防止超父容器，但 line-break 用 normal 允许正常按词换行
+  */
+  display:flex; flex-direction:row !important; flex-wrap:nowrap;
+  align-items:center; justify-content:flex-start;
+  gap:10px; margin-bottom:14px;
+}
+.hl-yiji-block .head > div:nth-child(2) { flex: 1 1 auto; min-width:0; }
+.hl-yiji-circle { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; font-weight:800; flex-shrink: 0 !important; }
 .hl-yiji-block.yi .hl-yiji-circle { background:linear-gradient(135deg,#10b981,#059669); }
 .hl-yiji-block.ji .hl-yiji-circle { background:linear-gradient(135deg,#f43f5e,#be123c); }
-.hl-yiji-block .head-title { font-size:16px; font-weight:800; color:var(--ink); }
-.hl-yiji-block .head-sub { font-size:12.5px; color:var(--ink-soft); font-weight:500; }
+.hl-yiji-block .head-title {
+  font-size:16px; font-weight:800; color:var(--ink);
+  /* 🚨 保底：在极端窄容器下标题不要一字一行竖排（word-break break-all 时每个字换行） */
+  word-break: normal; overflow-wrap: anywhere; line-height: 1.35;
+}
+.hl-yiji-block .head-sub { font-size:12.5px; color:var(--ink-soft); font-weight:500; line-height:1.5; margin-top:2px; }
 /* 宜忌标签：不变形、统一高度、左对齐、整齐网格感 */
 .hl-tags { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-start; align-items:center; }
-.hl-tag { padding:9px 16px; border-radius:999px; font-size:13.5px; font-weight:600; flex-shrink:0; line-height:1.4; transition: all 0.2s; }
+.hl-tag {
+  padding:9px 16px; border-radius:999px; font-size:13.5px; font-weight:600;
+  flex-shrink: 0;      /* 🚨 不允许被 flex 父容器压缩（之前 window resize 时标签被压成扁条）*/
+  flex-grow: 0;
+  /* 🚨 2026-09-04 文字最低宽度保证 —— 防「（进钱、」变成单字竖条 */
+  min-width: fit-content; /* 不压缩到短于自身内容 */
+  max-width: 100%;
+  white-space: nowrap;
+  line-height:1.4;
+  transition: all 0.2s;
+}
 .hl-tag:hover { transform: translateY(-1px); }
 .hl-yiji-block.yi .hl-tag { background:rgba(16,185,129,0.10); color:#047857; border:1px solid rgba(16,185,129,0.22); }
 .hl-yiji-block.ji .hl-tag { background:rgba(244,63,94,0.09); color:#be123c; border:1px solid rgba(244,63,94,0.18); }
@@ -2713,28 +2755,53 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .hl-mode-bailan .hl-pengzu b { opacity:0.5; }
 
 .hl-card-title .title-wrap { display:flex; align-items:center; gap:6px; min-width:0; flex:1 1 auto; }
-/* 覆写层：严格保留minmax防撑爆 + 保证每个子元素有min-width */
-.hl-section-grid, .hl-section-grid-inner { display:grid; grid-template-columns:minmax(420px, 1.08fr) minmax(0, 1fr); gap:18px; }
-.hl-section-grid > *, .hl-section-grid-inner > *, .hl-card > * { min-width:0; }
-.hl-ganzhi-big, .hl-shichen-big, .hl-wx-grid { min-width:0; }
-.hl-ganzhi-big > *, .hl-shichen-big > *, .hl-wx-grid > * { min-width:0; }
 
+/* ==========================================================================
+   🚨 2026-09-04 黄历响应式大统一：彻底修复 PC「压缩烂了」
+   —— 之前写了 3 套重叠断点（960 / 860 / 768）互相打架：
+      ① 960 两栏 + 860 单栏 → 860~960 宽度（用户「小窗口 PC」常见）被后写的 860 压成单栏
+      ② 860 的 .hl-section-grid 没写 .hl-section-grid-inner → 外层单栏内层两栏错层
+      ③ 768 手机端 L2936 hl-big-date flex-direction:column → 但 .hl-big-date 是 grid，flex 无效，改成 grid-column span
+   现在整合成**唯一的 3 个断点**，所有 .hl-section-grid / .hl-section-grid-inner 都成对出现：
+   • > 960 px   (PC/大平板)   → 双栏 1.08fr / 1fr
+   • 769 – 960  (普通平板)    → 双栏 1fr / 1fr（空间稍小，两栏均等）
+   • ≤ 768 px   (手机)        → 单栏 1fr
+   ========================================================================== */
+
+/* — PC/大平板默认：基础 L2584 + L2717 已经是双栏。这里加强：保证每一层 grid 选择器成对出现 */
+.hl-section-grid,
+.hl-section-grid-inner {
+  display: grid;
+  grid-template-columns: minmax(420px, 1.08fr) minmax(0, 1fr);
+  gap: clamp(14px, 2vw, 20px);
+  /* 防止 Liquid Glass 的 contain/layout 撑爆布局 */
+  contain: layout style;
+}
+.hl-section-grid > *,
+.hl-section-grid-inner > *,
+.hl-card > * { min-width: 0; }
+.hl-ganzhi-big, .hl-shichen-big, .hl-wx-grid { min-width: 0; }
+.hl-ganzhi-big > *, .hl-shichen-big > *, .hl-wx-grid > * { min-width: 0; }
+
+/* — 平板（769–960 px）：统一成 1fr 1fr 等分双栏，不放纵左栏 */
 @media (max-width: 960px) {
-  /* 平板及以下：两栏卡片都给空间，防日期区挤压 */
-  .hl-section-grid-inner { grid-template-columns: minmax(360px, 1fr) minmax(0, 1fr) !important; gap: 14px; }
-  .hl-section-grid { grid-template-columns: minmax(360px, 1fr) minmax(0, 1fr) !important; gap: 14px; }
+  .hl-section-grid,
+  .hl-section-grid-inner {
+    grid-template-columns: minmax(340px, 1fr) minmax(300px, 1fr) !important;
+    gap: 14px;
+  }
   .hl-big-date { grid-template-columns: minmax(64px, auto) minmax(200px, 1fr) minmax(88px, 104px); gap:14px; }
   .hl-big-info { min-width: 200px; }
 }
 
+/* — 手机端（≤768px）：唯一的单栏断点，其他地方再也不许写 .hl-section-grid* {1fr} */
 @media (max-width: 768px) {
-  /* 手机端：全部单栏 */
-  .hl-section-grid-inner { grid-template-columns:1fr !important; gap: 14px; }
-  .hl-section-grid { grid-template-columns:1fr !important; gap: 14px; }
+  .hl-section-grid,
+  .hl-section-grid-inner { grid-template-columns: 1fr !important; gap: 14px; }
   /* 手机日期区：大数字+信息列一行，印章单独居中 */
-  .hl-big-date { 
-    grid-template-columns: minmax(56px, auto) minmax(0, 1fr); 
-    gap: 14px; 
+  .hl-big-date {
+    grid-template-columns: minmax(56px, auto) minmax(0, 1fr);
+    gap: 14px;
     align-items: center;
   }
   .hl-lunar-stamp { grid-column: 1 / -1; width: min(160px, 100%); max-width: 160px; margin: 8px auto 0; }
@@ -2925,15 +2992,22 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .hr-src-note { display:flex; align-items:center; gap:8px; margin-top:20px; padding:12px 16px; background:var(--rule-soft); border-radius:var(--radius-sm); font-size:11.5px; color:var(--muted); }
 .hr-src-note a { color:var(--accent); font-weight:600; }
 @keyframes fadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform:none; } }
+/* — 🚨 2026-09-04 紧急修复：860 px 断点只处理黄历内部的 grid（时辰、干支、五行），
+   绝对不能再碰 `.hl-section-grid / .hl-section-grid-inner` — 外层双栏/单栏的断点已
+   统一收在上面 L2717 的「PC >960 / 平板 769–960 / 手机 ≤768」三段式。
+   之前 L2929 写了 `.hl-section-grid { grid-template-columns:1fr }`，导致 860~960 宽度
+   （用户最常见的「小窗口 PC / 半屏模式」）被强压成单栏，右侧宜忌栏被挤爆成 150px 宽！
+*/
 @media (max-width: 860px) {
-  .hl-section-grid, .hr-sec-grid { grid-template-columns:1fr; }
+  .hr-sec-grid { grid-template-columns:1fr; }
   .hl-shichen-big { grid-template-columns:repeat(3,1fr); }
   .hl-ganzhi-big { grid-template-columns:repeat(2,1fr); }
   .hr-lucky-grid { grid-template-columns:repeat(2,1fr); }
   .hr-four-scores { grid-template-columns:1fr; }
   .hl-wuxing-grid { grid-template-columns:repeat(3,1fr); }
   .hr-prof-info { grid-template-columns:1fr; }
-  .hl-big-date { flex-direction:column; align-items:flex-start; }
+  /* 注：L2936 旧写的 .hl-big-date { flex-direction:column } 对 grid 元素无效，
+     手机端的日期区 2 列已经在 L2760 用 grid-template-columns 设置了，此处删除。*/
 }
 
 /* ========== 🫧 批次 2-2 · 新拟态轻量组件（番茄钟/习惯/滑条）
