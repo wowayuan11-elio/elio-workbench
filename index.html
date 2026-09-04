@@ -2580,8 +2580,8 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .shichen-item.xiong .sc-吉凶 { color:var(--rose); }
 .shichen-item .sc-yi { font-size:10px; color:var(--ink-soft); margin-top:3px; line-height:1.4; }
 
-/* Section 专属（信息密度更高） — 严格保留minmax(0,fr)防止卡片撑爆父容器 */
-.hl-section-grid { display:grid; grid-template-columns: minmax(420px, 1.08fr) minmax(0, 1fr); gap:18px; }
+/* Section 专属（信息密度更高） — 2026-09-05 根因修复：外层单栏，双栏在 inner 上 */
+.hl-section-grid { display:grid; grid-template-columns: 1fr; gap:18px; }
 .hl-section-grid > .hl-card:first-child { min-width: 0; max-width: 100%; }
 .hl-card { min-width:0; overflow-x:hidden; background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); border-radius:var(--radius-lg); box-shadow:var(--shadow-glass); padding:clamp(18px, 3vw, 24px); border:1px solid var(--glass-border); }
 .hl-card-title { font-size:14px; font-weight:800; color:var(--ink); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 10px; }
@@ -2615,17 +2615,22 @@ body.dark .topbar { background: var(--glass-bg-strong); }
   overflow-wrap: normal;
   white-space: normal;
 }
-/* 🚨 2026-09-04 印章尺寸彻底锁死：不超过 grid cell 宽度 + 100% 适配 */
+/* 🚨 2026-09-05 印章尺寸修复：
+   之前 width:100% 是相对父容器 .hl-big-date 宽度（607px）而非 grid cell（128px），
+   导致印章撑到 607px 溢出卡片。
+   正确做法：width:auto + justify-self:stretch，让 grid 自动填满 cell（112~128px）。
+*/
 .hl-lunar-stamp {
   min-width:0;
-  width: 100% !important;
-  max-width: 100% !important;
+  width: auto;
+  max-width: 100%;
+  justify-self: stretch;
   aspect-ratio: 1;
   border-radius: 28px;
   background:linear-gradient(135deg,#8b0000,#c0392b);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   color:#fff; box-shadow:0 14px 32px rgba(139,0,0,0.28);
-  overflow:hidden; /* 防止内部字体撑破 */
+  overflow:hidden;
   padding: 6px 4px;
   box-sizing:border-box;
 }
@@ -2768,13 +2773,22 @@ body.dark .topbar { background: var(--glass-bg-strong); }
    • ≤ 768 px   (手机)        → 单栏 1fr
    ========================================================================== */
 
-/* — PC/大平板默认：基础 L2584 + L2717 已经是双栏。这里加强：保证每一层 grid 选择器成对出现 */
-.hl-section-grid,
+/* — PC/大平板默认：⚠️ 2026-09-05 根因修复
+   .hl-section-grid 只有 1 个直接子元素 .hl-section-grid-inner，
+   所以外层必须是单栏 1fr（让 inner 占满全部宽度），
+   双栏只在 .hl-section-grid-inner 上实现，右栏保底 300px 防宜忌卡被压窄。
+   之前内外层都设双栏 → 外层第 2 列 579px 空着浪费，inner 只拿到 626px → 宜忌卡仅 188px。
+*/
+.hl-section-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(14px, 2vw, 20px);
+  contain: layout style;
+}
 .hl-section-grid-inner {
   display: grid;
-  grid-template-columns: minmax(420px, 1.08fr) minmax(0, 1fr);
+  grid-template-columns: minmax(380px, 1.15fr) minmax(300px, 1fr);
   gap: clamp(14px, 2vw, 20px);
-  /* 防止 Liquid Glass 的 contain/layout 撑爆布局 */
   contain: layout style;
 }
 .hl-section-grid > *,
@@ -2783,18 +2797,18 @@ body.dark .topbar { background: var(--glass-bg-strong); }
 .hl-ganzhi-big, .hl-shichen-big, .hl-wx-grid { min-width: 0; }
 .hl-ganzhi-big > *, .hl-shichen-big > *, .hl-wx-grid > * { min-width: 0; }
 
-/* — 平板（769–960 px）：统一成 1fr 1fr 等分双栏，不放纵左栏 */
+/* — 平板（769–960 px）：外层单栏，inner 双栏等分但各保最低 280px */
 @media (max-width: 960px) {
-  .hl-section-grid,
+  .hl-section-grid { grid-template-columns: 1fr !important; gap: 14px; }
   .hl-section-grid-inner {
-    grid-template-columns: minmax(340px, 1fr) minmax(300px, 1fr) !important;
+    grid-template-columns: minmax(300px, 1fr) minmax(280px, 1fr) !important;
     gap: 14px;
   }
   .hl-big-date { grid-template-columns: minmax(64px, auto) minmax(200px, 1fr) minmax(88px, 104px); gap:14px; }
   .hl-big-info { min-width: 200px; }
 }
 
-/* — 手机端（≤768px）：唯一的单栏断点，其他地方再也不许写 .hl-section-grid* {1fr} */
+/* — 手机端（≤768px）：全部单栏 */
 @media (max-width: 768px) {
   .hl-section-grid,
   .hl-section-grid-inner { grid-template-columns: 1fr !important; gap: 14px; }
