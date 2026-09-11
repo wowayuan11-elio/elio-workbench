@@ -4407,12 +4407,17 @@ body.focus-mode .focus-station {
           <span><i style="background:rgba(92,112,87,0.15)"></i>易孕期</span>
         </div>
       </div>
-      <div class="pd2-btn-row">
-        <button class="pd2-btn primary" onclick="pd2Add()">+ 记录今天来月经</button>
-        <button class="pd2-btn ghost" onclick="pd2CalDate=new Date();pd2RenderCal();pd2RenderHist()">回到当前</button>
-        <button class="pd2-btn ghost" style="flex:0 0 auto;padding:12px 16px" onclick="pd2DeleteAllCustom()" title="清空所有自定义记录">🗑</button>
+      <div style="margin-bottom:14px;padding:12px;background:var(--rule-soft);border-radius:10px">
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px">✏️ 手动添加记录</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="date" id="pd2InStart" style="padding:6px 10px;border:1px solid var(--rule);border-radius:6px;font-size:12px">
+          <span style="color:var(--muted);font-size:12px">至</span>
+          <input type="date" id="pd2InEnd" style="padding:6px 10px;border:1px solid var(--rule);border-radius:6px;font-size:12px">
+          <button class="pd2-btn primary" style="flex:0 0 auto;padding:8px 16px;margin-top:0" onclick="pd2ManualAdd()">添加</button>
+          <button class="pd2-btn ghost" style="flex:0 0 auto;padding:8px 16px;margin-top:0" onclick="pd2CalDate=new Date();pd2RenderCal();pd2RenderHist()">回到当前</button>
+        </div>
       </div>
-      <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px">💡 点日历上的日期可快速添加/删除（粉色=已记录，点一下就删）</div>
+      <div id="pd2CustomList"></div>
       <div class="pd2-hist-wrap">
         <div class="pd2-hist-head">
           <div class="pd2-hist-title">📋 历史记录</div>
@@ -9806,6 +9811,21 @@ const PD2_HISTORY = [
   {s:'2026-07-19',e:'2026-07-25'},{s:'2026-08-17',e:'2026-08-23'},
 ];
 let pd2Custom = DB.get('pd_custom', []);
+// 自动去重 + 清理误加的垃圾记录
+function pd2SanitizeCustom(){
+  if(!pd2Custom || !pd2Custom.length) return;
+  // 按开始日期去重，保留结束日期最长的那条
+  const map = new Map();
+  pd2Custom.forEach(r => {
+    if(!map.has(r.s) || (r.e > map.get(r.s).e)) map.set(r.s, r);
+  });
+  const cleaned = Array.from(map.values());
+  if(cleaned.length !== pd2Custom.length){
+    pd2Custom = cleaned.sort((a,b)=>a.s.localeCompare(b.s));
+    DB.set('pd_custom', pd2Custom);
+  }
+}
+pd2SanitizeCustom();
 let pd2CalDate = new Date(); pd2CalDate.setDate(1);
 let pd2Filter = 'all'; // all | year number
 
@@ -9990,56 +10010,71 @@ function pd2RenderHist(){
   }).join('');
 
   document.getElementById('pd2HistList').innerHTML = html || '<div style="color:var(--muted);font-size:12px;padding:20px;text-align:center">该年份暂无数据</div>';
+  pd2RenderCustomList();
 }
 
 function pd2SetFilter(y){ pd2Filter = y; pd2RenderHist(); }
-function pd2Shift(n){ pd2CalDate = new Date(pd2CalDate.getFullYear(), pd2CalDate.getMonth()+n, 1); pd2RenderCal(); }
-function pd2Add(){
-  const t=new Date(); pd2ToggleDay(pd2F(t));
+function pd2RenderCustomList(){
+  const el = document.getElementById('pd2CustomList');
+  if(!el) return;
+  if(!pd2Custom || !pd2Custom.length){
+    el.innerHTML = ''; return;
+  }
+  const sorted = [...pd2Custom].sort((a,b)=>b.s.localeCompare(a.s));
+  const rows = sorted.map((r,i)=>{
+    const realIdx = pd2Custom.findIndex(x => x.s === r.s && x.e === r.e);
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(232,93,117,0.06);border-radius:8px;margin-bottom:6px">
+      <div>
+        <div style="font-size:13px;font-weight:600">${r.s} ~ ${r.e}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">经期 ${pd2D(r.s,r.e)+1} 天 · 自定义记录</div>
+      </div>
+      <button style="padding:4px 10px;border:1px solid rgba(212,69,106,0.3);background:white;color:#d4456a;border-radius:6px;font-size:11px;cursor:pointer" onclick="pd2DeleteCustom(${realIdx})">删除</button>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div style="font-size:12px;font-weight:600;margin-bottom:8px">📝 自定义记录（${pd2Custom.length}条）</div>${rows}
+    <button onclick="pd2DeleteAllCustom()" style="font-size:11px;color:var(--muted);text-decoration:underline;padding:0;border:none;background:none;cursor:pointer;margin-top:4px">清空全部</button>`;
 }
-function pd2ToggleDay(fullDate){
-  // 检查是否在历史数据里
-  const HIST = PD2_HISTORY;
-  const t = pd2P(fullDate);
-  const tEnd = pd2A(t, 6);
-  const fullEnd = pd2F(tEnd);
-  
-  // 先看 custom 里有没有以这个日期开始的记录 —— 有就删
-  const ci = pd2Custom.findIndex(r => r.s === fullDate);
-  if(ci >= 0){
-    pd2Custom.splice(ci, 1); DB.set('pd_custom', pd2Custom);
-    showToast(`🗑 已删除 ${fullDate} 的经期记录`);
-    renderPeriodSection(); return;
-  }
-  
-  // 看 custom 里有没有结束日期是 fullEnd 的 —— 删
-  const ci2 = pd2Custom.findIndex(r => r.e === fullEnd);
-  if(ci2 >= 0){
-    pd2Custom.splice(ci2, 1); DB.set('pd_custom', pd2Custom);
-    showToast(`🗑 已删除 ${pd2Custom[ci2]?.s||fullDate} 的经期记录`);
-    renderPeriodSection(); return;
-  }
-  
-  // 历史数据不可删，但可以提示
-  const inHist = HIST.some(r => r.s === fullDate);
-  if(inHist){
-    showToast('📌 这是历史数据，不可删除（只能删自定义记录）');
-    return;
-  }
-  
-  // 新增记录
-  pd2Custom.push({s: fullDate, e: fullEnd});
+function pd2Shift(n){ pd2CalDate = new Date(pd2CalDate.getFullYear(), pd2CalDate.getMonth()+n, 1); pd2RenderCal(); }
+function pd2ManualAdd(){
+  const sEl = document.getElementById('pd2InStart');
+  const eEl = document.getElementById('pd2InEnd');
+  const s = sEl.value, e = eEl.value;
+  if(!s || !e){ showToast('请填写开始和结束日期'); return; }
+  if(s > e){ showToast('开始日期不能晚于结束日期'); return; }
+  // 去重
+  if(pd2Custom.some(r => r.s === s)){ showToast('这一天已经添加过了'); return; }
+  pd2Custom.push({s, e});
   DB.set('pd_custom', pd2Custom);
-  showToast(`🩸 已记录 ${fullDate} ~ ${fullEnd}（点日期可删除）`);
+  sEl.value = ''; eEl.value = '';
+  showToast(`✅ 已添加 ${s} ~ ${e}`);
   renderPeriodSection();
+}
+function pd2DeleteCustom(idx){
+  if(idx < 0 || idx >= pd2Custom.length) return;
+  const r = pd2Custom[idx];
+  if(confirm(`确定删除 ${r.s} ~ ${r.e} 这条记录吗？`)){
+    pd2Custom.splice(idx, 1); DB.set('pd_custom', pd2Custom);
+    showToast('✅ 已删除');
+    renderPeriodSection();
+  }
 }
 function pd2DeleteAllCustom(){
   if(!pd2Custom.length){ showToast('没有自定义记录可删'); return; }
-  if(confirm('确定要删除所有自定义经期记录吗？')){
+  if(confirm(`确定删除全部 ${pd2Custom.length} 条自定义记录吗？`)){
     pd2Custom = []; DB.set('pd_custom', pd2Custom);
-    showToast('✅ 已清空所有自定义记录');
+    showToast('✅ 已全部删除');
     renderPeriodSection();
   }
+}
+function pd2Add(){
+  // 快捷：记录今天（自动补结束为+6天）
+  const t = new Date();
+  const s = pd2F(t);
+  const e = pd2F(pd2A(t, 6));
+  if(pd2Custom.some(r => r.s === s)){ showToast('今天已经有记录了'); return; }
+  pd2Custom.push({s, e}); DB.set('pd_custom', pd2Custom);
+  showToast(`✅ 已添加 ${s} ~ ${e}`);
+  renderPeriodSection();
 }
 
 function renderHoroRightCol() {
