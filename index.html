@@ -4921,36 +4921,36 @@ const SCHEDULE = [
   {time:'22:30', name:'早睡'},
 ];
 const FEYN_CONCEPTS = [
-  { name:'智能体', en:'Agent', desc:'AI Agent 是能自主感知环境、做决策、调用工具来完成任务的AI程序。', analogy:'就像一个能干的助理，自主查航班、比价格、选座位完成订票。' },
-  { name:'用量单位', en:'Token', desc:'Token是大语言模型处理文本的最小单位。中文字约1-2个Token。', analogy:'出租车按轮子转圈数计价，Token就是AI的计价圈数。' },
-  { name:'模型', en:'Model', desc:'大语言模型是通过海量文本训练出来的统计预测引擎。', analogy:'读了整个图书馆的学生，能聊天但不真的理解。' },
-  { name:'提示词', en:'Prompt', desc:'Prompt是你给AI的输入指令，包含角色设定、任务、格式、示例。', analogy:'给厨师写菜单，只写「来个菜」效果大不同。' },
-  { name:'接口', en:'API', desc:'API是应用程序之间的通信接口。', analogy:'餐厅的菜单，按格式点菜厨房就上菜。' },
-  { name:'上下文', en:'Context', desc:'模型一次对话中能记住的文本范围。', analogy:'人的短期记忆容量。' },
-  { name:'幻觉', en:'Hallucination', desc:'AI生成看似合理但实际错误或虚构的内容。', analogy:'考试不会但很会编的学生。' },
-  { name:'微调', en:'Fine-tuning', desc:'在预训练模型基础上用特定数据继续训练。', analogy:'医学生去心内科轮转三个月成为心内科医生。' },
-  { name:'检索增强', en:'RAG', desc:'先从知识库检索相关文档，再喂给模型生成答案。', analogy:'开卷考试。' },
-  { name:'向量嵌入', en:'Embedding', desc:'把文本转成高维向量，语义相近的距离更近。', analogy:'把文字放到意义地图上。' },
-  { name:'温度', en:'Temperature', desc:'控制模型输出随机性，低温确定高温创意。', analogy:'水龙头温度旋钮。' },
-  { name:'系统提示', en:'System Prompt', desc:'设定AI角色和行为规则的最高优先级指令。', analogy:'给演员的剧本角色设定。' },
-  { name:'少样本', en:'Few-shot', desc:'在Prompt中给几个输入输出示例让模型模仿。', analogy:'给新人看3个做好的例子。' },
-  { name:'思维链', en:'Chain of Thought', desc:'让模型先展示推理过程再给答案。', analogy:'数学老师要求写出解题步骤。' },
-  { name:'集成开发环境', en:'IDE', desc:'集代码编辑、调试、运行、版本控制于一体的开发工具。', analogy:'全功能厨房。' },
-  { name:'插件', en:'Plugin', desc:'为宿主程序扩展功能的独立模块。', analogy:'手机的App Store。' },
-  { name:'模型上下文协议', en:'MCP', desc:'让AI模型与外部工具、数据源交互的标准协议。', analogy:'USB接口标准。' },
-  { name:'函数调用', en:'Function Calling', desc:'模型识别意图输出结构化参数，外部代码执行。', analogy:'餐厅服务员翻译客人需求给厨房。' },
-  { name:'工具使用', en:'Tool Use', desc:'AI自主选择调用外部工具增强能力。', analogy:'会用工具的工匠。' },
-  { name:'沙箱', en:'Sandbox', desc:'隔离的执行环境，代码安全运行。', analogy:'医院隔离病房。' },
-  { name:'运行时', en:'Runtime', desc:'程序执行的引擎环境。', analogy:'舞台幕后团队。' },
-  { name:'自动化', en:'Automation', desc:'程序自动执行重复性任务。', analogy:'自动浇水系统。' },
-  { name:'网络钩子', en:'Webhook', desc:'事件触发的HTTP回调。', analogy:'快递柜取件通知。' },
-  { name:'定时任务', en:'Cron', desc:'周期性执行指定任务的调度器。', analogy:'超级闹钟。' },
-  { name:'基础地址', en:'Base URL', desc:'API调用的根地址。', analogy:'快递公司总部分拣中心。' },
-  { name:'流式输出', en:'Streaming', desc:'逐Token返回结果的打字机效果。', analogy:'水龙头流水。' },
-  { name:'多模态', en:'Multimodal', desc:'处理文本、图像、音频、视频多种模态。', analogy:'全能翻译官。' },
-  { name:'视觉模型', en:'Vision Model', desc:'理解和分析图像内容。', analogy:'火眼金睛质检员。' },
-  { name:'向量数据库', en:'Vector Database', desc:'存储和检索高维向量支持相似度搜索。', analogy:'按意义排列的超级书架。' },
-  { name:'框架', en:'Framework', desc:'提供可复用基础架构和标准化开发模式。', analogy:'盖房子的脚手架和图纸。' },
+  { name:'智能体', en:'Agent', desc:'AI Agent 是能自主感知环境、做决策、调用工具来完成任务的AI程序。', analogy:'就像一个能干的助理，自主查航班、比价格、选座位完成订票。', kws:['自主','感知','决策','调用工具','完成任务','目标驱动'] },
+  { name:'用量单位', en:'Token', desc:'Token是大语言模型处理文本的最小单位。中文字约1-2个Token。', analogy:'出租车按轮子转圈数计价，Token就是AI的计价圈数。', kws:['最小单位','计价','成本','计费','处理量','输入输出'] },
+  { name:'模型', en:'Model', desc:'大语言模型是通过海量文本训练出来的统计预测引擎。', analogy:'读了整个图书馆的学生，能聊天但不真的理解。', kws:['训练','预测','统计','海量数据','不理解','参数'] },
+  { name:'提示词', en:'Prompt', desc:'Prompt是你给AI的输入指令，包含角色设定、任务、格式、示例。', analogy:'给厨师写菜单，只写「来个菜」效果大不同。', kws:['指令','角色设定','任务','格式','示例','输入'] },
+  { name:'接口', en:'API', desc:'API是应用程序之间的通信接口。', analogy:'餐厅的菜单，按格式点菜厨房就上菜。', kws:['通信','请求','响应','数据交换','接口规范','调用'] },
+  { name:'上下文', en:'Context', desc:'模型一次对话中能记住的文本范围。', analogy:'人的短期记忆容量。', kws:['记忆','窗口','范围','限制','对话','token上限'] },
+  { name:'幻觉', en:'Hallucination', desc:'AI生成看似合理但实际错误或虚构的内容。', analogy:'考试不会但很会编的学生。', kws:['虚构','错误','编造','一本正经','不可靠','事实错误'] },
+  { name:'微调', en:'Fine-tuning', desc:'在预训练模型基础上用特定数据继续训练。', analogy:'医学生去心内科轮转三个月成为心内科医生。', kws:['预训练','继续训练','特定场景','适配','迁移','领域'] },
+  { name:'检索增强', en:'RAG', desc:'先从知识库检索相关文档，再喂给模型生成答案。', analogy:'开卷考试。', kws:['检索','知识库','外部知识','开卷','准确率','最新信息'] },
+  { name:'向量嵌入', en:'Embedding', desc:'把文本转成高维向量，语义相近的距离更近。', analogy:'把文字放到意义地图上。', kws:['向量化','语义','相似度','高维','映射','意义'] },
+  { name:'温度', en:'Temperature', desc:'控制模型输出随机性，低温确定高温创意。', analogy:'水龙头温度旋钮。', kws:['随机性','确定','创意','旋钮','参数','发散'] },
+  { name:'系统提示', en:'System Prompt', desc:'设定AI角色和行为规则的最高优先级指令。', analogy:'给演员的剧本角色设定。', kws:['角色','行为规则','最高优先级','指令','设定','约束'] },
+  { name:'少样本', en:'Few-shot', desc:'在Prompt中给几个输入输出示例让模型模仿。', analogy:'给新人看3个做好的例子。', kws:['示例','模仿','学习','输入输出','对比','样本'] },
+  { name:'思维链', en:'Chain of Thought', desc:'让模型先展示推理过程再给答案。', analogy:'数学老师要求写出解题步骤。', kws:['推理过程','步骤','逻辑','拆解','思考','中间结果'] },
+  { name:'集成开发环境', en:'IDE', desc:'集代码编辑、调试、运行、版本控制于一体的开发工具。', analogy:'全功能厨房。', kws:['编辑','调试','运行','版本控制','一体化','开发工具'] },
+  { name:'插件', en:'Plugin', desc:'为宿主程序扩展功能的独立模块。', analogy:'手机的App Store。', kws:['扩展','独立模块','宿主','安装','卸载','生态'] },
+  { name:'模型上下文协议', en:'MCP', desc:'让AI模型与外部工具、数据源交互的标准协议。', analogy:'USB接口标准。', kws:['协议','标准','接口','工具调用','数据源','连接'] },
+  { name:'函数调用', en:'Function Calling', desc:'模型识别意图输出结构化参数，外部代码执行。', analogy:'餐厅服务员翻译客人需求给厨房。', kws:['识别意图','结构化','参数','执行','翻译','工具'] },
+  { name:'工具使用', en:'Tool Use', desc:'AI自主选择调用外部工具增强能力。', analogy:'会用工具的工匠。', kws:['自主选择','调用','外部工具','增强能力','扩展','技能'] },
+  { name:'沙箱', en:'Sandbox', desc:'隔离的执行环境，代码安全运行。', analogy:'医院隔离病房。', kws:['隔离','安全','执行环境','沙盒','限制','容器'] },
+  { name:'运行时', en:'Runtime', desc:'程序执行的引擎环境。', analogy:'舞台幕后团队。', kws:['执行','引擎','环境','运行','启动','解释器'] },
+  { name:'自动化', en:'Automation', desc:'程序自动执行重复性任务。', analogy:'自动浇水系统。', kws:['自动','重复','任务','无人值守','效率','流程'] },
+  { name:'网络钩子', en:'Webhook', desc:'事件触发的HTTP回调。', analogy:'快递柜取件通知。', kws:['事件触发','回调','HTTP','通知','主动推送','触发'] },
+  { name:'定时任务', en:'Cron', desc:'周期性执行指定任务的调度器。', analogy:'超级闹钟。', kws:['周期','定时','调度','闹钟','计划','cron'] },
+  { name:'基础地址', en:'Base URL', desc:'API调用的根地址。', analogy:'快递公司总部分拣中心。', kws:['根地址','API','前缀','域名','路径','入口'] },
+  { name:'流式输出', en:'Streaming', desc:'逐Token返回结果的打字机效果。', analogy:'水龙头流水。', kws:['逐Token','打字机','实时','连续输出','分块','stream'] },
+  { name:'多模态', en:'Multimodal', desc:'处理文本、图像、音频、视频多种模态。', analogy:'全能翻译官。', kws:['文本','图像','音频','视频','多种模态','综合'] },
+  { name:'视觉模型', en:'Vision Model', desc:'理解和分析图像内容。', analogy:'火眼金睛质检员。', kws:['图像','理解','视觉','识别','分析','看图'] },
+  { name:'向量数据库', en:'Vector Database', desc:'存储和检索高维向量支持相似度搜索。', analogy:'按意义排列的超级书架。', kws:['向量','高维','相似度','检索','存储','语义搜索'] },
+  { name:'框架', en:'Framework', desc:'提供可复用基础架构和标准化开发模式。', analogy:'盖房子的脚手架和图纸。', kws:['基础架构','标准化','脚手架','复用','开发模式','约定'] },
 ];
 const KANBAN_COLS = [
   { id:'idea', name:'💡 灵感选题' },
@@ -7231,8 +7231,10 @@ function renderFeynman() {
     </div>
     <div class="feyn-actions">
       <button class="btn btn-ghost btn-sm" onclick="feynCopy()">📋 复制</button>
-      <button class="btn btn-primary btn-sm" onclick="feynMarkDone()">${isDone ? '✓ 已完成' : '标记完成'}</button>
-    </div>`;
+      <button class="btn btn-primary btn-sm" onclick="feynValidate()">🔍 验证</button>
+      <button class="btn ${isDone?'btn-ghost':'btn-primary'} btn-sm" onclick="feynMarkDone()">${isDone ? '✓ 已完成' : '标记完成'}</button>
+    </div>
+    <div id="feynValidateResult"></div>`;
   renderFeynGrid();
   ['prepP','prepR','prepE','prepP2'].forEach(id => {
     const el = document.getElementById(id);
@@ -7243,6 +7245,121 @@ function renderFeynman() {
     });
   });
 }
+
+function feynValidate(){
+  const idx = feynmanData.currentIdx || getFeynConcept();
+  const c = FEYN_CONCEPTS[idx];
+  // 优先读 textarea 实时值，回退到 drafts
+  const gv = (id) => { const el=document.getElementById(id); return el?el.value.trim():''; };
+  const P = gv('prepP'), R = gv('prepR'), E = gv('prepE'), P2 = gv('prepP2');
+
+  // 关键词库
+  const kws = c.kws || [];
+  // 因果/逻辑词
+  const causalWords = ['因为','所以','由于','导致','使得','让','使','目的是','作用是','原因是','本质是','简单说','具体来说'];
+  // 举例/场景词
+  const exampleWords = ['比如','举例','例如','就像','场景','例子','情况','当','做','跑','调用','执行','运行','搜索','查','选','生成'];
+  // 具体动作（E框需要）
+  const actionWords = ['查','搜','选','比','做','跑','生成','调用','执行','输入','输出','读','写','传','分析','识别','理解','返回','请求','响应'];
+
+  const results = [];
+
+  // === P 结论检查 ===
+  const pLen = P.length;
+  const pKwHit = kws.filter(k => P.includes(k));
+  results.push({
+    label: 'P 结论', text: P,
+    checks: [
+      { name: '字数 ≥ 15', pass: pLen >= 15, detail: `${pLen} 字` },
+      { name: '有关键词', pass: pKwHit.length >= 1, detail: pKwHit.length ? `命中 ${pKwHit.join('、')}` : `未覆盖任何核心关键词` }
+    ]
+  });
+
+  // === R 原因检查 ===
+  const rLen = R.length;
+  const rCausal = causalWords.filter(w => R.includes(w));
+  results.push({
+    label: 'R 原因', text: R,
+    checks: [
+      { name: '字数 ≥ 25', pass: rLen >= 25, detail: `${rLen} 字` },
+      { name: '有因果逻辑', pass: rCausal.length >= 1, detail: rCausal.length ? `含 ${rCausal.join('、')}` : '缺少因果词（因为/所以/本质是...）' }
+    ]
+  });
+
+  // === E 举例检查 ===
+  const eLen = E.length;
+  const eExample = exampleWords.filter(w => E.includes(w));
+  const eKwHit = kws.filter(k => E.includes(k));
+  results.push({
+    label: 'E 举例', text: E,
+    checks: [
+      { name: '字数 ≥ 25', pass: eLen >= 25, detail: `${eLen} 字` },
+      { name: '有具体场景', pass: eExample.length >= 2, detail: eExample.length ? `含 ${eExample.slice(0,3).join('、')}` : '缺具体场景/类比' },
+      { name: '覆盖关键词', pass: eKwHit.length >= 1, detail: eKwHit.length ? `命中 ${eKwHit.join('、')}` : '未关联概念关键词' }
+    ]
+  });
+
+  // === P 重申检查 ===
+  const p2Len = P2.length;
+  const p2KwHit = kws.filter(k => P2.includes(k));
+  const p2Sim = P ? Math.round([...P].filter(ch => P2.includes(ch)).length / P.length * 100) : 0;
+  results.push({
+    label: 'P 重申', text: P2,
+    checks: [
+      { name: '字数 ≥ 15', pass: p2Len >= 15, detail: `${p2Len} 字` },
+      { name: '不是复制 P', pass: p2Sim < 80, detail: `与 P 相似度 ${p2Sim}%` }
+    ]
+  });
+
+  // === 综合 ===
+  let passCount = 0, totalChecks = 0;
+  results.forEach(r => { r.checks.forEach(ch => { totalChecks++; if(ch.pass) passCount++; }); });
+  const score = Math.round(passCount / totalChecks * 100);
+
+  // 输出 HTML
+  const color = score >= 80 ? '#5c7057' : score >= 50 ? '#b8a07e' : '#d4456a';
+  const level = score >= 80 ? '通过' : score >= 50 ? '及格' : '需加强';
+
+  let html = `<div style="margin-top:14px;border-radius:12px;border:1px solid ${color}22;background:${color}08;padding:14px 16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:44px;height:44px;border-radius:50%;background:${color};color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px">${score}</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:${color}">综合 ${level}</div>
+        <div style="font-size:11px;color:var(--muted)">${passCount}/${totalChecks} 项检查通过</div>
+      </div>
+    </div>`;
+
+  results.forEach(r => {
+    html += `<div style="margin-top:10px;padding:10px 12px;background:white;border-radius:8px;border:1px solid var(--rule-soft)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:12px;font-weight:600">${r.label}</div>
+      </div>`;
+    r.checks.forEach(ch => {
+      const icon = ch.pass ? '✅' : '❌';
+      const c = ch.pass ? '#5c7057' : '#d4456a';
+      html += `<div style="font-size:11px;color:${c};margin:2px 0">${icon} ${ch.name} — ${ch.detail}</div>`;
+    });
+    html += '</div>';
+  });
+
+  // 建议
+  const fails = [];
+  results.forEach(r => r.checks.forEach(ch => { if(!ch.pass) fails.push(`${r.label}：${ch.name}`); }));
+  if(fails.length){
+    html += `<div style="margin-top:10px;padding:10px 12px;background:rgba(184,160,126,0.08);border-radius:8px;font-size:11px;color:#b8a07e">
+      💡 建议改善：${fails.join('；')}
+    </div>`;
+  } else {
+    html += `<div style="margin-top:10px;padding:10px 12px;background:rgba(92,112,87,0.08);border-radius:8px;font-size:11px;color:#5c7057">
+      🎉 费曼练习完整！点击"标记完成"锁定成果
+    </div>`;
+  }
+
+  html += '</div>';
+  const el = document.getElementById('feynValidateResult');
+  if(el) el.innerHTML = html;
+}
+
 function feynNav(dir) { feynmanData.currentIdx = ((feynmanData.currentIdx || getFeynConcept()) + dir + FEYN_CONCEPTS.length) % FEYN_CONCEPTS.length; saveAll(); renderFeynman(); }
 function feynVoice(id) {
   const el = document.getElementById(id); if (!el) return;
