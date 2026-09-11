@@ -3807,24 +3807,26 @@ body.focus-mode .focus-station {
 .pd2-days { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
 .pd2-day {
   aspect-ratio:1; display:flex; align-items:center; justify-content:center;
-  font-size:13px; border-radius:8px; cursor:default;
+  font-size:12px; border-radius:6px; cursor:pointer;
   background:transparent; color:var(--ink); position:relative;
+  border:1px solid transparent; transition:background .12s;
 }
-.pd2-day.other { color:#d0cfd8; }
-.pd2-day.today { font-weight:700; outline:2px solid var(--ink); outline-offset:-2px; }
-.pd2-day.period { background:#e85d75; color:white; font-weight:600; border-radius:8px; }
-.pd2-day.predicted { background:rgba(232,93,117,0.18); color:#e85d75; border:1px dashed #e85d75; }
-.pd2-day.ovulation { background:#5c7057; color:white; font-weight:700; }
-.pd2-day.peak { background:rgba(92,112,87,0.35); color:#5c7057; font-weight:600; }
-.pd2-day.fertile { background:rgba(92,112,87,0.15); color:#5c7057; }
+.pd2-day:hover { background:var(--rule-soft); }
+.pd2-day.other { color:#d0cfd8; cursor:default; border-color:transparent; background:transparent; }
+.pd2-day.today { font-weight:700; border:1.5px solid #e85d75; }
+.pd2-day.period { background:#fde8ed; color:#c13251; font-weight:500; border-radius:6px; border:1px solid rgba(225,93,117,0.3); }
+.pd2-day.predicted { background:rgba(232,93,117,0.1); color:#e85d75; border:1px dashed rgba(232,93,117,0.5); }
+.pd2-day.ovulation { background:#3d6b47; color:white; font-weight:600; border:1px solid #3d6b47; }
+.pd2-day.peak { background:#8fb493; color:white; font-weight:500; }
+.pd2-day.fertile { background:#d8e7da; color:#3d6b47; }
 .pd2-day.dot::after {
   content:''; position:absolute; bottom:3px; width:4px; height:4px;
   border-radius:50%; background:rgba(232,93,117,0.5);
 }
 
-.pd2-legend { display:flex; gap:14px; margin-top:14px; font-size:11px; color:var(--muted); flex-wrap:wrap; }
-.pd2-legend span { display:flex; align-items:center; gap:6px; }
-.pd2-legend i { width:10px; height:10px; border-radius:4px; display:inline-block; }
+.pd2-legend { display:flex; gap:14px; margin-bottom:10px; margin-top:0; font-size:11px; color:var(--muted); flex-wrap:wrap; }
+.pd2-legend span { display:flex; align-items:center; gap:5px; }
+.pd2-legend i { width:12px; height:12px; border-radius:3px; display:inline-block; }
 
 .pd2-btn-row { display:flex; gap:10px; margin-bottom:14px; }
 .pd2-btn {
@@ -4408,7 +4410,9 @@ body.focus-mode .focus-station {
       <div class="pd2-btn-row">
         <button class="pd2-btn primary" onclick="pd2Add()">+ 记录今天来月经</button>
         <button class="pd2-btn ghost" onclick="pd2CalDate=new Date();pd2RenderCal();pd2RenderHist()">回到当前</button>
+        <button class="pd2-btn ghost" style="flex:0 0 auto;padding:12px 16px" onclick="pd2DeleteAllCustom()" title="清空所有自定义记录">🗑</button>
       </div>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px">💡 点日历上的日期可快速添加/删除（粉色=已记录，点一下就删）</div>
       <div class="pd2-hist-wrap">
         <div class="pd2-hist-head">
           <div class="pd2-hist-title">📋 历史记录</div>
@@ -9890,7 +9894,8 @@ function pd2RenderCal(){
     else if(pkSet.has(d)) cls += ' peak';
     else if(ferSet.has(d)) cls += ' fertile';
     else if(predSet.has(d)) cls += ' predicted';
-    html += `<div class="${cls}">${d}</div>`;
+    const full = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html += `<div class="${cls}" data-full="${full}" onclick="pd2ToggleDay('${full}')">${d}</div>`;
   }
   document.getElementById('pd2Calendar').innerHTML = html;
 }
@@ -9990,9 +9995,51 @@ function pd2RenderHist(){
 function pd2SetFilter(y){ pd2Filter = y; pd2RenderHist(); }
 function pd2Shift(n){ pd2CalDate = new Date(pd2CalDate.getFullYear(), pd2CalDate.getMonth()+n, 1); pd2RenderCal(); }
 function pd2Add(){
-  const t=new Date(); const s=pd2F(t), e=pd2F(pd2A(t,6));
-  pd2Custom.push({s,e}); DB.set('pd_custom', pd2Custom);
-  showToast(`🩸 已记录 ${s} ~ ${e}`); renderPeriodSection();
+  const t=new Date(); pd2ToggleDay(pd2F(t));
+}
+function pd2ToggleDay(fullDate){
+  // 检查是否在历史数据里
+  const HIST = PD2_HISTORY;
+  const t = pd2P(fullDate);
+  const tEnd = pd2A(t, 6);
+  const fullEnd = pd2F(tEnd);
+  
+  // 先看 custom 里有没有以这个日期开始的记录 —— 有就删
+  const ci = pd2Custom.findIndex(r => r.s === fullDate);
+  if(ci >= 0){
+    pd2Custom.splice(ci, 1); DB.set('pd_custom', pd2Custom);
+    showToast(`🗑 已删除 ${fullDate} 的经期记录`);
+    renderPeriodSection(); return;
+  }
+  
+  // 看 custom 里有没有结束日期是 fullEnd 的 —— 删
+  const ci2 = pd2Custom.findIndex(r => r.e === fullEnd);
+  if(ci2 >= 0){
+    pd2Custom.splice(ci2, 1); DB.set('pd_custom', pd2Custom);
+    showToast(`🗑 已删除 ${pd2Custom[ci2]?.s||fullDate} 的经期记录`);
+    renderPeriodSection(); return;
+  }
+  
+  // 历史数据不可删，但可以提示
+  const inHist = HIST.some(r => r.s === fullDate);
+  if(inHist){
+    showToast('📌 这是历史数据，不可删除（只能删自定义记录）');
+    return;
+  }
+  
+  // 新增记录
+  pd2Custom.push({s: fullDate, e: fullEnd});
+  DB.set('pd_custom', pd2Custom);
+  showToast(`🩸 已记录 ${fullDate} ~ ${fullEnd}（点日期可删除）`);
+  renderPeriodSection();
+}
+function pd2DeleteAllCustom(){
+  if(!pd2Custom.length){ showToast('没有自定义记录可删'); return; }
+  if(confirm('确定要删除所有自定义经期记录吗？')){
+    pd2Custom = []; DB.set('pd_custom', pd2Custom);
+    showToast('✅ 已清空所有自定义记录');
+    renderPeriodSection();
+  }
 }
 
 function renderHoroRightCol() {
