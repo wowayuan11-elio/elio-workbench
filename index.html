@@ -2244,7 +2244,7 @@ body.dark .topbar { background: var(--glass-bg-strong); }
   /* 手机上极光光斑规模略小、不动画太快，省 CPU */
   body::after { inset:-20%; filter: saturate(1.1) blur(20px); }
   .sidebar { display: none; }
-  .main { margin-left: 0; padding: 24px 16px; padding-bottom: calc(var(--nav-h) + 28px); }
+  .main { margin-left: 0; padding: 24px 16px; padding-bottom: calc(var(--nav-h) + 28px); min-width:0; overflow-x:hidden; }
   .mobile-nav { display: block; }
   .dash-greeting { font-size: 22px; }
   .dash-clock { font-size: 22px; }
@@ -3762,85 +3762,155 @@ body.focus-mode .focus-station {
   border-color: rgba(139,92,246,0.22);
 }
 
-/* ========== 经期记录模块 CSS ========== */
-.pd-grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:16px; }
-.pd-grid > * { min-width:0; }
-.pd-bigcard {
-  background: linear-gradient(135deg, var(--accent, #e85d75), #d4456a);
-  color: white; border-radius:14px; padding:18px 20px;
-  display:flex; align-items:center; justify-content:space-between;
+/* ========== 经期记录模块 CSS (v2 简洁版) ========== */
+.pd2-body { padding: 0; }
+.pd2-summary {
+  background: linear-gradient(135deg, #e85d75, #d4456a);
+  color: white; border-radius: 14px; padding: 18px 22px;
+  margin-bottom: 14px; display:flex; align-items:center; gap:20px;
 }
-.pd-bigcard .pd-days { font-size:30px; font-weight:800; }
-.pd-bigcard .pd-sub { font-size:12px; opacity:0.9; margin-top:2px; }
-.pd-bigcard .pd-date { font-size:13px; opacity:0.95; text-align:right; }
-.pd-statrow { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px; }
-.pd-stat { background:var(--rule-soft); border-radius:10px; padding:12px; text-align:center; }
-.pd-stat .pd-v { font-size:20px; font-weight:700; color:var(--accent, #e85d75); }
-.pd-stat .pd-l { font-size:11px; color:var(--muted); margin-top:3px; }
-.pd-stat.sage .pd-v { color:#8a9a82; }
-.pd-stat.gold .pd-v { color:#b8a07e; }
-.pd-ov-info {
-  background:linear-gradient(135deg, rgba(138,154,130,0.12), rgba(138,154,130,0.04));
-  border:1px solid rgba(138,154,130,0.2); border-radius:12px; padding:14px 16px;
-  margin-top:12px; display:flex; align-items:center; justify-content:space-between;
+.pd2-summary .pd2-days { font-size:44px; font-weight:800; line-height:1; }
+.pd2-summary .pd2-sub { font-size:11px; opacity:0.85; margin-top:4px; }
+.pd2-summary .pd2-ov-box {
+  margin-left:auto; text-align:right; font-size:12px; opacity:0.92; line-height:1.6;
 }
-.pd-ov-info .pd-ov-left .pd-ov-date { font-size:17px; font-weight:700; color:#8a9a82; }
-.pd-ov-info .pd-ov-left .pd-ov-lbl { font-size:11px; color:var(--muted); margin-top:2px; }
-.pd-ov-info .pd-ov-right { font-size:12px; color:var(--muted); text-align:right; line-height:1.5; }
-.pd-cal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-.pd-cal-title { font-size:16px; font-weight:600; }
-.pd-cal-nav { display:flex; gap:6px; }
-.pd-cal-nav button {
-  width:30px; height:30px; border:1px solid var(--rule); background:white; border-radius:8px;
-  cursor:pointer; font-size:13px; color:var(--ink);
+.pd2-summary .pd2-ov-box strong { font-size:14px; }
+
+.pd2-stats { display:flex; gap:12px; margin-bottom:14px; }
+.pd2-stat {
+  flex:1; background:var(--card); border:1px solid var(--rule);
+  border-radius:12px; padding:12px 14px;
 }
-.pd-cal-nav button:hover { background:var(--rule-soft); }
-.pd-wkd { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:6px; }
-.pd-wkd div { text-align:center; font-size:11px; color:var(--muted); padding:4px 0; }
-.pd-days { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
-.pd-day {
+.pd2-stat .pd2-v { font-size:18px; font-weight:700; color:var(--ink); }
+.pd2-stat .pd2-l { font-size:10px; color:var(--muted); margin-top:2px; }
+.pd2-stat .pd2-v.accent { color:#e85d75; }
+.pd2-stat .pd2-v.green { color:#5c7057; }
+
+.pd2-cal-wrap {
+  background:var(--card); border:1px solid var(--rule);
+  border-radius:14px; padding:18px; margin-bottom:14px;
+}
+.pd2-cal-head {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;
+}
+.pd2-cal-head .pd2-title { font-size:16px; font-weight:700; }
+.pd2-cal-nav { display:flex; gap:8px; }
+.pd2-cal-nav button {
+  width:32px; height:32px; border:1px solid var(--rule); background:white;
+  border-radius:8px; cursor:pointer; font-size:14px; color:var(--ink);
+}
+.pd2-cal-nav button:hover { background:var(--rule-soft); }
+
+.pd2-wkd { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-bottom:4px; }
+.pd2-wkd div { text-align:center; font-size:11px; color:var(--muted); padding:6px 0; }
+
+.pd2-days { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+.pd2-day {
   aspect-ratio:1; display:flex; align-items:center; justify-content:center;
-  font-size:12px; border-radius:50%; cursor:pointer; transition:all 0.15s;
+  font-size:13px; border-radius:8px; cursor:default;
+  background:transparent; color:var(--ink); position:relative;
 }
-.pd-day:hover { background:var(--rule-soft); }
-.pd-day.other { color:#ccc; }
-.pd-day.today { font-weight:700; box-shadow:0 0 0 2px var(--accent, #e85d75); }
-.pd-day.period { background:var(--accent, #e85d75); color:white; font-weight:600; }
-.pd-day.predicted { background:rgba(232,93,117,0.2); color:var(--accent, #e85d75); border:1px dashed var(--accent, #e85d75); }
-.pd-day.ovulation { background:#8a9a82; color:white; font-weight:700; }
-.pd-day.peak-fertile { background:rgba(138,154,130,0.4); color:#5c7057; font-weight:600; }
-.pd-day.fertile { background:rgba(138,154,130,0.2); color:#8a9a82; }
-.pd-day.unknown { background:#f5f4f7; color:#aaa; font-size:10px; }
-.pd-legend { display:flex; gap:12px; margin-top:14px; font-size:11px; color:var(--muted); flex-wrap:wrap; }
-.pd-legend span { display:flex; align-items:center; gap:5px; }
-.pd-legend i { width:10px; height:10px; border-radius:50%; display:inline-block; }
-.pd-btn {
-  width:100%; padding:12px; border:none; border-radius:10px;
-  background:linear-gradient(135deg, var(--accent, #e85d75), #d4456a);
-  color:white; font-size:13px; font-weight:600; cursor:pointer; margin-top:10px;
+.pd2-day.other { color:#d0cfd8; }
+.pd2-day.today { font-weight:700; outline:2px solid var(--ink); outline-offset:-2px; }
+.pd2-day.period { background:#e85d75; color:white; font-weight:600; border-radius:8px; }
+.pd2-day.predicted { background:rgba(232,93,117,0.18); color:#e85d75; border:1px dashed #e85d75; }
+.pd2-day.ovulation { background:#5c7057; color:white; font-weight:700; }
+.pd2-day.peak { background:rgba(92,112,87,0.35); color:#5c7057; font-weight:600; }
+.pd2-day.fertile { background:rgba(92,112,87,0.15); color:#5c7057; }
+.pd2-day.dot::after {
+  content:''; position:absolute; bottom:3px; width:4px; height:4px;
+  border-radius:50%; background:rgba(232,93,117,0.5);
 }
-.pd-btn:hover { opacity:0.9; }
-.pd-history-title { font-size:14px; font-weight:600; margin-bottom:6px; }
-.pd-hist-item { display:flex; align-items:center; padding:10px 0; border-bottom:1px solid var(--rule-soft); }
-.pd-hist-item:last-child { border-bottom:none; }
-.pd-hist-dot { width:8px; height:8px; border-radius:50%; background:var(--accent, #e85d75); margin-right:10px; flex-shrink:0; }
-.pd-hist-info { flex:1; }
-.pd-hist-dates { font-size:13px; font-weight:600; }
-.pd-hist-meta { font-size:11px; color:var(--muted); margin-top:1px; }
-.pd-hist-cycle { font-size:12px; color:#8a9a82; font-weight:600; }
-.pd-disclaimer {
-  background:rgba(232,93,117,0.06); border:1px dashed rgba(232,93,117,0.35);
-  border-radius:10px; padding:10px 14px; font-size:11px; color:rgba(232,93,117,0.85);
-  margin-bottom:14px; line-height:1.6;
+
+.pd2-legend { display:flex; gap:14px; margin-top:14px; font-size:11px; color:var(--muted); flex-wrap:wrap; }
+.pd2-legend span { display:flex; align-items:center; gap:6px; }
+.pd2-legend i { width:10px; height:10px; border-radius:4px; display:inline-block; }
+
+.pd2-btn-row { display:flex; gap:10px; margin-bottom:14px; }
+.pd2-btn {
+  flex:1; padding:12px; border:none; border-radius:10px;
+  font-size:13px; font-weight:600; cursor:pointer;
 }
-.pd-source {
-  background:linear-gradient(135deg, rgba(138,154,130,0.1), rgba(184,160,126,0.06));
-  border:1px solid rgba(138,154,130,0.22); border-radius:10px; padding:12px 14px;
-  font-size:11px; color:var(--ink); margin-bottom:14px; line-height:1.65;
+.pd2-btn.primary { background:linear-gradient(135deg,#e85d75,#d4456a); color:white; }
+.pd2-btn.ghost { background:var(--card); border:1px solid var(--rule); color:var(--ink); }
+
+/* 历史：按年折叠 */
+.pd2-hist-wrap {
+  background:var(--card); border:1px solid var(--rule);
+  border-radius:14px; padding:18px;
 }
-.pd-source strong { color:#8a9a82; }
-@media (max-width: 768px) {
-  .pd-grid { grid-template-columns:minmax(0,1fr); gap:14px; }
+.pd2-hist-head {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;
+}
+.pd2-hist-title { font-size:15px; font-weight:700; }
+.pd2-hist-filter { display:flex; gap:6px; }
+.pd2-hist-filter button {
+  padding:6px 12px; border:1px solid var(--rule); background:white;
+  border-radius:16px; font-size:12px; cursor:pointer; color:var(--ink);
+}
+.pd2-hist-filter button.active {
+  background:var(--ink); color:white; border-color:var(--ink);
+}
+
+.pd2-year-group { margin-bottom:10px; }
+.pd2-year-head {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 12px; border-radius:10px; cursor:pointer;
+  background:var(--rule-soft); user-select:none;
+}
+.pd2-year-head:hover { background:rgba(20,18,53,0.08); }
+.pd2-year-head .pd2-y { font-size:14px; font-weight:700; }
+.pd2-year-head .pd2-meta { font-size:11px; color:var(--muted); }
+.pd2-year-head .pd2-arrow { font-size:12px; color:var(--muted); transition:transform .2s; }
+.pd2-year-group.open .pd2-year-head .pd2-arrow { transform:rotate(180deg); }
+.pd2-year-body { display:none; padding:6px 0 12px 0; }
+.pd2-year-group.open .pd2-year-body { display:block; }
+
+.pd2-mo-row {
+  display:flex; align-items:center; padding:8px 12px; gap:14px;
+}
+.pd2-mo-row + .pd2-mo-row { border-top:1px solid var(--rule-soft); }
+.pd2-mo-row .pd2-mo-label {
+  width:40px; font-size:11px; color:var(--muted); flex-shrink:0;
+}
+.pd2-mo-row .pd2-mo-bar {
+  flex:1; height:22px; background:rgba(232,93,117,0.12);
+  border-radius:6px; position:relative; overflow:hidden;
+}
+.pd2-mo-row .pd2-mo-bar .pd2-mo-fill {
+  position:absolute; top:0; bottom:0;
+  background:#e85d75; border-radius:6px; opacity:0.85;
+}
+.pd2-mo-row .pd2-mo-bar .pd2-mo-text {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:11px; color:var(--muted);
+}
+.pd2-mo-row .pd2-mo-cycle {
+  width:50px; font-size:11px; color:var(--muted); text-align:right; flex-shrink:0;
+}
+
+@media (max-width:768px) {
+  .pd2-summary { flex-direction:column; text-align:left; gap:12px; }
+  .pd2-summary .pd2-ov-box { margin-left:0; text-align:left; }
+  .pd2-days { gap:1px; }
+  .pd2-stats { flex-wrap:wrap; }
+  .pd2-stat { min-width:0; flex:1 1 30%; }
+  .pd2-cal-wrap, .pd2-hist-wrap { overflow-x:hidden; max-width:100%; }
+  .pd2-mo-bar { min-width:0; }
+  .pd2-day { font-size:11px; }
+  .pd2-mo-row { gap:6px; }
+  .pd2-mo-row .pd2-mo-label { width:30px; font-size:10px; }
+  .pd2-mo-row .pd2-mo-cycle { width:40px; font-size:10px; }
+  /* 星座运势移动端适配 */
+  .horo-head-row { gap:8px; }
+  .horo-symbol { width:46px; height:46px; font-size:22px; }
+  .horo-name-big { font-size:18px; }
+  .horo-overall-row { gap:8px; padding:8px; }
+  .horo-ov-circle { width:44px; height:44px; }
+  .horo-ov-info { min-width:0; }
+  .hr-sec-grid, #horoSectionGrid { grid-template-columns:minmax(0,1fr) !important; }
+  /* 设置页溢出修复 */
+  #settings .card, #settings > div { max-width:100%; overflow-x:hidden; }
 }
 
 </style>
@@ -4298,70 +4368,56 @@ body.focus-mode .focus-station {
         <!-- 由 JS 渲染 -->
       </div>
     </section>
-    <section class="section" id="period">
+        <section class="section" id="period">
       <h1 class="page-title">🩸 经期记录</h1>
-      <p class="page-sub">4.5年历史数据 · 医学验证算法 · 本地预测</p>
-      <div class="pd-source">
-        <strong>✅ 算法依据 ACOG / WHO / Wilcox NEJM 1995</strong>：排卵日=下次经期前14天，易孕期=排卵前5天~排卵日（共6天），最佳受孕日=排卵前2天、前1天
-      </div>
-      <div class="pd-disclaimer">
-        ⚠️ 日历推算法适用于周期规律者，精度±2天。不能替代排卵试纸或医生建议。避孕请勿单独依赖此方法。
-      </div>
-      <div class="pd-grid">
-        <!-- 左侧：预测+排卵信息 -->
-        <div class="card">
-          <div class="pd-bigcard" id="pdBigCard">
-            <div class="pd-left">
-              <div class="pd-days" id="pdDays">--</div>
-              <div class="pd-sub">距离下次经期预计</div>
-            </div>
-            <div class="pd-date" id="pdNextDate">--</div>
-          </div>
-          <div class="pd-statrow">
-            <div class="pd-stat"><div class="pd-v" id="pdAvgCycle">--</div><div class="pd-l">平均周期(天)</div></div>
-            <div class="pd-stat sage"><div class="pd-v" id="pdAvgDur">--</div><div class="pd-l">平均经期(天)</div></div>
-            <div class="pd-stat gold"><div class="pd-v" id="pdSinceLast">--</div><div class="pd-l">距上次结束</div></div>
-          </div>
-          <div class="pd-ov-info">
-            <div class="pd-ov-left">
-              <div class="pd-ov-date" id="pdOvDate">--</div>
-              <div class="pd-ov-lbl">排卵日（下次经期前14天）</div>
-            </div>
-            <div class="pd-ov-right">
-              易孕期<br>
-              <strong style="color:#8a9a82;font-size:13px" id="pdFertileWin">--</strong><br>
-              最佳：<span id="pdPeakDays">--</span>
-            </div>
-          </div>
+      <p class="page-sub">女朋友的 · 4.5年历史数据 · 本地预测</p>
+      <div class="pd2-summary">
+        <div>
+          <div class="pd2-days" id="pd2Days">--</div>
+          <div class="pd2-sub">距离下次经期 · 预计 <span id="pd2NextDate">--</span></div>
         </div>
-        <!-- 右侧：历史记录 -->
-        <div class="card">
-          <div class="pd-history-title">📋 历史记录 <span style="font-size:11px;color:var(--muted);font-weight:400" id="pdHistCount"></span></div>
-          <div id="pdHistoryList"></div>
+        <div class="pd2-ov-box">
+          排卵日 <strong id="pd2OvDate">--</strong><br>
+          易孕期 <span id="pd2Fertile">--</span><br>
+          最佳受孕 <span id="pd2Peak">--</span>
         </div>
       </div>
-      <!-- 日历 -->
-      <div class="card" style="margin-top:16px">
-        <div class="pd-cal-header">
-          <div class="pd-cal-title" id="pdCalTitle">--</div>
-          <div class="pd-cal-nav">
-            <button onclick="pdShiftMonth(-1)">‹</button>
-            <button onclick="pdShiftMonth(1)">›</button>
+      <div class="pd2-stats">
+        <div class="pd2-stat"><div class="pd2-v accent" id="pd2AvgCycle">--</div><div class="pd2-l">平均周期 / 天</div></div>
+        <div class="pd2-stat"><div class="pd2-v green" id="pd2AvgDur">--</div><div class="pd2-l">平均经期 / 天</div></div>
+        <div class="pd2-stat"><div class="pd2-v" id="pd2SinceLast">--</div><div class="pd2-l">距上次结束 / 天</div></div>
+      </div>
+      <div class="pd2-cal-wrap">
+        <div class="pd2-cal-head">
+          <div class="pd2-title" id="pd2CalTitle">--</div>
+          <div class="pd2-cal-nav">
+            <button onclick="pd2Shift(-1)">‹</button>
+            <button onclick="pd2Shift(1)">›</button>
           </div>
         </div>
-        <div class="pd-wkd"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>
-        <div class="pd-days" id="pdCalendar"></div>
-        <div class="pd-legend">
-          <span><i style="background:var(--accent)"></i>已记录经期</span>
-          <span><i style="background:rgba(232,93,117,0.2);border:1px dashed var(--accent)"></i>预测经期</span>
-          <span><i style="background:#8a9a82"></i>排卵日</span>
-          <span><i style="background:rgba(138,154,130,0.2)"></i>易孕期</span>
-          <span><i style="background:rgba(138,154,130,0.4)"></i>最佳受孕</span>
+        <div class="pd2-wkd"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>
+        <div class="pd2-days" id="pd2Calendar"></div>
+        <div class="pd2-legend">
+          <span><i style="background:#e85d75"></i>经期</span>
+          <span><i style="background:rgba(232,93,117,0.18);border:1px dashed #e85d75"></i>预测经期</span>
+          <span><i style="background:#5c7057"></i>排卵日</span>
+          <span><i style="background:rgba(92,112,87,0.35)"></i>最佳受孕</span>
+          <span><i style="background:rgba(92,112,87,0.15)"></i>易孕期</span>
         </div>
-        <button class="pd-btn" onclick="pdAddToday()">+ 记录今天来月经</button>
+      </div>
+      <div class="pd2-btn-row">
+        <button class="pd2-btn primary" onclick="pd2Add()">+ 记录今天来月经</button>
+        <button class="pd2-btn ghost" onclick="pd2CalDate=new Date();pd2RenderCal();pd2RenderHist()">回到当前</button>
+      </div>
+      <div class="pd2-hist-wrap">
+        <div class="pd2-hist-head">
+          <div class="pd2-hist-title">📋 历史记录</div>
+          <div class="pd2-hist-filter" id="pd2HistFilter"></div>
+        </div>
+        <div id="pd2HistList"></div>
       </div>
     </section>
-    <section class="section" id="settings">
+<section class="section" id="settings">
       <h1 class="page-title">设置</h1>
       <p class="page-sub">数据管理 · 主题 · 壁纸 · 导出备份</p>
       <div class="export-section">
@@ -9604,9 +9660,8 @@ function renderMahjongSection() {
   `;
 }
 
-/* ========== 经期记录模块 JS ========== */
-const PD_HISTORY = [
-  // 58条历史数据（2022.2 ~ 2026.8）——100%核对过
+/* ========== 经期记录模块 JS v2 ========== */
+const PD2_HISTORY = [
   {s:'2022-02-06',e:'2022-02-12'},{s:'2022-03-06',e:'2022-03-12'},{s:'2022-04-04',e:'2022-04-10'},
   {s:'2022-05-04',e:'2022-05-10'},{s:'2022-06-03',e:'2022-06-10'},{s:'2022-07-02',e:'2022-07-09'},
   {s:'2022-07-30',e:'2022-08-05'},{s:'2022-08-26',e:'2022-09-01'},{s:'2022-09-22',e:'2022-09-28'},
@@ -9629,151 +9684,198 @@ const PD_HISTORY = [
   {s:'2026-04-22',e:'2026-04-28'},{s:'2026-05-22',e:'2026-05-28'},{s:'2026-06-20',e:'2026-06-26'},
   {s:'2026-07-19',e:'2026-07-25'},{s:'2026-08-17',e:'2026-08-23'},
 ];
-let pdCustom = DB.get('pd_custom', []); // 用户手动添加的
-let pdCalDate = new Date();
-pdCalDate.setDate(1);
+let pd2Custom = DB.get('pd_custom', []);
+let pd2CalDate = new Date(); pd2CalDate.setDate(1);
+let pd2Filter = 'all'; // all | year number
 
-function pdParse(s){const[x,y,z]=s.split('-').map(Number);return new Date(x,y-1,z);}
-function pdFmt(d){const p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
-function pdAdd(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
-function pdDiff(a,b){return Math.round((pdParse(b)-pdParse(a))/86400000);}
+const pd2P = s => {const[x,y,z]=s.split('-').map(Number);return new Date(x,y-1,z);};
+const pd2F = d => {const p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;};
+const pd2A = (d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+const pd2D = (a,b)=>Math.round((pd2P(b)-pd2P(a))/86400000);
 
-function pdGetAll(){
-  const all = [...PD_HISTORY, ...pdCustom].sort((a,b)=>a.s.localeCompare(b.s));
-  return all;
-}
+function pd2All(){return [...PD2_HISTORY,...pd2Custom].sort((a,b)=>a.s.localeCompare(b.s));}
 
-function pdCompute(){
-  const all = pdGetAll();
-  const starts = all.map(r=>r.s);
-  // 周期
-  const cycles = [];
-  for(let i=1;i<starts.length;i++) cycles.push(pdDiff(starts[i-1], starts[i]));
-  const avgCycle = cycles.slice(-6).reduce((a,b)=>a+b,0) / Math.min(6,cycles.length);
-  // 经期天数
-  const durations = all.map(r=>pdDiff(r.s, r.e)+1);
-  const avgDur = durations.reduce((a,b)=>a+b,0) / durations.length;
-  // 预测
-  const last = pdParse(all[all.length-1].s);
-  const predNext = pdAdd(last, Math.round(avgCycle));
-  const predOv = pdAdd(predNext, -14);
-  const fertileStart = pdAdd(predOv, -5);
-  const peak1 = pdAdd(predOv, -2), peak2 = pdAdd(predOv, -1);
-  const avgDurR = Math.round(avgDur);
-  return { all, avgCycle, avgDur, avgDurR, last, predNext, predOv, fertileStart, peak1, peak2, cycles };
+function pd2Compute(){
+  const a = pd2All(); const ss = a.map(r=>r.s);
+  const cyc = []; for(let i=1;i<ss.length;i++) cyc.push(pd2D(ss[i-1],ss[i]));
+  const avgC = cyc.slice(-6).reduce((x,y)=>x+y,0)/Math.min(6,cyc.length);
+  const dus = a.map(r=>pd2D(r.s,r.e)+1);
+  const avgD = dus.reduce((x,y)=>x+y,0)/dus.length;
+  const last = pd2P(a[a.length-1].s);
+  const pred = pd2A(last, Math.round(avgC));
+  const ov = pd2A(pred, -14);
+  const fer = pd2A(ov, -5);
+  const pk1 = pd2A(ov,-2), pk2 = pd2A(ov,-1);
+  return {a, avgC, avgD, avgDR:Math.round(avgD), last, pred, ov, fer, pk1, pk2, cyc};
 }
 
 function renderPeriodSection(){
-  const st = pdCompute();
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const daysToNext = Math.round((st.predNext - today)/86400000);
-  const daysSinceLastEnd = Math.round((today - pdAdd(st.last, st.avgDurR-1))/86400000);
+  const st = pd2Compute();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d2n = Math.round((st.pred - today)/86400000);
 
-  // 预测卡片
-  document.getElementById('pdDays').textContent = daysToNext > 0 ? daysToNext : (daysToNext === 0 ? '今天' : '已过');
-  document.getElementById('pdNextDate').textContent = `${st.predNext.getMonth()+1}月${st.predNext.getDate()}日`;
-  document.getElementById('pdAvgCycle').textContent = st.avgCycle.toFixed(0);
-  document.getElementById('pdAvgDur').textContent = st.avgDur.toFixed(0);
-  document.getElementById('pdSinceLast').textContent = daysSinceLastEnd > 0 ? daysSinceLastEnd : 0;
-  document.getElementById('pdOvDate').textContent = `${st.predOv.getMonth()+1}月${st.predOv.getDate()}日`;
-  document.getElementById('pdFertileWin').textContent = `${st.fertileStart.getMonth()+1}/${st.fertileStart.getDate()} ~ ${st.predOv.getMonth()+1}/${st.predOv.getDate()}`;
-  document.getElementById('pdPeakDays').textContent = `${st.peak1.getMonth()+1}/${st.peak1.getDate()}、${st.peak2.getMonth()+1}/${st.peak2.getDate()}`;
+  // Summary
+  document.getElementById('pd2Days').textContent = d2n>0 ? d2n : (d2n===0 ? '今天' : '已过');
+  document.getElementById('pd2NextDate').textContent = `${st.pred.getMonth()+1}月${st.pred.getDate()}日`;
+  document.getElementById('pd2OvDate').textContent = `${st.ov.getMonth()+1}/${st.ov.getDate()}`;
+  document.getElementById('pd2Fertile').textContent = `${st.fer.getMonth()+1}/${st.fer.getDate()} ~ ${st.ov.getMonth()+1}/${st.ov.getDate()}`;
+  document.getElementById('pd2Peak').textContent = `${st.pk1.getMonth()+1}/${st.pk1.getDate()}、${st.pk2.getMonth()+1}/${st.pk2.getDate()}`;
 
-  // 历史列表（最近15条，倒序）
-  const hist = st.all.slice(-15).reverse();
-  document.getElementById('pdHistCount').textContent = `共 ${st.all.length} 次 · 显示最近15次`;
-  const histHtml = hist.map((r,i)=>{
-    const idx = st.all.length - 1 - i;
-    let cycStr = '';
-    if(idx > 0){
-      const cyc = st.cycles[idx-1];
-      cycStr = `<span class="pd-hist-cycle">周期 ${cyc} 天</span>`;
-    }
-    return `<div class="pd-hist-item">
-      <div class="pd-hist-dot"></div>
-      <div class="pd-hist-info">
-        <div class="pd-hist-dates">${r.s.slice(5).replace('-','月')}日 — ${r.e.slice(8)}日</div>
-        <div class="pd-hist-meta">持续 ${pdDiff(r.s,r.e)+1} 天</div>
-      </div>${cycStr}
-    </div>`;
-  }).join('');
-  document.getElementById('pdHistoryList').innerHTML = histHtml;
+  // Stats
+  document.getElementById('pd2AvgCycle').textContent = st.avgC.toFixed(0);
+  document.getElementById('pd2AvgDur').textContent = st.avgD.toFixed(0);
+  const since = Math.round((today - pd2A(st.last, st.avgDR-1))/86400000);
+  document.getElementById('pd2SinceLast').textContent = since>0 ? since : 0;
 
-  // 日历
-  pdRenderCalendar(st);
+  pd2RenderCal();
+  pd2RenderHist();
 }
 
-function pdRenderCalendar(st){
-  const y = pdCalDate.getFullYear(), m = pdCalDate.getMonth();
-  document.getElementById('pdCalTitle').textContent = `${y}年${m+1}月`;
-  const firstDay = new Date(y, m, 1).getDay();
-  const daysInMonth = new Date(y, m+1, 0).getDate();
-  const today = new Date();
-  today.setHours(0,0,0,0);
+function pd2RenderCal(){
+  const st = pd2Compute();
+  const y = pd2CalDate.getFullYear(), m = pd2CalDate.getMonth();
+  document.getElementById('pd2CalTitle').textContent = `${y}年${m+1}月`;
+  const fd = new Date(y,m,1).getDay();
+  const dim = new Date(y,m+1,0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
 
-  // 已知经期日期集合
-  const periodSet = new Set();
-  st.all.forEach(r=>{
-    const s = pdParse(r.s), e = pdParse(r.e);
-    for(let d=new Date(s); d<=e; d.setDate(d.getDate()+1)){
-      if(d.getFullYear()===y && d.getMonth()===m) periodSet.add(d.getDate());
+  const perSet = new Set();
+  st.a.forEach(r=>{
+    const s=pd2P(r.s),e=pd2P(r.e);
+    for(let d=new Date(s);d<=e;d.setDate(d.getDate()+1)){
+      if(d.getFullYear()===y&&d.getMonth()===m) perSet.add(d.getDate());
     }
   });
 
-  // 预测经期日期（predNext 开始的 avgDurR 天）
-  const predSet = new Set();
-  const predOvSet = new Set();
-  const fertileSet = new Set();
-  const peakSet = new Set();
-  for(let i=0;i<st.avgDurR;i++){
-    const d = pdAdd(st.predNext, i);
-    if(d.getFullYear()===y && d.getMonth()===m) predSet.add(d.getDate());
+  const predSet=new Set(),ovSet=new Set(),ferSet=new Set(),pkSet=new Set();
+  for(let i=0;i<st.avgDR;i++){
+    const d=pd2A(st.pred,i);
+    if(d.getFullYear()===y&&d.getMonth()===m) predSet.add(d.getDate());
   }
-  // 排卵日
-  if(st.predOv.getFullYear()===y && st.predOv.getMonth()===m) predOvSet.add(st.predOv.getDate());
-  // 易孕期（排卵前5天~排卵日）
+  if(st.ov.getFullYear()===y&&st.ov.getMonth()===m) ovSet.add(st.ov.getDate());
   for(let i=0;i<=5;i++){
-    const d = pdAdd(st.predOv, -i);
-    if(d.getFullYear()===y && d.getMonth()===m) fertileSet.add(d.getDate());
+    const d=pd2A(st.ov,-i);
+    if(d.getFullYear()===y&&d.getMonth()===m) ferSet.add(d.getDate());
   }
-  // 最佳受孕日（排卵前2天、前1天）
   for(let i=1;i<=2;i++){
-    const d = pdAdd(st.predOv, -i);
-    if(d.getFullYear()===y && d.getMonth()===m) peakSet.add(d.getDate());
+    const d=pd2A(st.ov,-i);
+    if(d.getFullYear()===y&&d.getMonth()===m) pkSet.add(d.getDate());
   }
 
-  // 渲染
   let html = '';
-  for(let i=0;i<firstDay;i++) html += '<div class="pd-day other"></div>';
-  for(let d=1; d<=daysInMonth; d++){
-    let cls = 'pd-day';
-    const dd = new Date(y, m, d);
+  for(let i=0;i<fd;i++) html += '<div class="pd2-day other"></div>';
+  for(let d=1;d<=dim;d++){
+    let cls = 'pd2-day';
+    const dd = new Date(y,m,d);
     if(+dd === +today) cls += ' today';
-    if(periodSet.has(d)) cls += ' period';
-    else if(predOvSet.has(d)) cls += ' ovulation';
-    else if(peakSet.has(d)) cls += ' peak-fertile';
-    else if(fertileSet.has(d)) cls += ' fertile';
+    if(perSet.has(d)) cls += ' period';
+    else if(ovSet.has(d)) cls += ' ovulation';
+    else if(pkSet.has(d)) cls += ' peak';
+    else if(ferSet.has(d)) cls += ' fertile';
     else if(predSet.has(d)) cls += ' predicted';
     html += `<div class="${cls}">${d}</div>`;
   }
-  document.getElementById('pdCalendar').innerHTML = html;
+  document.getElementById('pd2Calendar').innerHTML = html;
 }
 
-function pdShiftMonth(n){
-  pdCalDate = new Date(pdCalDate.getFullYear(), pdCalDate.getMonth()+n, 1);
-  pdRenderCalendar(pdCompute());
+function pd2RenderHist(){
+  const st = pd2Compute();
+  const a = st.a;
+
+  // 年份筛选按钮
+  const years = [...new Set(a.map(r=>pd2P(r.s).getFullYear()))].sort().reverse();
+  const filterHtml = `<button class="${pd2Filter==='all'?'active':''}" onclick="pd2SetFilter('all')">全部</button>` +
+    years.map(y=>`<button class="${pd2Filter===y?'active':''}" onclick="pd2SetFilter(${y})">${y}</button>`).join('');
+  document.getElementById('pd2HistFilter').innerHTML = filterHtml;
+
+  // 按年分组
+  let filtered = a;
+  if(pd2Filter !== 'all') filtered = a.filter(r=>pd2P(r.s).getFullYear()===pd2Filter);
+
+  const byYear = {};
+  filtered.forEach(r=>{
+    const y = pd2P(r.s).getFullYear();
+    if(!byYear[y]) byYear[y]=[];
+    byYear[y].push(r);
+  });
+
+  // 按年倒序渲染
+  const sortedYears = Object.keys(byYear).map(Number).sort((a,b)=>b-a);
+  const openYear = sortedYears[0]; // 默认展开最新一年
+
+  const html = sortedYears.map(y=>{
+    const items = byYear[y];
+    const cycs = st.cyc;
+    // 该年统计
+    const yearCyc = [];
+    items.forEach((r,i)=>{
+      const idx = a.findIndex(x=>x.s===r.s);
+      if(idx>0 && idx-1 < cycs.length && cycs[idx-1]!==undefined) yearCyc.push(cycs[idx-1]);
+    });
+    const avgY = yearCyc.length ? (yearCyc.reduce((x,z)=>x+z,0)/yearCyc.length).toFixed(1) : '-';
+    const open = y===openYear ? ' open' : '';
+
+    // 月视图：每个月一个进度条，条的位置显示经期日期
+    const byMonth = {};
+    items.forEach(r=>{
+      const m = pd2P(r.s).getMonth();
+      if(!byMonth[m]) byMonth[m]=[];
+      byMonth[m].push(r);
+    });
+
+    const months = [];
+    for(let m=0; m<12; m++){
+      const mItems = byMonth[m];
+      if(!mItems||!mItems.length) continue;
+      // 计算周期（从 items 中取）
+      let cycStr = '';
+      const firstIdx = a.findIndex(x=>x.s===mItems[0].s);
+      if(firstIdx>0 && firstIdx-1 < st.cyc.length && st.cyc[firstIdx-1]!==undefined) cycStr = `周期 ${st.cyc[firstIdx-1]}天`;
+
+      // 进度条：月初到月末，经期块定位
+      const dim = new Date(y, m+1, 0).getDate();
+      const bars = mItems.map(r=>{
+        const startDay = pd2P(r.s).getDate();
+        const endDay = pd2P(r.e).getDate();
+        const left = ((startDay-1)/dim)*100;
+        const width = ((endDay - startDay + 1)/dim)*100;
+        return `<div class="pd2-mo-fill" style="left:${left.toFixed(1)}%;width:${width.toFixed(1)}%"></div>`;
+      }).join('');
+
+      // 日期文字
+      const dateText = mItems.map(r=>{
+        const s = pd2P(r.s), e = pd2P(r.e);
+        return `${s.getMonth()+1}/${s.getDate()}-${e.getDate()}`;
+      }).join(' · ');
+
+      months.push(`<div class="pd2-mo-row">
+        <div class="pd2-mo-label">${m+1}月</div>
+        <div class="pd2-mo-bar">${bars}<div class="pd2-mo-text">${dateText}</div></div>
+        <div class="pd2-mo-cycle">${cycStr}</div>
+      </div>`);
+    }
+
+    return `<div class="pd2-year-group${open}">
+      <div class="pd2-year-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="pd2-y">${y}年</div>
+        <div>
+          <span class="pd2-meta">${items.length}次 · 平均周期 ${avgY}天</span>
+          <span class="pd2-arrow" style="margin-left:10px">▼</span>
+        </div>
+      </div>
+      <div class="pd2-year-body">${months.join('')}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('pd2HistList').innerHTML = html || '<div style="color:var(--muted);font-size:12px;padding:20px;text-align:center">该年份暂无数据</div>';
 }
 
-function pdAddToday(){
-  const today = new Date();
-  const s = pdFmt(today);
-  // 默认 7 天
-  const e = pdFmt(pdAdd(today, 6));
-  pdCustom.push({s, e});
-  DB.set('pd_custom', pdCustom);
-  showToast(`🩸 已记录 ${s} ~ ${e}`);
-  renderPeriodSection();
+function pd2SetFilter(y){ pd2Filter = y; pd2RenderHist(); }
+function pd2Shift(n){ pd2CalDate = new Date(pd2CalDate.getFullYear(), pd2CalDate.getMonth()+n, 1); pd2RenderCal(); }
+function pd2Add(){
+  const t=new Date(); const s=pd2F(t), e=pd2F(pd2A(t,6));
+  pd2Custom.push({s,e}); DB.set('pd_custom', pd2Custom);
+  showToast(`🩸 已记录 ${s} ~ ${e}`); renderPeriodSection();
 }
 
 function renderHoroRightCol() {
