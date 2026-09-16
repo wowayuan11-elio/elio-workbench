@@ -4384,18 +4384,18 @@ body.focus-mode .focus-station {
       <div class="pd2-summary">
         <div>
           <div class="pd2-days" id="pd2Days">--</div>
-          <div class="pd2-sub">距离下次经期 · 预计 <span id="pd2NextDate">--</span></div>
+          <div class="pd2-sub">距下次经期还有 <span id="pd2NextDate">--</span></div>
         </div>
         <div class="pd2-ov-box">
-          排卵日 <strong id="pd2OvDate">--</strong><br>
-          易孕期 <span id="pd2Fertile">--</span><br>
-          最佳受孕 <span id="pd2Peak">--</span>
+          预计排卵日 <strong id="pd2OvDate">--</strong><br>
+          本月易孕期 <span id="pd2Fertile">--</span><br>
+          最佳受孕日 <span id="pd2Peak">--</span>
         </div>
       </div>
       <div class="pd2-stats">
-        <div class="pd2-stat"><div class="pd2-v accent" id="pd2AvgCycle">--</div><div class="pd2-l">平均周期 / 天</div></div>
-        <div class="pd2-stat"><div class="pd2-v green" id="pd2AvgDur">--</div><div class="pd2-l">平均经期 / 天</div></div>
-        <div class="pd2-stat"><div class="pd2-v" id="pd2SinceLast">--</div><div class="pd2-l">距上次结束 / 天</div></div>
+        <div class="pd2-stat"><div class="pd2-v accent" id="pd2AvgCycle">--</div><div class="pd2-l">平均周期（两次间隔天数）</div></div>
+        <div class="pd2-stat"><div class="pd2-v green" id="pd2AvgDur">--</div><div class="pd2-l">平均经期（每次持续天数）</div></div>
+        <div class="pd2-stat"><div class="pd2-v" id="pd2SinceLast">--</div><div class="pd2-l">距上次结束（已过天数）</div></div>
       </div>
       <div class="pd2-cal-wrap">
         <div class="pd2-cal-head">
@@ -4416,9 +4416,8 @@ body.focus-mode .focus-station {
         </div>
       </div>
       <div class="pd2-manual-row">
-        <input type="date" id="pd2InStart">
-        <span>—</span>
-        <input type="date" id="pd2InEnd">
+        <input type="date" id="pd2InStart" onchange="pd2AutoEnd(this)" onclick="if(!this.value)this.showPicker()" style="cursor:pointer">
+        <span class="pd2-auto-end" id="pd2AutoEnd"></span>
         <button class="btn-add" onclick="pd2ManualAdd()">添加</button>
         <button class="btn-back" onclick="pd2CalDate=new Date();pd2RenderCal();pd2RenderHist()">今天</button>
       </div>
@@ -9861,17 +9860,18 @@ function renderPeriodSection(){
   const d2n = Math.round((st.pred - today)/86400000);
 
   // Summary
-  document.getElementById('pd2Days').textContent = d2n>0 ? d2n : (d2n===0 ? '今天' : '已过');
+  const daysLabel = d2n>0 ? `${d2n}天后` : (d2n===0 ? '就是今天' : `已过${-d2n}天`);
+  document.getElementById('pd2Days').textContent = daysLabel;
   document.getElementById('pd2NextDate').textContent = `${st.pred.getMonth()+1}月${st.pred.getDate()}日`;
-  document.getElementById('pd2OvDate').textContent = `${st.ov.getMonth()+1}/${st.ov.getDate()}`;
-  document.getElementById('pd2Fertile').textContent = `${st.fer.getMonth()+1}/${st.fer.getDate()} ~ ${st.ov.getMonth()+1}/${st.ov.getDate()}`;
-  document.getElementById('pd2Peak').textContent = `${st.pk1.getMonth()+1}/${st.pk1.getDate()}、${st.pk2.getMonth()+1}/${st.pk2.getDate()}`;
+  document.getElementById('pd2OvDate').textContent = `${st.ov.getMonth()+1}月${st.ov.getDate()}日`;
+  document.getElementById('pd2Fertile').textContent = `${st.fer.getMonth()+1}月${st.fer.getDate()}日 ~ ${st.ov.getMonth()+1}月${st.ov.getDate()}日`;
+  document.getElementById('pd2Peak').textContent = `${st.pk1.getMonth()+1}月${st.pk1.getDate()}日、${st.pk2.getMonth()+1}月${st.pk2.getDate()}日`;
 
   // Stats
-  document.getElementById('pd2AvgCycle').textContent = st.avgC.toFixed(0);
-  document.getElementById('pd2AvgDur').textContent = st.avgD.toFixed(0);
+  document.getElementById('pd2AvgCycle').textContent = `${st.avgC.toFixed(0)} 天`;
+  document.getElementById('pd2AvgDur').textContent = `${st.avgD.toFixed(0)} 天`;
   const since = Math.round((today - pd2A(st.last, st.avgDR-1))/86400000);
-  document.getElementById('pd2SinceLast').textContent = since>0 ? since : 0;
+  document.getElementById('pd2SinceLast').textContent = `${since>0 ? since : 0} 天`;
 
   pd2RenderCal();
   pd2RenderHist();
@@ -10037,18 +10037,28 @@ function pd2RenderCustomList(){
     <button onclick="pd2DeleteAllCustom()" style="font-size:10px;color:#bbb;border:none;background:none;cursor:pointer;margin-top:4px">清空全部</button>`;
 }
 function pd2Shift(n){ pd2CalDate = new Date(pd2CalDate.getFullYear(), pd2CalDate.getMonth()+n, 1); pd2RenderCal(); }
+function pd2AutoEnd(el){
+  const s = el.value;
+  const span = document.getElementById('pd2AutoEnd');
+  if(!s){ span.textContent = ''; return; }
+  const d = new Date(s);
+  d.setDate(d.getDate() + 6);
+  const e = pd2F(d);
+  span.textContent = `→ ${e}（7天）`;
+}
 function pd2ManualAdd(){
   const sEl = document.getElementById('pd2InStart');
-  const eEl = document.getElementById('pd2InEnd');
-  const s = sEl.value, e = eEl.value;
-  if(!s || !e){ showToast('请填写开始和结束日期'); return; }
-  if(s > e){ showToast('开始日期不能晚于结束日期'); return; }
-  // 去重
+  const s = sEl.value;
+  if(!s){ showToast('请填写开始日期'); return; }
+  const d = new Date(s);
+  d.setDate(d.getDate() + 6);
+  const e = pd2F(d);
   if(pd2Custom.some(r => r.s === s)){ showToast('这一天已经添加过了'); return; }
   pd2Custom.push({s, e});
   DB.set('pd_custom', pd2Custom);
-  sEl.value = ''; eEl.value = '';
-  showToast(`✅ 已添加 ${s} ~ ${e}`);
+  sEl.value = '';
+  document.getElementById('pd2AutoEnd').textContent = '';
+  showToast(`已添加 ${s} ~ ${e}（7天）`);
   renderPeriodSection();
 }
 function pd2DeleteCustom(idx){
