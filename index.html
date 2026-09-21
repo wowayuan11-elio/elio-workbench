@@ -3923,6 +3923,58 @@ body.focus-mode .focus-station {
 /* 设置页溢出修复 */
 #settings .card,#settings>div{max-width:100%;overflow-x:hidden}
 
+/* ========== 流年运势模块 CSS ========== */
+.ln-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:18px; }
+.ln-grid > .ln-col { display:flex; flex-direction:column; gap:18px; min-width:0; }
+.ln-card { min-width:0; max-width:100%; overflow-x:hidden; background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturate)); border-radius:var(--radius-lg); box-shadow:var(--shadow-glass); padding:clamp(18px,3vw,24px); border:1px solid var(--glass-border); }
+.ln-profile-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.ln-p-item { padding:12px 14px; background:var(--surface-2); border-radius:var(--radius-sm); }
+.ln-p-item .lb { font-size:10.5px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; }
+.ln-p-item .vl { font-size:14.5px; font-weight:700; color:var(--ink); margin-top:4px; }
+.ln-year-overview { background:linear-gradient(135deg,rgba(16,185,129,0.10),rgba(139,92,246,0.06)); }
+.ln-yo-head { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:10px; }
+.ln-yo-year { font-size:30px; font-weight:800; color:var(--ink); letter-spacing:-0.02em; }
+.ln-yo-ganzhi { font-size:18px; font-weight:700; color:var(--accent); font-family:var(--mono); }
+.ln-yo-shichen { display:inline-block; padding:5px 14px; border-radius:999px; font-size:12.5px; font-weight:700; color:#fff; box-shadow:0 4px 12px rgba(16,185,129,0.28); }
+.ln-yo-desc { font-size:13.5px; color:var(--ink-soft); line-height:1.78; }
+.ln-yo-desc b { font-weight:700; }
+.ln-month-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px 14px; margin-bottom:14px; }
+.ln-month-head .hl-card-title { margin:0; }
+.ln-year-tabs { display:flex; flex-wrap:wrap; gap:6px; }
+.ln-ytab { padding:6px 12px; border-radius:999px; font-size:12px; font-weight:600; color:var(--muted); background:var(--rule-soft); cursor:pointer; transition:all 0.2s; border:1px solid transparent; user-select:none; }
+.ln-ytab:hover { color:var(--ink); }
+.ln-ytab.active { background:var(--accent); color:#fff; box-shadow:0 4px 12px rgba(107,91,255,0.3); }
+.ln-table { width:100%; border-collapse:collapse; font-size:13px; min-width:0; }
+.ln-table th { text-align:left; padding:10px 10px; font-size:10.5px; font-weight:700; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; border-bottom:1px solid var(--rule); white-space:nowrap; }
+.ln-table td { padding:11px 10px; color:var(--ink-soft); border-bottom:1px solid var(--rule-soft); vertical-align:top; line-height:1.55; }
+.ln-table tr:last-child td { border-bottom:none; }
+.ln-table .ln-m-mon { font-weight:700; color:var(--ink); white-space:nowrap; }
+.ln-table .ln-m-gz { font-family:var(--mono); font-weight:600; color:var(--ink); white-space:nowrap; }
+.ln-month-table-wrap, .ln-year-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.ln-month-table th:nth-child(4), .ln-month-table th:nth-child(5),
+.ln-month-table td:nth-child(4), .ln-month-table td:nth-child(5) { min-width:92px; }
+.ln-sch { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:700; white-space:nowrap; color:#fff; }
+/* 当前月/当前年高亮 */
+.ln-table tr.ln-current td { background:linear-gradient(90deg,rgba(245,158,11,0.12),rgba(245,158,11,0.02)); }
+.ln-table tr.ln-current .ln-m-mon::after { content:'·今'; font-size:10px; color:var(--gold); font-weight:700; margin-left:2px; }
+.ln-table tr.ln-current-year td { background:linear-gradient(90deg,rgba(16,185,129,0.12),rgba(16,185,129,0.02)); }
+.ln-table tr.ln-current-year .ln-y-yr::after { content:'·今'; font-size:10px; color:var(--sage); font-weight:700; margin-left:2px; }
+.ln-month-hint { margin-top:14px; padding:12px 14px; background:var(--rule-soft); border-radius:var(--radius-sm); font-size:12px; color:var(--muted); line-height:1.7; }
+.ln-month-hint b { color:var(--ink); font-weight:600; }
+.ln-quick-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.ln-qcard { padding:12px 14px; background:var(--surface-2); border-radius:var(--radius-sm); border-left:3px solid var(--rule); min-width:0; }
+.ln-qcard .ln-q-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.ln-qcard .ln-q-yi { font-size:11.5px; color:#047857; line-height:1.5; margin-bottom:3px; }
+.ln-qcard .ln-q-bu { font-size:11.5px; color:#be123c; line-height:1.5; }
+.ln-qcard .ln-q-yi::before { content:'宜 '; font-weight:700; }
+.ln-qcard .ln-q-bu::before { content:'忌 '; font-weight:700; }
+@media (max-width: 860px) {
+  .ln-grid { grid-template-columns:1fr; }
+  .ln-quick-grid { grid-template-columns:1fr; }
+  .ln-yo-year { font-size:24px; }
+  .ln-table { font-size:12.5px; }
+  .ln-table th, .ln-table td { padding:9px 8px; }
+}
 </style>
 </head>
 <body>
@@ -3987,6 +4039,7 @@ body.focus-mode .focus-station {
       <div class="nav-item" data-section="stats"><span class="nav-icon">▤</span> 数据统计</div>
       <div class="nav-item" data-section="achievements" style="display:none"><span class="nav-icon">🏆</span> 成就徽章</div>
       <div class="nav-item" data-section="huangli"><span class="nav-icon">📜</span> 黄道吉日</div>
+      <div class="nav-item" data-section="liunian"><span class="nav-icon">🔮</span> 流年运势</div>
       <div class="nav-item" data-section="horoscope"><span class="nav-icon">⚖</span> 星座运势</div>
       <div class="nav-item" data-section="mahjong"><span class="nav-icon">🀄</span> 麻将运势</div>
       <div class="nav-item" data-section="period"><span class="nav-icon">🩸</span> 经期记录</div>
@@ -4430,6 +4483,59 @@ body.focus-mode .focus-station {
         <div id="pd2HistList"></div>
       </div>
     </section>
+
+    <section class="section" id="liunian">
+      <h1 class="page-title">🔮 流年运势</h1>
+      <p class="page-sub">日主甲木 · 流年十神月度规划 · 2024-2030 七年运势图谱</p>
+      <div class="ln-grid">
+        <div class="ln-col">
+          <div class="ln-card ln-profile">
+            <div class="hl-card-title">🪷 命主档案</div>
+            <div class="ln-profile-grid">
+              <div class="ln-p-item"><div class="lb">日主</div><div class="vl">甲（阳木）</div></div>
+              <div class="ln-p-item"><div class="lb">日柱</div><div class="vl">甲辰</div></div>
+              <div class="ln-p-item"><div class="lb">阳历生日</div><div class="vl">1999-10-19</div></div>
+              <div class="ln-p-item"><div class="lb">生肖</div><div class="vl">属兔（己卯）</div></div>
+            </div>
+          </div>
+          <div class="ln-card ln-year-overview" id="lnYearOverview"></div>
+          <div class="ln-card">
+            <div class="hl-card-title">📅 七年运势概览（2024-2030）</div>
+            <div class="ln-year-table-wrap">
+              <table class="ln-table ln-year-table">
+                <thead>
+                  <tr><th>年份</th><th>干支</th><th>十神</th><th>关键词</th></tr>
+                </thead>
+                <tbody id="lnYearTbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ln-card">
+            <div class="hl-card-title">📖 十神速查表</div>
+            <div class="ln-quick-grid" id="lnQuickGrid"></div>
+          </div>
+        </div>
+        <div class="ln-col">
+          <div class="ln-card">
+            <div class="ln-month-head">
+              <div class="hl-card-title">🗓 月度十神详程</div>
+              <div class="ln-year-tabs" id="lnYearTabs"></div>
+            </div>
+            <div class="ln-month-table-wrap">
+              <table class="ln-table ln-month-table">
+                <thead>
+                  <tr>
+                    <th>月份</th><th>干支</th><th>十神</th><th>宜</th><th>不宜</th>
+                  </tr>
+                </thead>
+                <tbody id="lnMonthTbody"></tbody>
+              </table>
+            </div>
+            <div class="ln-month-hint" id="lnMonthHint"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 <section class="section" id="settings">
       <h1 class="page-title">设置</h1>
       <p class="page-sub">数据管理 · 主题 · 壁纸 · 导出备份</p>
@@ -4590,6 +4696,7 @@ body.focus-mode .focus-station {
       <div class="ms-item" data-section="achievements" style="display:none"><span class="ms-icon">🏆</span><span class="ms-label">成就徽章</span></div>
       <div class="ms-item" data-section="mahjong"><span class="ms-icon">🀄</span><span class="ms-label">麻将运势</span></div>
       <div class="ms-item" data-section="period"><span class="ms-icon">🩸</span><span class="ms-label">经期记录</span></div>
+      <div class="ms-item" data-section="liunian"><span class="ms-icon">🔮</span><span class="ms-label">流年运势</span></div>
       <div class="ms-item" data-section="settings"><span class="ms-icon">⚙</span><span class="ms-label">设置</span></div>
     </div>
   </div>
@@ -5089,7 +5196,7 @@ const SECTION_NAMES = {
   dashboard:'仪表盘', tasks:'任务管理', pomodoro:'番茄钟', habits:'习惯打卡',
   life:'生活管理', feynman:'费曼练习', media:'自媒体', topics:'热点追踪',
   news:'资讯日报', review:'每日复盘', stats:'数据统计', achievements:'成就徽章',
-  huangli:'黄道吉日', horoscope:'星座运势', mahjong:'麻将运势', settings:'设置'
+  huangli:'黄道吉日', liunian:'流年运势', horoscope:'星座运势', mahjong:'麻将运势', settings:'设置'
 };
 function updateTopbarBadge() {
   const today = todayStr();
@@ -5115,6 +5222,7 @@ const SEARCH_SECTIONS = [
   { id:'review',    name:'每日复盘', icon:'❏', aliases:['复盘','review','日记','日报','总结','回顾'] },
   { id:'stats',     name:'数据统计', icon:'▤', aliases:['统计','数据','stats','报表','分析','图表'] },
   { id:'huangli',   name:'黄道吉日', icon:'📜', aliases:['黄历','黄','吉日','宜忌','黄道','万年历','日历','择日'] },
+  { id:'liunian',   name:'流年运势', icon:'🔮', aliases:['流年','运势','十神','八字','命理','甲辰','日主','食神','伤官','偏财','正财'] },
   { id:'horoscope', name:'星座运势', icon:'⚖', aliases:['星座','运势','星运','horo','libra','天秤','占星'] },
   { id:'mahjong',   name:'麻将运势', icon:'🀄', aliases:['麻将','牌局','mahjong','财神','方位','打麻将','吉时'] },
   { id:'settings',  name:'设置',     icon:'⚙', aliases:['设置','setting','配置','偏好','齿轮'] },
@@ -5338,7 +5446,7 @@ function doInlineContentSearch(q, target) {
 function sectionName(id){
   return ({tasks:'任务管理',habits:'习惯打卡',news:'资讯日报',topics:'热点追踪',
     dashboard:'仪表盘',pomodoro:'番茄钟',life:'生活管理',feynman:'费曼练习',
-    media:'自媒体',review:'每日复盘',stats:'数据统计',huangli:'黄道吉日',
+    media:'自媒体',review:'每日复盘',stats:'数据统计',huangli:'黄道吉日',liunian:'流年运势',
     horoscope:'星座运势',mahjong:'麻将运势',settings:'设置'})[id]||'工作台';
 }
 // 点击页面其他地方时收起下拉
@@ -5729,6 +5837,7 @@ function switchSection(name) {
   if (name === 'horoscope') renderHoroSection();
   if (name === 'mahjong') renderMahjongSection();
   if (name === 'period') renderPeriodSection();
+  if (name === 'liunian') renderLiunianSection();
   if (name === 'tasks') { renderTaskProjectSelect(); renderTasks(); renderSavedFiltersBar(); }
   window.scrollTo(0, 0);
 }
@@ -10808,6 +10917,222 @@ if (typeof showToast === 'function'){
  * 确保所有 const/let/function（LUNAR_INFO、GAN_ZHI、calcHuangLi 等）
  * 都已脱离 TDZ 暂时性死区，黄历&星座 Widget 不再报 TDZ 错误
  * ====================================================================== */
+
+/* =====================================================================
+ * 流年运势模块：日主甲木 · 2024-2030 流年十神月度规划
+ * 月柱按五虎遁推算；2026 月度宜忌采用任务指定具体值，其余年份按十神通用宜忌
+ * ===================================================================== */
+const LN_SHEN = {
+  '食神': { yi:'享受生活、创作、表达', bu:'减肥、自律、克制', color:'#10b981', desc:'日主所生同性之物，主口福、享受、才华外露，忌自我压抑。' },
+  '伤官': { yi:'创业、自由职业、表达', bu:'乖乖上班、压抑才华', color:'#f97316', desc:'日主所生异性之物，主才华横溢、叛逆创新，忌墨守成规。' },
+  '偏财': { yi:'副业、投资、偏门收入', bu:'谈恋爱破财', color:'#d4a017', desc:'日主所克同性之物，主偏门财、意外收入，忌情场破财。' },
+  '正财': { yi:'踏实赚钱、存钱', bu:'冒险投资', color:'#3b82f6', desc:'日主所克异性之物，主正业收入、稳定财源，忌投机冒险。' },
+  '劫财': { yi:'守财、避免大额支出', bu:'投资、借钱', color:'#ef4444', desc:'与日主异性同五行，主争财、合作破财，忌借钱投资。' },
+  '比肩': { yi:'独立做事、竞争', bu:'依赖他人', color:'#64748b', desc:'与日主同性同五行，主独立、竞争、花销大，忌依附他人。' },
+  '偏官': { yi:'拼搏、突破', bu:'躺平、逃避', color:'#991b1b', desc:'克日主同性之物，又称七杀，主压力、突破、权柄，忌逃避躺平。' },
+  '正官': { yi:'求职、升职、守规矩', bu:'叛逆作死', color:'#1e40af', desc:'克日主异性之物，主名声、职位、规矩，忌叛逆作死。' },
+  '偏印': { yi:'学玄学、艺术、偏门', bu:'死磕主流', color:'#8b5cf6', desc:'生日主同性之物，又称枭神，主偏门学问、玄学艺术。' },
+  '正印': { yi:'考证、学习、贵人相助', bu:'逆长辈意', color:'#06b6d4', desc:'生日主异性之物，主学业、长辈、贵人，忌逆长辈意。' }
+};
+function LN_SHEN_LABEL(s){ return s === '偏官' ? '偏官(七杀)' : s; }
+
+const LN_YEARS = [
+  { year:2024, ganzhi:'甲辰', shen:'比肩', keywords:'竞争、独立、花销大' },
+  { year:2025, ganzhi:'乙巳', shen:'劫财', keywords:'破财风险、别投资' },
+  { year:2026, ganzhi:'丙午', shen:'食神', keywords:'享受、创作、表达' },
+  { year:2027, ganzhi:'丁未', shen:'伤官', keywords:'创业、自由职业、别打工' },
+  { year:2028, ganzhi:'戊申', shen:'偏财', keywords:'副业、偏门收入、别谈恋爱' },
+  { year:2029, ganzhi:'己酉', shen:'正财', keywords:'踏实赚钱、存钱' },
+  { year:2030, ganzhi:'庚戌', shen:'偏官', keywords:'拼搏、承受压力' }
+];
+
+// 公历 1-12 月对应节气月：1月=丑月,2月=寅月,...,12月=子月
+const LN_MONTH_BASE = [
+  { solarMonth:1,  mon:'丑月' }, { solarMonth:2,  mon:'寅月' },
+  { solarMonth:3,  mon:'卯月' }, { solarMonth:4,  mon:'辰月' },
+  { solarMonth:5,  mon:'巳月' }, { solarMonth:6,  mon:'午月' },
+  { solarMonth:7,  mon:'未月' }, { solarMonth:8,  mon:'申月' },
+  { solarMonth:9,  mon:'酉月' }, { solarMonth:10, mon:'戌月' },
+  { solarMonth:11, mon:'亥月' }, { solarMonth:12, mon:'子月' }
+];
+
+const _LN_GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const _LN_ZHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+// 五虎遁：起寅月天干索引（甲己→丙, 乙庚→戊, 丙辛→庚, 丁壬→壬, 戊癸→甲）
+const _LN_START_GAN = { '甲':2,'己':2,'乙':4,'庚':4,'丙':6,'辛':6,'丁':8,'壬':8,'戊':0,'癸':0 };
+const _LN_START_NAME = { '甲':'丙寅','己':'丙寅','乙':'戊寅','庚':'戊寅','丙':'庚寅','辛':'庚寅','丁':'壬寅','壬':'壬寅','戊':'甲寅','癸':'甲寅' };
+
+// 日主甲阳木的十神映射（按月干）
+const LN_SHEN_OF_STEM = {
+  '甲':'比肩','乙':'劫财','丙':'食神','丁':'伤官',
+  '戊':'偏财','己':'正财','庚':'偏官','辛':'正官',
+  '壬':'偏印','癸':'正印'
+};
+
+// 2026 年任务指定的月度具体宜/忌（覆盖十神通用宜忌）
+const LN_2026_CUSTOM = {
+  1:  { yi:'签约、求职',         bu:'叛逆作死' },
+  2:  { yi:'拼搏突破',           bu:'躺平' },
+  3:  { yi:'求职、考试',         bu:'冲撞上级' },
+  4:  { yi:'学玄学、偏门知识',   bu:'死磕主流' },
+  5:  { yi:'考证、学习、找贵人', bu:'逆长辈意' },
+  6:  { yi:'独立做事、竞争',     bu:'依赖他人' },
+  7:  { yi:'守财',               bu:'投资、借钱' },
+  8:  { yi:'创作、享受、表达',   bu:'减肥自律' },
+  9:  { yi:'创业、自由职业',     bu:'乖乖上班' },
+  10: { yi:'副业、偏门财',       bu:'恋爱破财' },
+  11: { yi:'签合同、稳定收入',   bu:'冒险投资' },
+  12: { yi:'承受压力、收尾',     bu:'惹事生非' }
+};
+
+let lnCurrentYear = 2026; // 默认当前年份
+
+function lnMonthGZ(yearStem, solarMonth) {
+  const start = _LN_START_GAN[yearStem];
+  if (start === undefined) return '?';
+  // 寅月(solarMonth=2)为基准，其他月份 cyclically 前进
+  const offset = (solarMonth - 2 + 12) % 12;
+  const ganIdx = (start + offset) % 10;
+  const zhiIdx = (2 + offset) % 12; // 寅=2
+  return _LN_GAN[ganIdx] + _LN_ZHI[zhiIdx];
+}
+
+function lnBuildMonths(year) {
+  const y = LN_YEARS.find(x => x.year === year);
+  if (!y) return [];
+  const yearStem = y.ganzhi[0];
+  return LN_MONTH_BASE.map(m => {
+    const gz = lnMonthGZ(yearStem, m.solarMonth);
+    const shen = LN_SHEN_OF_STEM[gz[0]];
+    let yi, bu;
+    if (year === 2026 && LN_2026_CUSTOM[m.solarMonth]) {
+      yi = LN_2026_CUSTOM[m.solarMonth].yi;
+      bu = LN_2026_CUSTOM[m.solarMonth].bu;
+    } else {
+      const s = LN_SHEN[shen];
+      yi = s.yi; bu = s.bu;
+    }
+    return {
+      solarMonth: m.solarMonth,
+      monLabel: m.solarMonth + '月(' + m.mon + ')',
+      ganzhi: gz,
+      shen: shen,
+      shenLabel: LN_SHEN_LABEL(shen),
+      yi: yi,
+      bu: bu
+    };
+  });
+}
+
+function renderLiunianSection() {
+  // 当前年份概览
+  const yo = document.getElementById('lnYearOverview');
+  if (yo) {
+    const cur = LN_YEARS.find(y => y.year === lnCurrentYear) || LN_YEARS[2];
+    const shenInfo = LN_SHEN[cur.shen];
+    const label = LN_SHEN_LABEL(cur.shen);
+    const isCur = (cur.year === 2026);
+    yo.innerHTML =
+      '<div class="hl-card-title">✨ ' + (isCur ? '当前流年' : '流年') + ' · ' + cur.year + '</div>' +
+      '<div class="ln-yo-head">' +
+        '<span class="ln-yo-year">' + cur.year + '</span>' +
+        '<span class="ln-yo-ganzhi">' + cur.ganzhi + '</span>' +
+        '<span class="ln-yo-shichen" style="background:linear-gradient(135deg,' + shenInfo.color + ',' + shenInfo.color + 'cc)">' + label + '年</span>' +
+      '</div>' +
+      '<div class="ln-yo-desc">' +
+        '<b style="color:' + shenInfo.color + '">' + label + '年</b>：' + shenInfo.desc + '<br>' +
+        '<span style="color:var(--muted);font-size:12px">关键词：' + cur.keywords + '　·　宜「' + shenInfo.yi + '」　忌「' + shenInfo.bu + '」</span>' +
+      '</div>';
+  }
+
+  // 年度概览表
+  const ytb = document.getElementById('lnYearTbody');
+  if (ytb) {
+    ytb.innerHTML = LN_YEARS.map(y => {
+      const s = LN_SHEN[y.shen];
+      const label = LN_SHEN_LABEL(y.shen);
+      const cls = (y.year === 2026) ? 'ln-current-year' : '';
+      return '<tr class="' + cls + '">' +
+        '<td class="ln-y-yr" style="font-weight:700;color:var(--ink)">' + y.year + '</td>' +
+        '<td style="font-family:var(--mono);font-weight:600">' + y.ganzhi + '</td>' +
+        '<td><span class="ln-sch" style="background:' + s.color + '">' + label + '</span></td>' +
+        '<td style="font-size:12.5px">' + y.keywords + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  // 十神速查表
+  const qg = document.getElementById('lnQuickGrid');
+  if (qg) {
+    qg.innerHTML = Object.keys(LN_SHEN).map(k => {
+      const s = LN_SHEN[k];
+      const label = LN_SHEN_LABEL(k);
+      return '<div class="ln-qcard" style="border-left-color:' + s.color + '">' +
+        '<div class="ln-q-head"><span class="ln-sch" style="background:' + s.color + '">' + label + '</span></div>' +
+        '<div class="ln-q-yi">' + s.yi + '</div>' +
+        '<div class="ln-q-bu">' + s.bu + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // 年份切换 tabs
+  const yt = document.getElementById('lnYearTabs');
+  if (yt) {
+    yt.innerHTML = LN_YEARS.map(y => {
+      const cls = (y.year === lnCurrentYear) ? 'ln-ytab active' : 'ln-ytab';
+      return '<span class="' + cls + '" data-year="' + y.year + '" onclick="lnSwitchYear(' + y.year + ')">' + y.year + '</span>';
+    }).join('');
+  }
+
+  // 月度详程表
+  lnRenderMonths();
+}
+
+function lnRenderMonths() {
+  const mtb = document.getElementById('lnMonthTbody');
+  if (!mtb) return;
+  const months = lnBuildMonths(lnCurrentYear);
+  // 仅 2026 高亮当前月（公历当前月）
+  const now = new Date();
+  const currentMonth = (lnCurrentYear === 2026) ? (now.getMonth() + 1) : null;
+  mtb.innerHTML = months.map(m => {
+    const s = LN_SHEN[m.shen];
+    const cls = (currentMonth === m.solarMonth) ? 'ln-current' : '';
+    return '<tr class="' + cls + '">' +
+      '<td class="ln-m-mon">' + m.monLabel + '</td>' +
+      '<td class="ln-m-gz">' + m.ganzhi + '</td>' +
+      '<td><span class="ln-sch" style="background:' + s.color + '">' + m.shenLabel + '</span></td>' +
+      '<td style="font-size:12.5px;color:#047857">' + m.yi + '</td>' +
+      '<td style="font-size:12.5px;color:#be123c">' + m.bu + '</td>' +
+    '</tr>';
+  }).join('');
+
+  // 提示说明
+  const hint = document.getElementById('lnMonthHint');
+  if (hint) {
+    const y = LN_YEARS.find(x => x.year === lnCurrentYear);
+    if (y) {
+      const s = LN_SHEN[y.shen];
+      const label = LN_SHEN_LABEL(y.shen);
+      const startName = _LN_START_NAME[y.ganzhi[0]];
+      let html = '<b>' + y.year + '年 ' + y.ganzhi + ' · ' + label + '年</b>　关键词：' + y.keywords + '<br>';
+      html += '月柱按五虎遁推算（' + y.ganzhi[0] + '年→' + startName + '起寅月），日主<b>甲木</b>见月干论十神。';
+      if (currentMonth) {
+        const cur = months.find(m => m.solarMonth === currentMonth);
+        if (cur) {
+          html += '<br>📍 当前 <b>' + cur.monLabel + '</b>（' + cur.ganzhi + '）为 <b style="color:' + s.color + '">' + cur.shenLabel + '</b>月，宜「' + cur.yi + '」，忌「' + cur.bu + '」。';
+        }
+      }
+      hint.innerHTML = html;
+    }
+  }
+}
+
+function lnSwitchYear(year) {
+  lnCurrentYear = year;
+  renderLiunianSection();
+}
+
 init();
 </script>
 
