@@ -3975,6 +3975,193 @@ body.focus-mode .focus-station {
   .ln-table { font-size:12.5px; }
   .ln-table th, .ln-table td { padding:9px 8px; }
 }
+/* ========== 求职跟踪模块 CSS ========== */
+.jt-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-glass);
+  padding: clamp(16px,2.5vw,22px);
+  border: 1px solid var(--glass-border);
+  margin-bottom: 16px;
+  min-width: 0;
+  max-width: 100%;
+}
+.jt-card-title {
+  font-size: 14px; font-weight: 700; color: var(--ink);
+  letter-spacing: -0.01em; margin-bottom: 14px;
+}
+.jt-form-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 12px 14px; align-items: start;
+}
+.jt-field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.jt-field-note { grid-column: 1 / -1; }
+.jt-field label {
+  font-size: 10.5px; color: var(--muted); font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.jt-field input, .jt-field select, .jt-field textarea {
+  width: 100%; padding: 8px 11px; font-size: 13px;
+  color: var(--ink); background: var(--surface-2);
+  border: 1px solid var(--rule); border-radius: var(--r-input, 12px);
+  outline: none; transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+  font-family: var(--font-body); min-width: 0;
+  box-sizing: border-box;
+}
+.jt-field textarea { resize: vertical; line-height: 1.55; }
+.jt-field input:focus, .jt-field select:focus, .jt-field textarea:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg);
+}
+.jt-form-actions {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 14px; flex-wrap: wrap;
+}
+.jt-btn {
+  padding: 8px 18px; font-size: 13px; font-weight: 600;
+  border: none; border-radius: var(--r-btn, 14px); cursor: pointer;
+  transition: all var(--dur-fast); font-family: var(--font-body);
+}
+.jt-btn.primary {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 4px 12px rgba(107,91,255,0.28);
+}
+.jt-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(107,91,255,0.36); }
+.jt-btn.ghost {
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--rule);
+}
+.jt-btn.ghost:hover { color: var(--ink); border-color: var(--accent); }
+.jt-edit-hint { font-size: 11px; color: var(--gold); font-weight: 600; }
+
+/* 筛选栏 */
+.jt-filter-card { padding: 14px clamp(16px,2.5vw,22px); }
+.jt-filter-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; flex-wrap: wrap;
+}
+.jt-filter-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.jt-date-group { flex-wrap: nowrap; }
+.jt-filter-label {
+  font-size: 10.5px; color: var(--muted); font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase; flex-shrink: 0;
+}
+.jt-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.jt-chip {
+  padding: 4px 11px; font-size: 11.5px; font-weight: 500;
+  border: 1px solid var(--rule); background: transparent; color: var(--muted);
+  border-radius: 999px; cursor: pointer; transition: all var(--dur-fast);
+  font-family: var(--font-body);
+}
+.jt-chip:hover { color: var(--ink); border-color: var(--accent-soft); }
+.jt-chip.active {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(107,91,255,0.24);
+}
+.jt-date-group input[type=date] {
+  padding: 4px 8px; font-size: 11.5px; border: 1px solid var(--rule);
+  border-radius: 8px; background: var(--surface-2); color: var(--ink);
+  font-family: var(--font-body);
+}
+.jt-date-sep { font-size: 11px; color: var(--muted-light); }
+.jt-btn-tiny {
+  padding: 4px 9px; font-size: 11px; background: transparent;
+  border: 1px solid var(--rule); border-radius: 8px; cursor: pointer;
+  color: var(--muted); transition: all var(--dur-fast); font-family: var(--font-body);
+}
+.jt-btn-tiny:hover { color: var(--ink); }
+.jt-filter-summary {
+  margin-top: 10px; font-size: 11.5px; color: var(--muted);
+  display: none;
+}
+.jt-filter-summary.show { display: block; }
+.jt-filter-summary b { color: var(--ink); font-weight: 600; }
+
+/* 记录列表 */
+.jt-list-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.jt-list-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.jt-list-count { font-size: 11.5px; color: var(--muted); }
+.jt-list { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.jt-row {
+  display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) auto auto;
+  gap: 10px 14px; align-items: center;
+  padding: 11px 14px; background: var(--surface-2);
+  border-radius: var(--radius-sm); border: 1px solid var(--rule-soft);
+  transition: all var(--dur-fast); min-width: 0;
+}
+.jt-row:hover { background: var(--glass-bg-hover); border-color: var(--rule); }
+.jt-r-main { min-width: 0; }
+.jt-r-company {
+  font-size: 13.5px; font-weight: 700; color: var(--ink);
+  letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.jt-r-position {
+  font-size: 11.5px; color: var(--muted); margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.jt-r-note {
+  font-size: 11px; color: var(--muted-light); margin-top: 3px;
+  line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.jt-r-meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.jt-r-date {
+  font-size: 11.5px; color: var(--muted); font-family: var(--mono);
+  white-space: nowrap;
+}
+.jt-r-channel {
+  font-size: 10.5px; color: var(--muted-light); white-space: nowrap;
+}
+.jt-r-tag {
+  display: inline-block; padding: 3px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; white-space: nowrap; color: #fff;
+  justify-self: end;
+}
+.jt-st-applied  { background: #94a3b8; }
+.jt-st-read     { background: var(--blue); }
+.jt-st-interview{ background: var(--gold); }
+.jt-st-done     { background: #eab308; }
+.jt-st-offer    { background: var(--sage); }
+.jt-st-rejected { background: var(--rose); }
+.jt-st-declined { background: #475569; }
+.jt-r-actions { display: flex; gap: 4px; justify-self: end; }
+.jt-r-btn {
+  width: 26px; height: 26px; border: none; border-radius: 8px;
+  background: transparent; cursor: pointer; font-size: 12px;
+  color: var(--muted); transition: all var(--dur-fast); display: flex;
+  align-items: center; justify-content: center;
+}
+.jt-r-btn:hover { background: var(--rule-soft); color: var(--ink); }
+.jt-r-btn.del:hover { color: var(--rose); }
+
+.jt-empty {
+  text-align: center; padding: 36px 12px; color: var(--muted-light);
+  font-size: 12.5px;
+}
+.jt-empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+@media (max-width: 860px) {
+  .jt-form-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 640px) {
+  .jt-form-grid { grid-template-columns: 1fr; }
+  .jt-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "main tag"
+      "meta meta"
+      "actions actions";
+    gap: 8px 10px;
+  }
+  .jt-row .jt-r-main { grid-area: main; }
+  .jt-row .jt-r-tag { grid-area: tag; justify-self: end; }
+  .jt-r-meta { grid-area: meta; flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+  .jt-r-actions { grid-area: actions; justify-self: stretch; justify-content: flex-end; }
+  .jt-filter-row { flex-direction: column; align-items: flex-start; }
+}
 </style>
 </head>
 <body>
@@ -4043,6 +4230,7 @@ body.focus-mode .focus-station {
       <div class="nav-item" data-section="horoscope"><span class="nav-icon">⚖</span> 星座运势</div>
       <div class="nav-item" data-section="mahjong"><span class="nav-icon">🀄</span> 麻将运势</div>
       <div class="nav-item" data-section="period"><span class="nav-icon">🩸</span> 经期记录</div>
+      <div class="nav-item" data-section="jobtracker"><span class="nav-icon">💼</span> 求职跟踪</div>
       <div class="nav-item" data-section="settings"><span class="nav-icon">⚙</span> 设置</div>
     </div>
     <div class="sidebar-footer">
@@ -4536,6 +4724,103 @@ body.focus-mode .focus-station {
         </div>
       </div>
     </section>
+    <section class="section" id="jobtracker">
+      <h1 class="page-title">💼 求职跟踪</h1>
+      <p class="page-sub">投递记录 · 状态管理 · 转化漏斗 · 跟进提醒</p>
+
+      <!-- 统计面板 -->
+      <div class="page-metrics" id="jtMetrics"></div>
+
+      <!-- 添加/编辑表单 -->
+      <div class="jt-card jt-form-card">
+        <div class="jt-card-title" id="jtFormTitle">➕ 新增投递</div>
+        <div class="jt-form-grid">
+          <div class="jt-field">
+            <label>公司名称</label>
+            <input type="text" id="jtCompany" placeholder="例如：字节跳动" maxlength="60">
+          </div>
+          <div class="jt-field">
+            <label>岗位名称</label>
+            <input type="text" id="jtPosition" placeholder="例如：前端工程师" maxlength="60">
+          </div>
+          <div class="jt-field">
+            <label>投递日期</label>
+            <input type="date" id="jtDate">
+          </div>
+          <div class="jt-field">
+            <label>渠道</label>
+            <select id="jtChannel">
+              <option value="Boss直聘">Boss直聘</option>
+              <option value="猎聘">猎聘</option>
+              <option value="拉勾">拉勾</option>
+              <option value="前程无忧">前程无忧</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+          <div class="jt-field">
+            <label>状态</label>
+            <select id="jtStatus">
+              <option value="已投递">已投递</option>
+              <option value="已读">已读</option>
+              <option value="面试中">面试中</option>
+              <option value="面试完">面试完</option>
+              <option value="offer">offer</option>
+              <option value="已拒">已拒</option>
+              <option value="拒绝">拒绝</option>
+            </select>
+          </div>
+          <div class="jt-field jt-field-note">
+            <label>备注（面试反馈等）</label>
+            <textarea id="jtNote" rows="2" placeholder="HR反馈、面试感受、薪资范围…" maxlength="300"></textarea>
+          </div>
+        </div>
+        <div class="jt-form-actions">
+          <button class="jt-btn primary" onclick="jtSave()">保存</button>
+          <button class="jt-btn ghost" onclick="jtResetForm()">清空</button>
+          <span class="jt-edit-hint" id="jtEditHint" style="display:none">编辑中（保存将更新记录）</span>
+        </div>
+      </div>
+
+      <!-- 筛选栏 -->
+      <div class="jt-card jt-filter-card">
+        <div class="jt-filter-row">
+          <div class="jt-filter-group">
+            <span class="jt-filter-label">状态</span>
+            <div class="jt-chips" id="jtFilterStatus">
+              <button class="jt-chip active" data-st="all">全部</button>
+              <button class="jt-chip" data-st="已投递">已投递</button>
+              <button class="jt-chip" data-st="已读">已读</button>
+              <button class="jt-chip" data-st="面试中">面试中</button>
+              <button class="jt-chip" data-st="面试完">面试完</button>
+              <button class="jt-chip" data-st="offer">offer</button>
+              <button class="jt-chip" data-st="已拒">已拒</button>
+              <button class="jt-chip" data-st="拒绝">拒绝</button>
+            </div>
+          </div>
+          <div class="jt-filter-group jt-date-group">
+            <span class="jt-filter-label">日期</span>
+            <input type="date" id="jtFilterFrom" title="开始">
+            <span class="jt-date-sep">~</span>
+            <input type="date" id="jtFilterTo" title="结束">
+            <button class="jt-btn-tiny" onclick="jtClearDate()">清空</button>
+          </div>
+        </div>
+        <div class="jt-filter-summary" id="jtFilterSummary"></div>
+      </div>
+
+      <!-- 记录列表 -->
+      <div class="jt-card jt-list-card">
+        <div class="jt-list-head">
+          <div class="jt-list-title">📋 投递记录</div>
+          <div class="jt-list-count" id="jtListCount">共 0 条</div>
+        </div>
+        <div class="jt-list" id="jtList"></div>
+        <div class="jt-empty" id="jtEmpty" style="display:none">
+          <div class="jt-empty-icon">📭</div>
+          <div>暂无投递记录，从上方表单开始记录吧</div>
+        </div>
+      </div>
+    </section>
 <section class="section" id="settings">
       <h1 class="page-title">设置</h1>
       <p class="page-sub">数据管理 · 主题 · 壁纸 · 导出备份</p>
@@ -4697,6 +4982,7 @@ body.focus-mode .focus-station {
       <div class="ms-item" data-section="mahjong"><span class="ms-icon">🀄</span><span class="ms-label">麻将运势</span></div>
       <div class="ms-item" data-section="period"><span class="ms-icon">🩸</span><span class="ms-label">经期记录</span></div>
       <div class="ms-item" data-section="liunian"><span class="ms-icon">🔮</span><span class="ms-label">流年运势</span></div>
+      <div class="ms-item" data-section="jobtracker"><span class="ms-icon">💼</span><span class="ms-label">求职跟踪</span></div>
       <div class="ms-item" data-section="settings"><span class="ms-icon">⚙</span><span class="ms-label">设置</span></div>
     </div>
   </div>
@@ -4957,6 +5243,7 @@ let projects = DB.get('projects', [
 let selectedMood = '';
 let pomoInterval = null;
 let lifeData = DB.get('life', { schedule:{}, sportLog:[], healthLog:[], jobLog:[] });
+let jobTracker = DB.get('job_tracker', []);
 if (!lifeData.schedule) lifeData.schedule = {};
 if (!lifeData.sportLog) lifeData.sportLog = [];
 if (!lifeData.healthLog) lifeData.healthLog = [];
@@ -5196,7 +5483,7 @@ const SECTION_NAMES = {
   dashboard:'仪表盘', tasks:'任务管理', pomodoro:'番茄钟', habits:'习惯打卡',
   life:'生活管理', feynman:'费曼练习', media:'自媒体', topics:'热点追踪',
   news:'资讯日报', review:'每日复盘', stats:'数据统计', achievements:'成就徽章',
-  huangli:'黄道吉日', liunian:'流年运势', horoscope:'星座运势', mahjong:'麻将运势', settings:'设置'
+  huangli:'黄道吉日', liunian:'流年运势', horoscope:'星座运势', mahjong:'麻将运势', jobtracker:'求职跟踪', settings:'设置'
 };
 function updateTopbarBadge() {
   const today = todayStr();
@@ -5225,6 +5512,7 @@ const SEARCH_SECTIONS = [
   { id:'liunian',   name:'流年运势', icon:'🔮', aliases:['流年','运势','十神','八字','命理','甲辰','日主','食神','伤官','偏财','正财'] },
   { id:'horoscope', name:'星座运势', icon:'⚖', aliases:['星座','运势','星运','horo','libra','天秤','占星'] },
   { id:'mahjong',   name:'麻将运势', icon:'🀄', aliases:['麻将','牌局','mahjong','财神','方位','打麻将','吉时'] },
+  { id:'jobtracker', name:'求职跟踪', icon:'💼', aliases:['求职','投递','简历','job','面试','offer','岗位','公司','工作'] },
   { id:'settings',  name:'设置',     icon:'⚙', aliases:['设置','setting','配置','偏好','齿轮'] },
 ];
 // 搜索下拉：当前展示的可选项目（扁平数组，每项含 kind:'section'|'inline' 等）
@@ -5447,7 +5735,7 @@ function sectionName(id){
   return ({tasks:'任务管理',habits:'习惯打卡',news:'资讯日报',topics:'热点追踪',
     dashboard:'仪表盘',pomodoro:'番茄钟',life:'生活管理',feynman:'费曼练习',
     media:'自媒体',review:'每日复盘',stats:'数据统计',huangli:'黄道吉日',liunian:'流年运势',
-    horoscope:'星座运势',mahjong:'麻将运势',settings:'设置'})[id]||'工作台';
+    horoscope:'星座运势',mahjong:'麻将运势',jobtracker:'求职跟踪',settings:'设置'})[id]||'工作台';
 }
 // 点击页面其他地方时收起下拉
 document.addEventListener('click', function(e){
@@ -5621,6 +5909,7 @@ function saveAll() {
   DB.set('hotRead', hotRead); DB.set('hotLater', hotLater); DB.set('moodHistory', moodHistory);
   DB.set('wallpaper', wallpaperData); DB.set('weather', weatherData); DB.set('countdown', countdownData);
   DB.set('dailyGoals', dailyGoals); DB.set('quickLinks', quickLinks);
+  DB.set('job_tracker', jobTracker);
   DB.set('aes', aesData);
 }
 function escHtml(s) {
@@ -5838,6 +6127,7 @@ function switchSection(name) {
   if (name === 'mahjong') renderMahjongSection();
   if (name === 'period') renderPeriodSection();
   if (name === 'liunian') renderLiunianSection();
+  if (name === 'jobtracker') renderJobTracker();
   if (name === 'tasks') { renderTaskProjectSelect(); renderTasks(); renderSavedFiltersBar(); }
   window.scrollTo(0, 0);
 }
@@ -11131,6 +11421,220 @@ function lnRenderMonths() {
 function lnSwitchYear(year) {
   lnCurrentYear = year;
   renderLiunianSection();
+}
+
+/* =====================================================================
+ * 求职跟踪模块：投递记录 / 状态管理 / 统计面板 / 筛选
+ * 数据：jobTracker 数组，localStorage key = wb4_job_tracker
+ * ===================================================================== */
+let jtEditingId = null;
+let jtFilterStatus = 'all';
+
+function jtStatusClass(st) {
+  return {
+    '已投递':'jt-st-applied','已读':'jt-st-read','面试中':'jt-st-interview',
+    '面试完':'jt-st-done','offer':'jt-st-offer','已拒':'jt-st-rejected','拒绝':'jt-st-declined'
+  }[st] || 'jt-st-applied';
+}
+function jtEscape(v) { return escHtml(v == null ? '' : v); }
+function jtUid() { return 'jt_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7); }
+
+function renderJobTracker() {
+  // 默认日期 = 今天
+  const dEl = document.getElementById('jtDate');
+  if (dEl && !dEl.value) dEl.value = todayStr();
+  // 绑定筛选交互（只绑一次）
+  if (!renderJobTracker._bound) {
+    renderJobTracker._bound = true;
+    document.querySelectorAll('#jtFilterStatus .jt-chip').forEach(c => {
+      c.addEventListener('click', () => {
+        document.querySelectorAll('#jtFilterStatus .jt-chip').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        jtFilterStatus = c.dataset.st;
+        jtRenderList();
+      });
+    });
+    const ff = document.getElementById('jtFilterFrom');
+    const ft = document.getElementById('jtFilterTo');
+    if (ff) ff.addEventListener('change', jtRenderList);
+    if (ft) ft.addEventListener('change', jtRenderList);
+  }
+  jtRenderMetrics();
+  jtRenderList();
+}
+
+function jtGetFiltered() {
+  let list = jobTracker.slice();
+  // 状态筛选
+  if (jtFilterStatus !== 'all') list = list.filter(r => r.status === jtFilterStatus);
+  // 日期范围筛选
+  const f = document.getElementById('jtFilterFrom');
+  const t = document.getElementById('jtFilterTo');
+  const fv = f ? f.value : '';
+  const tv = t ? t.value : '';
+  if (fv) list = list.filter(r => (r.date||'') >= fv);
+  if (tv) list = list.filter(r => (r.date||'') <= tv);
+  // 日期倒序
+  list.sort((a,b) => {
+    const da = a.date||'', db = b.date||'';
+    if (da !== db) return db.localeCompare(da);
+    return (b.createdAt||0) - (a.createdAt||0);
+  });
+  return list;
+}
+
+function jtRenderMetrics() {
+  const el = document.getElementById('jtMetrics');
+  if (!el) return;
+  const all = jobTracker;
+  const total = all.length;
+  const today = todayStr();
+  // 本周（周日为周首）
+  const now = new Date(); now.setHours(0,0,0,0);
+  const dow = now.getDay();
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - dow);
+  const weekStartStr = weekStart.getFullYear() + '-' + String(weekStart.getMonth()+1).padStart(2,'0') + '-' + String(weekStart.getDate()).padStart(2,'0');
+  const weekCount = all.filter(r => (r.date||'') >= weekStartStr && (r.date||'') <= today).length;
+  const interviewing = all.filter(r => r.status === '面试中').length;
+  const offerCount = all.filter(r => r.status === 'offer').length;
+  const readNoReply = all.filter(r => r.status === '已读').length;
+  const applied = all.filter(r => r.status === '已投递').length;
+  const interviewTotal = all.filter(r => r.status === '面试中' || r.status === '面试完' || r.status === 'offer').length;
+  const rate = total > 0 ? Math.round(interviewTotal / total * 100) : 0;
+
+  el.innerHTML = '<div class="page-metrics stagger">' +
+    '<div class="pm-card"><div class="pm-val info">' + weekCount + '</div><div class="pm-lbl">本周投递</div><div class="pm-sub">截至今天</div></div>' +
+    '<div class="pm-card"><div class="pm-val">' + total + '</div><div class="pm-lbl">总投递数</div><div class="pm-sub">全部记录</div></div>' +
+    '<div class="pm-card"><div class="pm-val warn">' + interviewing + '</div><div class="pm-lbl">面试中</div><div class="pm-sub">待跟进</div></div>' +
+    '<div class="pm-card"><div class="pm-val acc">' + offerCount + '</div><div class="pm-lbl">offer</div><div class="pm-sub">已收到</div></div>' +
+    '<div class="pm-card"><div class="pm-val danger">' + readNoReply + '</div><div class="pm-lbl">已读未复</div><div class="pm-sub">需跟进</div></div>' +
+    '<div class="pm-card"><div class="pm-val">' + rate + '%</div><div class="pm-lbl">面试转化率</div><div class="pm-sub">面试/' + (applied||total) + '</div></div>' +
+    '</div>';
+}
+
+function jtRenderList() {
+  const listEl = document.getElementById('jtList');
+  const countEl = document.getElementById('jtListCount');
+  const emptyEl = document.getElementById('jtEmpty');
+  if (!listEl) return;
+  const list = jtGetFiltered();
+  if (countEl) countEl.textContent = '共 ' + list.length + ' 条';
+
+  // 筛选摘要
+  const sumEl = document.getElementById('jtFilterSummary');
+  if (sumEl) {
+    const f = document.getElementById('jtFilterFrom');
+    const t = document.getElementById('jtFilterTo');
+    const fv = f ? f.value : '', tv = t ? t.value : '';
+    let parts = [];
+    if (jtFilterStatus !== 'all') parts.push('状态：<b>' + jtEscape(jtFilterStatus) + '</b>');
+    if (fv || tv) parts.push('日期：<b>' + jtEscape(fv || '…') + ' ~ ' + jtEscape(tv || '…') + '</b>');
+    if (parts.length) { sumEl.innerHTML = '筛选中 · ' + parts.join(' · ') + ' · 命中 <b>' + list.length + '</b>'; sumEl.classList.add('show'); }
+    else { sumEl.classList.remove('show'); sumEl.innerHTML = ''; }
+  }
+
+  if (list.length === 0) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  listEl.innerHTML = list.map(function(r) {
+    return '<div class="jt-row">' +
+      '<div class="jt-r-main">' +
+        '<div class="jt-r-company">' + jtEscape(r.company) + '</div>' +
+        '<div class="jt-r-position">' + jtEscape(r.position) + '</div>' +
+        (r.note ? '<div class="jt-r-note">' + jtEscape(r.note) + '</div>' : '') +
+      '</div>' +
+      '<div class="jt-r-meta">' +
+        '<div class="jt-r-date">' + jtEscape(r.date||'-') + '</div>' +
+        '<div class="jt-r-channel">' + jtEscape(r.channel||'') + '</div>' +
+      '</div>' +
+      '<span class="jt-r-tag ' + jtStatusClass(r.status) + '">' + jtEscape(r.status||'已投递') + '</span>' +
+      '<div class="jt-r-actions">' +
+        '<button class="jt-r-btn" title="编辑" onclick="jtEdit(\'' + r.id + '\')">✎</button>' +
+        '<button class="jt-r-btn del" title="删除" onclick="jtDelete(\'' + r.id + '\')">🗑</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function jtSave() {
+  const company = (document.getElementById('jtCompany').value || '').trim();
+  const position = (document.getElementById('jtPosition').value || '').trim();
+  const date = document.getElementById('jtDate').value || todayStr();
+  const channel = document.getElementById('jtChannel').value;
+  const status = document.getElementById('jtStatus').value;
+  const note = (document.getElementById('jtNote').value || '').trim();
+  if (!company) { showToast('请填写公司名称'); document.getElementById('jtCompany').focus(); return; }
+  if (!position) { showToast('请填写岗位名称'); document.getElementById('jtPosition').focus(); return; }
+  const now = Date.now();
+  if (jtEditingId) {
+    const idx = jobTracker.findIndex(r => r.id === jtEditingId);
+    if (idx > -1) {
+      jobTracker[idx] = Object.assign({}, jobTracker[idx], {
+        company, position, date, channel, status, note, updatedAt: now
+      });
+    }
+    showToast('已更新投递记录');
+  } else {
+    jobTracker.push({ id: jtUid(), company, position, date, channel, status, note, createdAt: now, updatedAt: now });
+    showToast('已新增投递记录');
+  }
+  saveAll();
+  jtResetForm();
+  jtRenderMetrics();
+  jtRenderList();
+}
+
+function jtResetForm() {
+  document.getElementById('jtCompany').value = '';
+  document.getElementById('jtPosition').value = '';
+  document.getElementById('jtDate').value = todayStr();
+  document.getElementById('jtChannel').selectedIndex = 0;
+  document.getElementById('jtStatus').selectedIndex = 0;
+  document.getElementById('jtNote').value = '';
+  jtEditingId = null;
+  const title = document.getElementById('jtFormTitle');
+  if (title) title.textContent = '➕ 新增投递';
+  const hint = document.getElementById('jtEditHint');
+  if (hint) hint.style.display = 'none';
+}
+
+function jtEdit(id) {
+  const r = jobTracker.find(x => x.id === id);
+  if (!r) return;
+  jtEditingId = id;
+  document.getElementById('jtCompany').value = r.company || '';
+  document.getElementById('jtPosition').value = r.position || '';
+  document.getElementById('jtDate').value = r.date || todayStr();
+  document.getElementById('jtChannel').value = r.channel || '其他';
+  document.getElementById('jtStatus').value = r.status || '已投递';
+  document.getElementById('jtNote').value = r.note || '';
+  const title = document.getElementById('jtFormTitle');
+  if (title) title.textContent = '✎ 编辑投递';
+  const hint = document.getElementById('jtEditHint');
+  if (hint) hint.style.display = 'inline';
+  document.getElementById('jtCompany').scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function jtDelete(id) {
+  const r = jobTracker.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm('确认删除「' + r.company + ' · ' + r.position + '」的记录？')) return;
+  jobTracker = jobTracker.filter(x => x.id !== id);
+  if (jtEditingId === id) jtResetForm();
+  saveAll();
+  jtRenderMetrics();
+  jtRenderList();
+  showToast('已删除投递记录');
+}
+
+function jtClearDate() {
+  document.getElementById('jtFilterFrom').value = '';
+  document.getElementById('jtFilterTo').value = '';
+  jtRenderList();
 }
 
 init();
