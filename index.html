@@ -8748,8 +8748,8 @@ function getPengZu(dayTG, dayDZ) {
 function getChongSha(dayDZidx) {
   const chongDZidx = (dayDZidx + 6) % 12; // 六冲
   const shengXiao = SHENG_XIAO[chongDZidx];
-  // 煞方：冲子→煞南，午→煞北；寅→煞北，申→煞南；卯→煞西，酉→煞东；巳→煞东，亥→煞西；辰戌→煞南北；丑未→煞东西
-  const shaMap = {'子':'南','午':'北','丑':'西','未':'东','寅':'北','申':'南','卯':'西','酉':'东','辰':'北','戌':'南','巳':'东','亥':'西'};
+  // 煞方（三煞）：申子辰→煞南，寅午戌→煞北，亥卯未→煞西，巳酉丑→煞东
+  const shaMap = {'子':'南','丑':'东','寅':'北','卯':'西','辰':'南','巳':'东','午':'北','未':'西','申':'南','酉':'东','戌':'北','亥':'西'};
   const sha = shaMap[DI_ZHI[dayDZidx]] || '';
   return {
     chongDZ: DI_ZHI[chongDZidx],
@@ -9918,8 +9918,8 @@ const MJ_YANGGUI = { '甲':'西南','戊':'东北','庚':'东北','乙':'西南'
 // 阴贵神
 const MJ_YINGUI = { '甲':'东北','戊':'西南','庚':'西南','乙':'正北','己':'西南','丙':'西北','丁':'正西','壬':'东南','癸':'正东','辛':'正南' };
 
-// 煞方：子午卯酉→煞南北东西（正方向冲煞）
-const MJ_SHAFANG = { '子':'煞南','午':'煞北','卯':'煞西','酉':'煞东','寅':'煞南','申':'煞北','巳':'煞东','亥':'煞西','辰':'煞南','戌':'煞北','丑':'煞东','未':'煞西' };
+// 煞方（三煞）：申子辰→煞南，寅午戌→煞北，亥卯未→煞西，巳酉丑→煞东
+const MJ_SHAFANG = { '子':'煞南','丑':'煞东','寅':'煞北','卯':'煞西','辰':'煞南','巳':'煞东','午':'煞北','未':'煞西','申':'煞南','酉':'煞东','戌':'煞北','亥':'煞西' };
 
 function calcMahjongLuck() {
   if (typeof calcHuangLi !== 'function') return null;
@@ -9946,8 +9946,8 @@ function calcMahjongLuck() {
   const sanheGroups = [[8,0,4],[11,3,7],[2,6,10],[5,9,1]];
   let sanhe = [];
   for (const g of sanheGroups) { if (g.includes(dzIdx)) { sanhe = g.filter(i => i !== dzIdx).map(i => SX_NAMES[i]); break; } }
-  // 六合
-  const liuheMap = [5,6,7,8,9,0,1,2,3,10,11,4]; // 子丑合、寅亥合...
+  // 六合：子丑合、寅亥合、卯戌合、辰酉合、巳申合、午未合
+  const liuheMap = [1,0,11,10,9,8,7,6,5,4,3,2];
   const liuheSX = SX_NAMES[liuheMap[dzIdx]];
   // 吉时（从12时辰中选吉）
   const shichenData = hl.shichen || [];
