@@ -4162,6 +4162,299 @@ body.focus-mode .focus-station {
   .jt-r-actions { grid-area: actions; justify-self: stretch; justify-content: flex-end; }
   .jt-filter-row { flex-direction: column; align-items: flex-start; }
 }
+/* ===================== 知识库 · PARA ===================== */
+.kb-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-glass);
+  padding: clamp(16px,2.5vw,22px);
+  border: 1px solid var(--glass-border);
+  margin-bottom: 16px;
+  min-width: 0;
+  max-width: 100%;
+}
+.kb-card-title {
+  font-size: 14px; font-weight: 700; color: var(--ink);
+  letter-spacing: -0.01em; margin-bottom: 12px;
+}
+/* 快速捕获 */
+.kb-capture-row {
+  display: flex; gap: 10px; align-items: center;
+}
+.kb-capture-row input {
+  flex: 1; padding: 11px 14px; font-size: 14px;
+  color: var(--ink); background: var(--surface-2);
+  border: 1px solid var(--rule); border-radius: var(--r-input, 16px);
+  outline: none; transition: all var(--dur-fast);
+  font-family: var(--font-body); min-width: 0;
+}
+.kb-capture-row input:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg);
+}
+.kb-btn {
+  padding: 9px 18px; font-size: 13px; font-weight: 600;
+  border: none; border-radius: var(--r-btn, 14px); cursor: pointer;
+  transition: all var(--dur-fast); font-family: var(--font-body);
+  white-space: nowrap; flex-shrink: 0;
+}
+.kb-btn.primary {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 4px 12px rgba(107,91,255,0.28);
+}
+.kb-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(107,91,255,0.36); }
+.kb-btn.ghost {
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--rule);
+}
+.kb-btn.ghost:hover { color: var(--ink); border-color: var(--accent); }
+.kb-btn-sm { padding: 6px 12px; font-size: 12px; }
+/* 工具栏 */
+.kb-toolbar-card { padding: 14px clamp(16px,2.5vw,22px); }
+.kb-cat-tabs {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+}
+.kb-cat-tab {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 13px; font-size: 12.5px; font-weight: 600;
+  border: 1px solid var(--rule); background: transparent; color: var(--muted);
+  border-radius: 999px; cursor: pointer; transition: all var(--dur-fast);
+  font-family: var(--font-body);
+}
+.kb-cat-tab:hover { color: var(--ink); border-color: var(--accent-soft); }
+.kb-cat-tab.active {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(107,91,255,0.24);
+}
+.kb-cat-dot {
+  width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+}
+.kb-dot-project { background: var(--blue); }
+.kb-dot-area { background: var(--sage); }
+.kb-dot-resource { background: var(--gold); }
+.kb-dot-archive { background: #94a3b8; }
+.kb-search-row { display: flex; }
+.kb-search-row input {
+  width: 100%; padding: 9px 14px; font-size: 13px;
+  color: var(--ink); background: var(--surface-2);
+  border: 1px solid var(--rule); border-radius: var(--r-input, 16px);
+  outline: none; transition: all var(--dur-fast);
+  font-family: var(--font-body);
+}
+.kb-search-row input:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg);
+}
+/* 标签云 */
+.kb-tagcloud { display: flex; flex-wrap: wrap; gap: 7px; }
+.kb-tagcloud-hint { font-size: 11px; color: var(--muted-light); font-weight: 400; margin-left: 6px; }
+.kb-tag-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 11px; font-size: 12px; font-weight: 500;
+  background: var(--accent-bg); color: var(--accent);
+  border: 1px solid rgba(107,91,255,0.18); border-radius: 999px;
+  cursor: pointer; transition: all var(--dur-fast);
+}
+.kb-tag-chip:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(107,91,255,0.18); }
+.kb-tag-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.kb-tag-chip .kb-tag-count {
+  font-size: 10.5px; opacity: 0.7; font-weight: 600;
+  background: rgba(255,255,255,0.4); padding: 0 5px; border-radius: 999px;
+}
+.kb-tag-chip.active .kb-tag-count { background: rgba(255,255,255,0.25); }
+/* 笔记列表 */
+.kb-list-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px; gap: 10px; flex-wrap: wrap;
+}
+.kb-list-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.kb-list-actions { display: flex; align-items: center; gap: 12px; }
+.kb-list-count { font-size: 11.5px; color: var(--muted); }
+.kb-note-list { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.kb-note-item {
+  background: var(--surface-2);
+  border-radius: var(--radius-sm); border: 1px solid var(--rule-soft);
+  padding: 13px 16px; cursor: pointer;
+  transition: all var(--dur-fast); min-width: 0;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.kb-note-item:hover { background: var(--glass-bg-hover); border-color: var(--rule); transform: translateY(-1px); box-shadow: var(--shadow); }
+.kb-note-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 10px; min-width: 0;
+}
+.kb-note-title {
+  font-size: 14.5px; font-weight: 700; color: var(--ink);
+  letter-spacing: -0.01em; line-height: 1.35;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  flex: 1; min-width: 0;
+}
+.kb-note-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.kb-note-del {
+  width: 26px; height: 26px; border: none; border-radius: 8px;
+  background: transparent; cursor: pointer; font-size: 12px;
+  color: var(--muted); transition: all var(--dur-fast); display: flex;
+  align-items: center; justify-content: center;
+}
+.kb-note-del:hover { background: rgba(236,72,153,0.1); color: var(--rose); }
+.kb-note-meta {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.kb-cat-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 9px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.kb-cat-project { background: var(--blue-bg); color: var(--blue); }
+.kb-cat-area { background: var(--sage-bg); color: var(--sage); }
+.kb-cat-resource { background: var(--gold-bg); color: #b45309; }
+.kb-cat-archive { background: rgba(148,163,184,0.18); color: #64748b; }
+.kb-note-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.kb-note-tag {
+  padding: 2px 8px; font-size: 11px; font-weight: 500;
+  background: var(--purple-bg); color: var(--purple);
+  border-radius: 999px;
+}
+.kb-note-preview {
+  font-size: 12.5px; color: var(--muted); line-height: 1.6;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.kb-note-time { font-size: 11px; color: var(--muted-light); font-family: var(--mono); }
+.kb-empty {
+  text-align: center; padding: 36px 12px; color: var(--muted-light);
+  font-size: 12.5px;
+}
+.kb-empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+/* 笔记编辑器弹窗 */
+.kb-modal-mask {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(15,23,42,0.45);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px; animation: kbFadeIn 0.2s ease;
+}
+.kb-modal-mask.show { display: flex; }
+@keyframes kbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.kb-modal {
+  background: var(--surface-solid);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 30px 80px rgba(15,23,42,0.25), 0 0 0 1px var(--glass-border);
+  width: 100%; max-width: 640px; max-height: 90vh;
+  display: flex; flex-direction: column;
+  animation: kbSlideUp 0.28s cubic-bezier(0.22,1.2,0.36,1);
+  overflow: hidden;
+}
+@keyframes kbSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.kb-modal-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 22px 14px; border-bottom: 1px solid var(--rule-soft);
+}
+.kb-modal-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+.kb-modal-close {
+  width: 30px; height: 30px; border: none; border-radius: 50%;
+  background: transparent; cursor: pointer; font-size: 16px;
+  color: var(--muted); transition: all var(--dur-fast);
+}
+.kb-modal-close:hover { background: var(--rule-soft); color: var(--ink); }
+.kb-modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+.kb-modal-foot {
+  display: flex; justify-content: flex-end; align-items: center; gap: 10px;
+  padding: 14px 22px; border-top: 1px solid var(--rule-soft);
+  background: var(--glass-bg);
+}
+.kb-edit-hint { font-size: 11px; color: var(--gold); font-weight: 600; margin-right: auto; }
+.kb-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; min-width: 0; }
+.kb-field-row { display: grid; grid-template-columns: 140px 1fr; gap: 14px; }
+.kb-field label {
+  font-size: 10.5px; color: var(--muted); font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.kb-field input, .kb-field select, .kb-field textarea {
+  width: 100%; padding: 9px 12px; font-size: 13.5px;
+  color: var(--ink); background: var(--surface-2);
+  border: 1px solid var(--rule); border-radius: var(--r-input, 12px);
+  outline: none; transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+  font-family: var(--font-body); box-sizing: border-box;
+}
+.kb-field textarea { resize: vertical; line-height: 1.6; min-height: 160px; font-family: var(--mono); font-size: 13px; }
+.kb-field input:focus, .kb-field select:focus, .kb-field textarea:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg);
+}
+.kb-tag-input-wrap {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  padding: 7px 10px; background: var(--surface-2);
+  border: 1px solid var(--rule); border-radius: var(--r-input, 12px);
+  min-height: 38px;
+}
+.kb-tag-input-wrap:focus-within {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg);
+}
+.kb-tag-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.kb-edit-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; font-size: 11.5px; font-weight: 500;
+  background: var(--accent-bg); color: var(--accent);
+  border-radius: 999px;
+}
+.kb-edit-chip button {
+  border: none; background: transparent; cursor: pointer;
+  color: var(--accent); font-size: 12px; padding: 0; line-height: 1;
+  opacity: 0.6;
+}
+.kb-edit-chip button:hover { opacity: 1; }
+.kb-tag-input-wrap input {
+  flex: 1; min-width: 80px; border: none; padding: 3px 4px;
+  background: transparent; box-shadow: none; font-size: 13px;
+}
+.kb-tag-input-wrap input:focus { box-shadow: none; border: none; }
+.kb-edit-toolbar {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 10px; margin-bottom: 8px; flex-wrap: wrap;
+}
+.kb-md-hint { font-size: 11px; color: var(--muted-light); }
+.kb-edit-toggle { display: flex; border: 1px solid var(--rule); border-radius: 999px; overflow: hidden; }
+.kb-toggle-btn {
+  padding: 5px 14px; font-size: 12px; font-weight: 600;
+  border: none; background: transparent; cursor: pointer;
+  color: var(--muted); transition: all var(--dur-fast);
+  font-family: var(--font-body);
+}
+.kb-toggle-btn.active { background: var(--accent); color: #fff; }
+.kb-md-preview {
+  padding: 14px 16px; background: var(--surface-2);
+  border: 1px solid var(--rule); border-radius: var(--r-input, 12px);
+  font-size: 13.5px; line-height: 1.7; color: var(--ink-soft);
+  min-height: 160px; max-height: 50vh; overflow-y: auto;
+}
+.kb-md-preview h1 { font-size: 20px; font-weight: 700; margin: 12px 0 8px; color: var(--ink); }
+.kb-md-preview h2 { font-size: 17px; font-weight: 700; margin: 10px 0 6px; color: var(--ink); }
+.kb-md-preview h3 { font-size: 15px; font-weight: 600; margin: 8px 0 5px; color: var(--ink); }
+.kb-md-preview p { margin: 6px 0; }
+.kb-md-preview strong { font-weight: 700; color: var(--ink); }
+.kb-md-preview em { font-style: italic; }
+.kb-md-preview ul, .kb-md-preview ol { margin: 6px 0 6px 22px; }
+.kb-md-preview li { margin: 3px 0; }
+.kb-md-preview blockquote {
+  margin: 8px 0; padding: 6px 12px;
+  border-left: 3px solid var(--accent-soft);
+  background: var(--accent-bg); color: var(--ink-soft);
+  border-radius: 0 8px 8px 0;
+}
+.kb-md-preview code {
+  background: var(--rule-soft); padding: 1px 6px; border-radius: 4px;
+  font-family: var(--mono); font-size: 12.5px; color: var(--accent);
+}
+.kb-md-preview a { color: var(--accent); text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .kb-capture-row { flex-direction: column; align-items: stretch; }
+  .kb-capture-row .kb-btn { width: 100%; }
+  .kb-field-row { grid-template-columns: 1fr; }
+  .kb-modal { max-height: 92vh; }
+  .kb-modal-head, .kb-modal-body, .kb-modal-foot { padding-left: 16px; padding-right: 16px; }
+}
 </style>
 </head>
 <body>
@@ -4231,6 +4524,7 @@ body.focus-mode .focus-station {
       <div class="nav-item" data-section="mahjong"><span class="nav-icon">🀄</span> 麻将运势</div>
       <div class="nav-item" data-section="period"><span class="nav-icon">🩸</span> 经期记录</div>
       <div class="nav-item" data-section="jobtracker"><span class="nav-icon">💼</span> 求职跟踪</div>
+      <div class="nav-item" data-section="knowledge"><span class="nav-icon">📖</span> 知识库</div>
       <div class="nav-item" data-section="settings"><span class="nav-icon">⚙</span> 设置</div>
     </div>
     <div class="sidebar-footer">
@@ -4821,6 +5115,110 @@ body.focus-mode .focus-station {
         </div>
       </div>
     </section>
+
+    <!-- ===================== 知识库 · PARA ===================== -->
+    <section class="section" id="knowledge">
+      <h1 class="page-title">📖 知识库</h1>
+      <p class="page-sub">PARA 方法 · 项目 / 领域 / 资源 / 归档 · 灵感速记 · 全文搜索</p>
+
+      <!-- 统计面板 -->
+      <div class="page-metrics" id="kbMetrics"></div>
+
+      <!-- 顶部快速捕获 -->
+      <div class="kb-card kb-capture-card">
+        <div class="kb-capture-row">
+          <input type="text" id="kbQuickInput" placeholder="随时记录灵感…回车或点「记录」快速保存到「资源」" maxlength="500" onkeydown="if(event.key==='Enter')kbQuickCapture()">
+          <button class="kb-btn primary" onclick="kbQuickCapture()">记录</button>
+        </div>
+      </div>
+
+      <!-- 工具栏：分类 Tab + 搜索 -->
+      <div class="kb-card kb-toolbar-card">
+        <div class="kb-cat-tabs" id="kbCatTabs">
+          <button class="kb-cat-tab active" data-cat="all">全部</button>
+          <button class="kb-cat-tab" data-cat="project"><span class="kb-cat-dot kb-dot-project"></span>项目</button>
+          <button class="kb-cat-tab" data-cat="area"><span class="kb-cat-dot kb-dot-area"></span>领域</button>
+          <button class="kb-cat-tab" data-cat="resource"><span class="kb-cat-dot kb-dot-resource"></span>资源</button>
+          <button class="kb-cat-tab" data-cat="archive"><span class="kb-cat-dot kb-dot-archive"></span>归档</button>
+        </div>
+        <div class="kb-search-row">
+          <input type="text" id="kbSearch" placeholder="🔍 搜索标题 / 内容 / 标签" oninput="kbRenderList()">
+        </div>
+      </div>
+
+      <!-- 标签云 -->
+      <div class="kb-card kb-tagcloud-card" id="kbTagCloudCard" style="display:none">
+        <div class="kb-card-title">🏷 标签云 <span class="kb-tagcloud-hint" id="kbTagCloudHint"></span></div>
+        <div class="kb-tagcloud" id="kbTagCloud"></div>
+      </div>
+
+      <!-- 笔记列表 -->
+      <div class="kb-card kb-list-card">
+        <div class="kb-list-head">
+          <div class="kb-list-title">📚 笔记列表</div>
+          <div class="kb-list-actions">
+            <span class="kb-list-count" id="kbListCount">共 0 条</span>
+            <button class="kb-btn ghost kb-btn-sm" onclick="kbOpenEditor()">+ 新建笔记</button>
+          </div>
+        </div>
+        <div class="kb-note-list" id="kbNoteList"></div>
+        <div class="kb-empty" id="kbEmpty" style="display:none">
+          <div class="kb-empty-icon">📝</div>
+          <div>还没有笔记，从上方快速记录或新建一篇吧</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 笔记编辑器弹窗 -->
+    <div class="kb-modal-mask" id="kbEditorMask" onclick="if(event.target===this)kbCloseEditor()">
+      <div class="kb-modal" role="dialog" aria-modal="true">
+        <div class="kb-modal-head">
+          <div class="kb-modal-title" id="kbEditorTitle">✎ 新建笔记</div>
+          <button class="kb-modal-close" onclick="kbCloseEditor()">✕</button>
+        </div>
+        <div class="kb-modal-body">
+          <div class="kb-field">
+            <label>标题</label>
+            <input type="text" id="kbEditTitle" placeholder="给这条笔记起个标题" maxlength="120">
+          </div>
+          <div class="kb-field-row">
+            <div class="kb-field">
+              <label>分类</label>
+              <select id="kbEditCategory">
+                <option value="project">项目</option>
+                <option value="area">领域</option>
+                <option value="resource" selected>资源</option>
+                <option value="archive">归档</option>
+              </select>
+            </div>
+            <div class="kb-field kb-field-tags">
+              <label>标签（逗号分隔，回车添加）</label>
+              <div class="kb-tag-input-wrap">
+                <div class="kb-tag-chips" id="kbEditTagChips"></div>
+                <input type="text" id="kbEditTagInput" placeholder="输入标签后回车" onkeydown="kbTagInputKey(event)">
+              </div>
+            </div>
+          </div>
+          <div class="kb-field">
+            <div class="kb-edit-toolbar">
+              <span class="kb-md-hint">支持 Markdown：# 标题 · **加粗** · *斜体* · - 列表 · 1. 有序 · [链接](url) · > 引用 · `代码`</span>
+              <div class="kb-edit-toggle">
+                <button class="kb-toggle-btn active" id="kbBtnEdit" onclick="kbSetEditMode('edit')">编辑</button>
+                <button class="kb-toggle-btn" id="kbBtnPreview" onclick="kbSetEditMode('preview')">预览</button>
+              </div>
+            </div>
+            <textarea id="kbEditTextarea" rows="12" placeholder="# 在这里写下你的想法&#10;- 支持简单 Markdown&#10;**加粗** 和 *斜体*"></textarea>
+            <div class="kb-md-preview" id="kbEditPreview" style="display:none"></div>
+          </div>
+        </div>
+        <div class="kb-modal-foot">
+          <span class="kb-edit-hint" id="kbEditHint" style="display:none">编辑中</span>
+          <button class="kb-btn ghost" onclick="kbCloseEditor()">取消</button>
+          <button class="kb-btn primary" onclick="kbSaveNote()">保存</button>
+        </div>
+      </div>
+    </div>
+
 <section class="section" id="settings">
       <h1 class="page-title">设置</h1>
       <p class="page-sub">数据管理 · 主题 · 壁纸 · 导出备份</p>
@@ -4983,6 +5381,7 @@ body.focus-mode .focus-station {
       <div class="ms-item" data-section="period"><span class="ms-icon">🩸</span><span class="ms-label">经期记录</span></div>
       <div class="ms-item" data-section="liunian"><span class="ms-icon">🔮</span><span class="ms-label">流年运势</span></div>
       <div class="ms-item" data-section="jobtracker"><span class="ms-icon">💼</span><span class="ms-label">求职跟踪</span></div>
+      <div class="ms-item" data-section="knowledge"><span class="ms-icon">📖</span><span class="ms-label">知识库</span></div>
       <div class="ms-item" data-section="settings"><span class="ms-icon">⚙</span><span class="ms-label">设置</span></div>
     </div>
   </div>
@@ -5244,6 +5643,7 @@ let selectedMood = '';
 let pomoInterval = null;
 let lifeData = DB.get('life', { schedule:{}, sportLog:[], healthLog:[], jobLog:[] });
 let jobTracker = DB.get('job_tracker', []);
+let kbNotes = DB.get('knowledge_base', []);
 if (!lifeData.schedule) lifeData.schedule = {};
 if (!lifeData.sportLog) lifeData.sportLog = [];
 if (!lifeData.healthLog) lifeData.healthLog = [];
@@ -5483,7 +5883,7 @@ const SECTION_NAMES = {
   dashboard:'仪表盘', tasks:'任务管理', pomodoro:'番茄钟', habits:'习惯打卡',
   life:'生活管理', feynman:'费曼练习', media:'自媒体', topics:'热点追踪',
   news:'资讯日报', review:'每日复盘', stats:'数据统计', achievements:'成就徽章',
-  huangli:'黄道吉日', liunian:'流年运势', horoscope:'星座运势', mahjong:'麻将运势', jobtracker:'求职跟踪', settings:'设置'
+  huangli:'黄道吉日', liunian:'流年运势', horoscope:'星座运势', mahjong:'麻将运势', jobtracker:'求职跟踪', knowledge:'知识库', settings:'设置'
 };
 function updateTopbarBadge() {
   const today = todayStr();
@@ -5513,6 +5913,7 @@ const SEARCH_SECTIONS = [
   { id:'horoscope', name:'星座运势', icon:'⚖', aliases:['星座','运势','星运','horo','libra','天秤','占星'] },
   { id:'mahjong',   name:'麻将运势', icon:'🀄', aliases:['麻将','牌局','mahjong','财神','方位','打麻将','吉时'] },
   { id:'jobtracker', name:'求职跟踪', icon:'💼', aliases:['求职','投递','简历','job','面试','offer','岗位','公司','工作'] },
+  { id:'knowledge', name:'知识库',   icon:'📖', aliases:['知识库','笔记','知识','para','项目','领域','资源','归档','标签','markdown'] },
   { id:'settings',  name:'设置',     icon:'⚙', aliases:['设置','setting','配置','偏好','齿轮'] },
 ];
 // 搜索下拉：当前展示的可选项目（扁平数组，每项含 kind:'section'|'inline' 等）
@@ -5735,7 +6136,7 @@ function sectionName(id){
   return ({tasks:'任务管理',habits:'习惯打卡',news:'资讯日报',topics:'热点追踪',
     dashboard:'仪表盘',pomodoro:'番茄钟',life:'生活管理',feynman:'费曼练习',
     media:'自媒体',review:'每日复盘',stats:'数据统计',huangli:'黄道吉日',liunian:'流年运势',
-    horoscope:'星座运势',mahjong:'麻将运势',jobtracker:'求职跟踪',settings:'设置'})[id]||'工作台';
+    horoscope:'星座运势',mahjong:'麻将运势',jobtracker:'求职跟踪',knowledge:'知识库',settings:'设置'})[id]||'工作台';
 }
 // 点击页面其他地方时收起下拉
 document.addEventListener('click', function(e){
@@ -5910,6 +6311,7 @@ function saveAll() {
   DB.set('wallpaper', wallpaperData); DB.set('weather', weatherData); DB.set('countdown', countdownData);
   DB.set('dailyGoals', dailyGoals); DB.set('quickLinks', quickLinks);
   DB.set('job_tracker', jobTracker);
+  DB.set('knowledge_base', kbNotes);
   DB.set('aes', aesData);
 }
 function escHtml(s) {
@@ -6128,6 +6530,7 @@ function switchSection(name) {
   if (name === 'period') renderPeriodSection();
   if (name === 'liunian') renderLiunianSection();
   if (name === 'jobtracker') renderJobTracker();
+  if (name === 'knowledge') renderKnowledge();
   if (name === 'tasks') { renderTaskProjectSelect(); renderTasks(); renderSavedFiltersBar(); }
   window.scrollTo(0, 0);
 }
@@ -11635,6 +12038,352 @@ function jtClearDate() {
   document.getElementById('jtFilterFrom').value = '';
   document.getElementById('jtFilterTo').value = '';
   jtRenderList();
+}
+
+/* =====================================================================
+ * 知识库模块：PARA 方法（项目/领域/资源/归档）· Markdown 笔记 · 标签 · 搜索
+ * 数据：kbNotes 数组，localStorage key = wb4_knowledge_base
+ * ===================================================================== */
+const KB_CATS = {
+  project:  { label:'项目', cls:'kb-cat-project',  dot:'kb-dot-project' },
+  area:     { label:'领域', cls:'kb-cat-area',     dot:'kb-dot-area' },
+  resource: { label:'资源', cls:'kb-cat-resource', dot:'kb-dot-resource' },
+  archive:  { label:'归档', cls:'kb-cat-archive',  dot:'kb-dot-archive' }
+};
+let kbCat = 'all';
+let kbTagFilter = '';
+let kbEditingId = null;
+let kbEditTags = [];
+let kbEditMode = 'edit';
+
+function kbUid() { return 'kb_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7); }
+function kbEsc(v) { return escHtml(v == null ? '' : v); }
+function kbFmtTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function kbWeekCount() {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const dow = now.getDay();
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - dow);
+  weekStart.setHours(0,0,0,0);
+  return kbNotes.filter(n => (n.createdAt||0) >= weekStart.getTime()).length;
+}
+
+/* ---------- Markdown 渲染（纯 JS，无外部库） ---------- */
+function kbMarkdown(md) {
+  if (!md) return '';
+  let html = kbEsc(md);
+  // 代码：`code` （先处理避免被其他规则破坏）
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // 标题：### / ## / #
+  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+  // 引用：> text
+  html = html.replace(/^&gt; (.*$)/gm, '<blockquote>$1</blockquote>');
+  // 链接：[text](url)
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  // 加粗：**text**
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // 斜体：*text*
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // 有序列表：1. item（用专用标签避免与无序列表混淆）
+  html = html.replace(/^\d+\. (.*$)/gm, '<li-o>$1</li-o>');
+  html = html.replace(/(<li-o>.*<\/li-o>\n?)+/g, m => '<ol>' + m.replace(/\n$/,'') + '</ol>');
+  // 无序列表：- item
+  html = html.replace(/^- (.*$)/gm, '<li-u>$1</li-u>');
+  html = html.replace(/(<li-u>.*<\/li-u>\n?)+/g, m => '<ul>' + m.replace(/\n$/,'') + '</ul>');
+  // 统一为 <li>
+  html = html.replace(/<\/?li-[ou]>/g, m => m.includes('/') ? '</li>' : '<li>');
+  // 段落：剩余非空行包裹为 <p>
+  html = html.split('\n').map(line => {
+    const t = line.trim();
+    if (!t) return '';
+    if (/^<(h[1-3]|blockquote|ol|ul|li|p|div|pre|code)/.test(t)) return line;
+    return '<p>' + line + '</p>';
+  }).join('\n');
+  return html;
+}
+
+/* ---------- 渲染入口 ---------- */
+function renderKnowledge() {
+  if (!renderKnowledge._bound) {
+    renderKnowledge._bound = true;
+    // 分类 tab 切换
+    document.querySelectorAll('#kbCatTabs .kb-cat-tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('#kbCatTabs .kb-cat-tab').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        kbCat = t.dataset.cat;
+        kbRenderList();
+      });
+    });
+  }
+  kbRenderMetrics();
+  kbRenderTagCloud();
+  kbRenderList();
+}
+
+/* ---------- 统计面板 ---------- */
+function kbRenderMetrics() {
+  const el = document.getElementById('kbMetrics');
+  if (!el) return;
+  const total = kbNotes.length;
+  const counts = { project:0, area:0, resource:0, archive:0 };
+  kbNotes.forEach(n => { if (counts[n.category] !== undefined) counts[n.category]++; });
+  const weekNew = kbWeekCount();
+  // 常用标签 TOP5
+  const tagMap = {};
+  kbNotes.forEach(n => (n.tags||[]).forEach(t => { tagMap[t] = (tagMap[t]||0) + 1; }));
+  const topTags = Object.entries(tagMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topTagsHtml = topTags.length
+    ? topTags.map(t => '<span class="kb-tag-chip" style="cursor:default">' + kbEsc(t[0]) + '<span class="kb-tag-count">' + t[1] + '</span></span>').join('')
+    : '<span style="color:var(--muted-light);font-size:11.5px">暂无</span>';
+
+  el.innerHTML = '<div class="page-metrics stagger">' +
+    '<div class="pm-card"><div class="pm-val">' + total + '</div><div class="pm-lbl">总笔记数</div><div class="pm-sub">全部记录</div></div>' +
+    '<div class="pm-card"><div class="pm-val info">' + weekNew + '</div><div class="pm-lbl">本周新增</div><div class="pm-sub">截至今天</div></div>' +
+    '<div class="pm-card"><div class="pm-val" style="color:var(--blue)">' + counts.project + '</div><div class="pm-lbl">项目</div><div class="pm-sub">Projects</div></div>' +
+    '<div class="pm-card"><div class="pm-val" style="color:var(--sage)">' + counts.area + '</div><div class="pm-lbl">领域</div><div class="pm-sub">Areas</div></div>' +
+    '<div class="pm-card"><div class="pm-val" style="color:#b45309">' + counts.resource + '</div><div class="pm-lbl">资源</div><div class="pm-sub">Resources</div></div>' +
+    '<div class="pm-card"><div class="pm-val" style="color:#64748b">' + counts.archive + '</div><div class="pm-lbl">归档</div><div class="pm-sub">Archives</div></div>' +
+    '<div class="pm-card" style="grid-column:span 2"><div class="pm-lbl" style="margin-bottom:6px">🔥 常用标签 TOP5</div><div style="display:flex;flex-wrap:wrap;gap:6px">' + topTagsHtml + '</div></div>' +
+    '</div>';
+}
+
+/* ---------- 标签云 ---------- */
+function kbRenderTagCloud() {
+  const card = document.getElementById('kbTagCloudCard');
+  const cloud = document.getElementById('kbTagCloud');
+  const hint = document.getElementById('kbTagCloudHint');
+  if (!card || !cloud) return;
+  const tagMap = {};
+  kbNotes.forEach(n => (n.tags||[]).forEach(t => { tagMap[t] = (tagMap[t]||0) + 1; }));
+  const tags = Object.entries(tagMap).sort((a,b)=>b[1]-a[1]);
+  if (tags.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  hint.textContent = kbTagFilter ? '（点击标签取消筛选）' : '（共 ' + tags.length + ' 个标签，点击筛选）';
+  cloud.innerHTML = tags.map(t => {
+    const active = t[0] === kbTagFilter ? ' active' : '';
+    return '<span class="kb-tag-chip' + active + '" onclick="kbToggleTagFilter(\'' + kbEsc(t[0]).replace(/'/g,"\\'") + '\')">' +
+      kbEsc(t[0]) + '<span class="kb-tag-count">' + t[1] + '</span></span>';
+  }).join('');
+}
+function kbToggleTagFilter(tag) {
+  kbTagFilter = (kbTagFilter === tag) ? '' : tag;
+  kbRenderTagCloud();
+  kbRenderList();
+}
+
+/* ---------- 列表 ---------- */
+function kbGetFiltered() {
+  let list = kbNotes.slice();
+  if (kbCat !== 'all') list = list.filter(n => n.category === kbCat);
+  if (kbTagFilter) list = list.filter(n => (n.tags||[]).includes(kbTagFilter));
+  const q = (document.getElementById('kbSearch')?.value || '').trim().toLowerCase();
+  if (q) {
+    list = list.filter(n =>
+      (n.title||'').toLowerCase().includes(q) ||
+      (n.content||'').toLowerCase().includes(q) ||
+      (n.tags||[]).some(t => t.toLowerCase().includes(q))
+    );
+  }
+  list.sort((a,b) => (b.updatedAt||0) - (a.updatedAt||0));
+  return list;
+}
+function kbRenderList() {
+  const listEl = document.getElementById('kbNoteList');
+  const countEl = document.getElementById('kbListCount');
+  const emptyEl = document.getElementById('kbEmpty');
+  if (!listEl) return;
+  const list = kbGetFiltered();
+  if (countEl) countEl.textContent = '共 ' + list.length + ' 条';
+  if (list.length === 0) {
+    listEl.innerHTML = '';
+    if (emptyEl) {
+      emptyEl.style.display = 'block';
+      const q = (document.getElementById('kbSearch')?.value || '').trim();
+      emptyEl.querySelector('div:last-child').textContent =
+        kbNotes.length === 0 ? '还没有笔记，从上方快速记录或新建一篇吧'
+        : (q ? '没有匹配的笔记，换个关键词试试' : '该分类下暂无笔记');
+    }
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  listEl.innerHTML = list.map(n => {
+    const cat = KB_CATS[n.category] || KB_CATS.resource;
+    const tags = (n.tags||[]).map(t => '<span class="kb-note-tag">' + kbEsc(t) + '</span>').join('');
+    const preview = kbEsc((n.content||'').replace(/[#*`>\-]/g,'').replace(/\n+/g,' ').trim().slice(0,80));
+    return '<div class="kb-note-item" onclick="kbOpenEditor(\'' + n.id + '\')">' +
+      '<div class="kb-note-top">' +
+        '<div class="kb-note-title">' + kbEsc(n.title || '无标题') + '</div>' +
+        '<div class="kb-note-actions">' +
+          '<button class="kb-note-del" title="删除" onclick="event.stopPropagation();kbDeleteNote(\'' + n.id + '\')">🗑</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="kb-note-meta">' +
+        '<span class="kb-cat-badge ' + cat.cls + '"><span class="kb-cat-dot ' + cat.dot + '"></span>' + cat.label + '</span>' +
+        (tags ? '<span class="kb-note-tags">' + tags + '</span>' : '') +
+        '<span class="kb-note-time">' + kbFmtTime(n.updatedAt) + '</span>' +
+      '</div>' +
+      (preview ? '<div class="kb-note-preview">' + preview + (n.content.length > 80 ? '…' : '') + '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+/* ---------- 快速捕获 ---------- */
+function kbQuickCapture() {
+  const input = document.getElementById('kbQuickInput');
+  const text = (input?.value || '').trim();
+  if (!text) { showToast('请输入内容'); return; }
+  const now = Date.now();
+  kbNotes.unshift({
+    id: kbUid(),
+    title: text.slice(0, 30),
+    content: text,
+    category: 'resource',
+    tags: [],
+    createdAt: now, updatedAt: now
+  });
+  input.value = '';
+  saveAll();
+  kbRenderMetrics();
+  kbRenderTagCloud();
+  kbRenderList();
+  showToast('已快速记录到「资源」');
+}
+
+/* ---------- 编辑器 ---------- */
+function kbOpenEditor(id) {
+  kbEditingId = id || null;
+  kbEditTags = [];
+  kbEditMode = 'edit';
+  const titleEl = document.getElementById('kbEditorTitle');
+  const hint = document.getElementById('kbEditHint');
+  if (id) {
+    const n = kbNotes.find(x => x.id === id);
+    if (!n) return;
+    document.getElementById('kbEditTitle').value = n.title || '';
+    document.getElementById('kbEditCategory').value = n.category || 'resource';
+    document.getElementById('kbEditTextarea').value = n.content || '';
+    kbEditTags = (n.tags || []).slice();
+    if (titleEl) titleEl.textContent = '✎ 编辑笔记';
+    if (hint) hint.style.display = 'inline';
+  } else {
+    document.getElementById('kbEditTitle').value = '';
+    document.getElementById('kbEditCategory').value = 'resource';
+    document.getElementById('kbEditTextarea').value = '';
+    if (titleEl) titleEl.textContent = '✎ 新建笔记';
+    if (hint) hint.style.display = 'none';
+  }
+  kbRenderEditTags();
+  kbSetEditMode('edit');
+  document.getElementById('kbEditorMask').classList.add('show');
+  setTimeout(() => document.getElementById('kbEditTitle').focus(), 100);
+}
+function kbCloseEditor() {
+  document.getElementById('kbEditorMask').classList.remove('show');
+  kbEditingId = null;
+  kbEditTags = [];
+}
+function kbRenderEditTags() {
+  const wrap = document.getElementById('kbEditTagChips');
+  if (!wrap) return;
+  wrap.innerHTML = kbEditTags.map((t,i) =>
+    '<span class="kb-edit-chip">' + kbEsc(t) +
+    '<button onclick="kbRemoveEditTag(' + i + ')" title="移除">✕</button></span>'
+  ).join('');
+}
+function kbRemoveEditTag(i) {
+  kbEditTags.splice(i, 1);
+  kbRenderEditTags();
+}
+function kbTagInputKey(e) {
+  const input = document.getElementById('kbEditTagInput');
+  const val = (input.value || '').trim();
+  if (e.key === 'Enter' || e.key === ',' || e.key === '，') {
+    e.preventDefault();
+    if (val) {
+      val.split(/[,，]/).map(s => s.trim()).filter(Boolean).forEach(t => {
+        if (!kbEditTags.includes(t)) kbEditTags.push(t);
+      });
+      kbRenderEditTags();
+    }
+    input.value = '';
+  } else if (e.key === 'Backspace' && !val && kbEditTags.length) {
+    kbEditTags.pop();
+    kbRenderEditTags();
+  }
+}
+function kbSetEditMode(mode) {
+  kbEditMode = mode;
+  const ta = document.getElementById('kbEditTextarea');
+  const pv = document.getElementById('kbEditPreview');
+  const btnE = document.getElementById('kbBtnEdit');
+  const btnP = document.getElementById('kbBtnPreview');
+  if (mode === 'preview') {
+    pv.innerHTML = kbMarkdown(ta.value);
+    pv.style.display = 'block';
+    ta.style.display = 'none';
+    btnE.classList.remove('active');
+    btnP.classList.add('active');
+  } else {
+    pv.style.display = 'none';
+    ta.style.display = 'block';
+    btnE.classList.add('active');
+    btnP.classList.remove('active');
+  }
+}
+function kbSaveNote() {
+  const title = (document.getElementById('kbEditTitle').value || '').trim();
+  const category = document.getElementById('kbEditCategory').value;
+  const content = document.getElementById('kbEditTextarea').value || '';
+  // 收集标签输入框中残留的
+  const tagInput = document.getElementById('kbEditTagInput');
+  if (tagInput && tagInput.value.trim()) {
+    tagInput.value.trim().split(/[,，]/).map(s=>s.trim()).filter(Boolean).forEach(t => {
+      if (!kbEditTags.includes(t)) kbEditTags.push(t);
+    });
+    tagInput.value = '';
+    kbRenderEditTags();
+  }
+  if (!title && !content.trim()) { showToast('请填写标题或内容'); return; }
+  const finalTitle = title || content.slice(0,30).replace(/\n/g,' ');
+  const now = Date.now();
+  if (kbEditingId) {
+    const idx = kbNotes.findIndex(n => n.id === kbEditingId);
+    if (idx > -1) {
+      kbNotes[idx] = Object.assign({}, kbNotes[idx], {
+        title: finalTitle, category, content, tags: kbEditTags.slice(), updatedAt: now
+      });
+    }
+    showToast('笔记已更新');
+  } else {
+    kbNotes.unshift({
+      id: kbUid(), title: finalTitle, content, category,
+      tags: kbEditTags.slice(), createdAt: now, updatedAt: now
+    });
+    showToast('笔记已创建');
+  }
+  saveAll();
+  kbCloseEditor();
+  kbRenderMetrics();
+  kbRenderTagCloud();
+  kbRenderList();
+}
+function kbDeleteNote(id) {
+  const n = kbNotes.find(x => x.id === id);
+  if (!n) return;
+  if (!confirm('确认删除「' + (n.title || '无标题') + '」？')) return;
+  kbNotes = kbNotes.filter(x => x.id !== id);
+  saveAll();
+  kbRenderMetrics();
+  kbRenderTagCloud();
+  kbRenderList();
+  showToast('笔记已删除');
 }
 
 init();
