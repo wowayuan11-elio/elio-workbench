@@ -4212,6 +4212,13 @@ body.focus-mode .focus-station {
 .kb-btn-sm { padding: 6px 12px; font-size: 12px; }
 /* 工具栏 */
 .kb-toolbar-card { padding: 14px clamp(16px,2.5vw,22px); }
+.kb-cat-help {
+  width:22px;height:22px;border-radius:50%;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:12px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all .15s;
+}
+.kb-cat-help:hover { background:var(--accent-bg);color:var(--accent);border-color:var(--accent); }
 .kb-cat-tabs {
   display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
 }
@@ -5136,10 +5143,11 @@ body.focus-mode .focus-station {
       <div class="kb-card kb-toolbar-card">
         <div class="kb-cat-tabs" id="kbCatTabs">
           <button class="kb-cat-tab active" data-cat="all">全部</button>
-          <button class="kb-cat-tab" data-cat="project"><span class="kb-cat-dot kb-dot-project"></span>项目</button>
-          <button class="kb-cat-tab" data-cat="area"><span class="kb-cat-dot kb-dot-area"></span>领域</button>
-          <button class="kb-cat-tab" data-cat="resource"><span class="kb-cat-dot kb-dot-resource"></span>资源</button>
-          <button class="kb-cat-tab" data-cat="archive"><span class="kb-cat-dot kb-dot-archive"></span>归档</button>
+          <button class="kb-cat-tab" data-cat="project" title="有截止日期、要完成的事"><span class="kb-cat-dot kb-dot-project"></span>项目</button>
+          <button class="kb-cat-tab" data-cat="area" title="长期维护的能力和责任"><span class="kb-cat-dot kb-dot-area"></span>领域</button>
+          <button class="kb-cat-tab" data-cat="resource" title="以后可能用到的参考资料"><span class="kb-cat-dot kb-dot-resource"></span>资源</button>
+          <button class="kb-cat-tab" data-cat="archive" title="已完成或不再需要的"><span class="kb-cat-dot kb-dot-archive"></span>归档</button>
+          <button class="kb-cat-help" onclick="kbShowCategoryHelp()" title="分类说明">?</button>
         </div>
         <div class="kb-search-row">
           <input type="text" id="kbSearch" placeholder="🔍 搜索标题 / 内容 / 标签" oninput="kbRenderList()">
@@ -5168,6 +5176,39 @@ body.focus-mode .focus-station {
         </div>
       </div>
     </section>
+
+    <!-- 分类说明弹窗 -->
+    <div class="kb-modal-mask" id="kbHelpMask" onclick="if(event.target===this)kbCloseHelp()">
+      <div class="kb-modal" role="dialog" aria-modal="true" style="max-width:480px">
+        <div class="kb-modal-head">
+          <div class="kb-modal-title">📖 PARA 分类说明</div>
+          <button class="kb-modal-close" onclick="kbCloseHelp()">✕</button>
+        </div>
+        <div class="kb-modal-body">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="padding:10px 12px;background:rgba(59,130,246,0.08);border-left:3px solid #3b82f6;border-radius:4px">
+              <div style="font-weight:600;color:var(--ink);margin-bottom:4px">🟦 项目 Project</div>
+              <div style="color:var(--muted);font-size:13px;line-height:1.5">有截止日期、要完成的事。<br><b>例子：</b>求职冲刺、面试准备、学完某门课</div>
+            </div>
+            <div style="padding:10px 12px;background:rgba(16,185,129,0.08);border-left:3px solid #10b981;border-radius:4px">
+              <div style="font-weight:600;color:var(--ink);margin-bottom:4px">🟩 领域 Area</div>
+              <div style="color:var(--muted);font-size:13px;line-height:1.5">长期维护的能力和责任，没有终点。<br><b>例子：</b>客户成功方法论、健康管理、理财</div>
+            </div>
+            <div style="padding:10px 12px;background:rgba(245,158,11,0.08);border-left:3px solid #f59e0b;border-radius:4px">
+              <div style="font-weight:600;color:var(--ink);margin-bottom:4px">🟧 资源 Resource</div>
+              <div style="color:var(--muted);font-size:13px;line-height:1.5">以后可能用到的参考资料。<br><b>例子：</b>面试话术、行业分析、文章摘录、灵感速记</div>
+            </div>
+            <div style="padding:10px 12px;background:rgba(156,163,175,0.08);border-left:3px solid #9ca3af;border-radius:4px">
+              <div style="font-weight:600;color:var(--ink);margin-bottom:4px">⬜ 归档 Archive</div>
+              <div style="color:var(--muted);font-size:13px;line-height:1.5">已完成或不再需要的内容。<br><b>例子：</b>面完的公司、过时的笔记、旧项目资料</div>
+            </div>
+            <div style="margin-top:4px;padding:10px 12px;background:var(--accent-bg);border-radius:4px;font-size:12px;color:var(--muted);line-height:1.6">
+              💡 <b>速记规则：</b>不知道放哪就先丢「资源」，每周花 5 分钟整理一次就行。分类不重要，<b>能搜到才重要</b>。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- 笔记编辑器弹窗 -->
     <div class="kb-modal-mask" id="kbEditorMask" onclick="if(event.target===this)kbCloseEditor()">
@@ -12257,6 +12298,12 @@ function kbQuickCapture() {
 }
 
 /* ---------- 编辑器 ---------- */
+function kbShowCategoryHelp() {
+  document.getElementById('kbHelpMask').style.display = 'flex';
+}
+function kbCloseHelp() {
+  document.getElementById('kbHelpMask').style.display = 'none';
+}
 function kbOpenEditor(id) {
   kbEditingId = id || null;
   kbEditTags = [];
