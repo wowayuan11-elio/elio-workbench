@@ -323,9 +323,9 @@ ul { list-style: none; }
   width: 34px; height: 34px; border-radius: 10px;
   flex-shrink: 0; position: relative; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  /* V6 深紫实心底，和大图标一致 */
-  background: #141235;
-  box-shadow: 0 4px 10px -4px rgba(5,2,22,.22);
+  /* V7 极简渐变紫，高级感 */
+  background: linear-gradient(135deg, #2d1b69 0%, #1a0f3e 100%);
+  box-shadow: 0 4px 12px -3px rgba(45,27,105,.35), inset 0 1px 0 rgba(255,255,255,.08);
   border: none;
 }
 /* 顶部极细高光（1 条），给实心底一点"气"，不是死黑块 */
@@ -4499,12 +4499,10 @@ body.focus-mode .focus-station {
   <nav class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-mark"><svg viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <!-- 白色等宽 01：SF Mono 系统字体，跟大图标完全一致 -->
-  <g filter="drop-shadow(0 1px 1px rgba(5,2,22,.18))">
-    <text x="17" y="22.5" text-anchor="middle"
-          font-family="SF Mono, SF Pro Display, Inter, Consolas, Menlo, monospace"
-          font-size="15.5" font-weight="700" fill="#ffffff" letter-spacing="-.5">01</text>
-  </g>
+  <!-- 极简 e 字母：SF Pro Display，匹配 elio 品牌 -->
+  <text x="17" y="23" text-anchor="middle"
+        font-family="SF Pro Display, Inter, -apple-system, Helvetica, sans-serif"
+        font-size="19" font-weight="600" fill="#ffffff" letter-spacing="-.5">e</text>
 </svg></div>
       <div class="logo-text">elio工作台</div>
     </div>
