@@ -10635,13 +10635,17 @@ let pd2Custom = DB.get('pd_custom', []);
 // 自动去重 + 清理误加的垃圾记录
 function pd2SanitizeCustom(){
   if(!pd2Custom || !pd2Custom.length) return;
+  const orig = pd2Custom;
+  // 剔除与硬编码 PD2_HISTORY 重复(相同开始日期)的 localStorage 记录，避免平均周期算短
+  const histSet = new Set(PD2_HISTORY.map(r=>r.s));
+  pd2Custom = pd2Custom.filter(r=>!histSet.has(r.s));
   // 按开始日期去重，保留结束日期最长的那条
   const map = new Map();
   pd2Custom.forEach(r => {
     if(!map.has(r.s) || (r.e > map.get(r.s).e)) map.set(r.s, r);
   });
   const cleaned = Array.from(map.values());
-  if(cleaned.length !== pd2Custom.length){
+  if(cleaned.length !== orig.length){
     pd2Custom = cleaned.sort((a,b)=>a.s.localeCompare(b.s));
     DB.set('pd_custom', pd2Custom);
   }
@@ -10655,7 +10659,12 @@ const pd2F = d => {const p=n=>String(n).padStart(2,'0');return`${d.getFullYear()
 const pd2A = (d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
 const pd2D = (a,b)=>Math.round((pd2P(b)-pd2P(a))/86400000);
 
-function pd2All(){return [...PD2_HISTORY,...pd2Custom].sort((a,b)=>a.s.localeCompare(b.s));}
+function pd2All(){
+  // 用开始日期去重，避免 localStorage 重复记录把平均周期算短
+  const map = new Map();
+  [...PD2_HISTORY,...pd2Custom].sort((a,b)=>a.s.localeCompare(b.s)).forEach(r=>map.set(r.s, r));
+  return Array.from(map.values());
+}
 
 function pd2Compute(){
   const a = pd2All(); const ss = a.map(r=>r.s);
