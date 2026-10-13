@@ -10661,14 +10661,26 @@ function pd2Compute(){
   const a = pd2All(); const ss = a.map(r=>r.s);
   const cyc = []; for(let i=1;i<ss.length;i++) cyc.push(pd2D(ss[i-1],ss[i]));
   const avgC = cyc.slice(-6).reduce((x,y)=>x+y,0)/Math.min(6,cyc.length);
+  const avgCR = Math.round(avgC);
   const dus = a.map(r=>pd2D(r.s,r.e)+1);
   const avgD = dus.reduce((x,y)=>x+y,0)/dus.length;
+  const avgDR = Math.round(avgD);
   const last = pd2P(a[a.length-1].s);
-  const pred = pd2A(last, Math.round(avgC));
-  const ov = pd2A(pred, -14);
-  const fer = pd2A(ov, -5);
-  const pk1 = pd2A(ov,-2), pk2 = pd2A(ov,-1);
-  return {a, avgC, avgD, avgDR:Math.round(avgD), last, pred, ov, fer, pk1, pk2, cyc};
+  let pred = pd2A(last, avgCR);
+  let ov = pd2A(pred, -14);
+  let fer = pd2A(ov, -5);
+  let pk1 = pd2A(ov,-2), pk2 = pd2A(ov,-1);
+  // 自动滚动：预测经期开始日 + 持续期都已过去 → 推到下一周期，避免显示过期数据
+  const today = new Date(); today.setHours(0,0,0,0);
+  let roll = 0;
+  while (pd2A(pred, Math.max(0, avgDR-1)) < today && roll < 6) {
+    pred = pd2A(pred, avgCR);
+    ov = pd2A(pred, -14);
+    fer = pd2A(ov, -5);
+    pk1 = pd2A(ov,-2); pk2 = pd2A(ov,-1);
+    roll++;
+  }
+  return {a, avgC, avgD, avgDR, avgCR, last, pred, ov, fer, pk1, pk2, cyc, roll};
 }
 
 function renderPeriodSection(){
@@ -10680,9 +10692,20 @@ function renderPeriodSection(){
   const daysLabel = d2n>0 ? `${d2n}天后` : (d2n===0 ? '就是今天' : `已过${-d2n}天`);
   document.getElementById('pd2Days').textContent = daysLabel;
   document.getElementById('pd2NextDate').textContent = `${st.pred.getMonth()+1}月${st.pred.getDate()}日`;
-  document.getElementById('pd2OvDate').textContent = `${st.ov.getMonth()+1}月${st.ov.getDate()}日`;
-  document.getElementById('pd2Fertile').textContent = `${st.fer.getMonth()+1}月${st.fer.getDate()}日 ~ ${st.ov.getMonth()+1}月${st.ov.getDate()}日`;
-  document.getElementById('pd2Peak').textContent = `${st.pk1.getMonth()+1}月${st.pk1.getDate()}日、${st.pk2.getMonth()+1}月${st.pk2.getDate()}日`;
+  // 排卵日已过 → 显示下一周期（未来）排卵日，并标注本轮已过，避免显示过期数据
+  const ovPassed = st.ov < today;
+  let showOv = st.ov, showFer = st.fer, showPk1 = st.pk1, showPk2 = st.pk2;
+  if (ovPassed) {
+    const c = st.avgCR;
+    showOv = pd2A(st.ov, c);
+    showFer = pd2A(st.fer, c);
+    showPk1 = pd2A(st.pk1, c);
+    showPk2 = pd2A(st.pk2, c);
+  }
+  const ovSuffix = ovPassed ? `（本轮${st.ov.getMonth()+1}月${st.ov.getDate()}日已过${Math.round((today-st.ov)/86400000)}天）` : '';
+  document.getElementById('pd2OvDate').textContent = `${showOv.getMonth()+1}月${showOv.getDate()}日${ovSuffix}`;
+  document.getElementById('pd2Fertile').textContent = `${showFer.getMonth()+1}月${showFer.getDate()}日 ~ ${showOv.getMonth()+1}月${showOv.getDate()}日`;
+  document.getElementById('pd2Peak').textContent = `${showPk1.getMonth()+1}月${showPk1.getDate()}日、${showPk2.getMonth()+1}月${showPk2.getDate()}日`;
 
   // Stats
   document.getElementById('pd2AvgCycle').textContent = `${st.avgC.toFixed(0)} 天`;
