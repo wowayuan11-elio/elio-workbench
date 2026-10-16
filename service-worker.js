@@ -1,5 +1,5 @@
 // elio工作台 Service Worker — 离线缓存核心
-const CACHE_NAME = 'elio-workbench-v4-vibe-v7';
+const CACHE_NAME = 'elio-workbench-v5-netfirst';
 const ASSETS = [
   './',
   './index.html',
@@ -24,23 +24,19 @@ self.addEventListener('activate', e => {
   );
 });
 
-// 请求拦截：缓存优先，网络回退
+// 请求拦截：网络优先，离线才回退缓存（保证联网时永远看到最新版）
 self.addEventListener('fetch', e => {
   // 只处理 GET 请求
   if (e.request.method !== 'GET') return;
 
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      // 有缓存先用缓存，同时后台更新
-      const fetchPromise = fetch(e.request).then(response => {
-        // 只缓存同源的成功响应
-        if (response && response.status === 200 && e.request.url.startsWith(self.location.origin)) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-        }
-        return response;
-      }).catch(() => cached);
-      return cached || fetchPromise;
-    })
+    fetch(e.request).then(response => {
+      // 联网成功：更新缓存并返回最新内容
+      if (response && response.status === 200 && e.request.url.startsWith(self.location.origin)) {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+      }
+      return response;
+    }).catch(() => caches.match(e.request)) // 断网才用缓存
   );
 });
