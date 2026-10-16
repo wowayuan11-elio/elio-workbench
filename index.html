@@ -4896,7 +4896,7 @@ body.focus-mode .focus-station {
     </section>
         <section class="section" id="period">
       <h1 class="page-title">🩸 经期记录</h1>
-      <p class="page-sub">女朋友的 · 4.5年历史数据 · 本地预测</p>
+      <p class="page-sub">本地记录 · 仅自己可见</p>
       <div class="pd2-summary">
         <div>
           <div class="pd2-days" id="pd2Days">--</div>
@@ -4941,7 +4941,11 @@ body.focus-mode .focus-station {
       <div class="pd2-hist-wrap">
         <div class="pd2-hist-head">
           <div class="pd2-hist-title">📋 历史记录</div>
-          <div class="pd2-hist-filter" id="pd2HistFilter"></div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <button class="btn-add" style="font-size:11px;padding:3px 8px;border-radius:6px" onclick="pd2Import()" title="导入备份 JSON">📥 导入</button>
+            <button class="btn-add" style="font-size:11px;padding:3px 8px;border-radius:6px;background:#6b7280" onclick="pd2Export()" title="导出为 JSON 备份">📤 导出</button>
+            <div class="pd2-hist-filter" id="pd2HistFilter" style="margin-left:8px"></div>
+          </div>
         </div>
         <div id="pd2HistList"></div>
       </div>
@@ -10608,29 +10612,9 @@ function renderMahjongSection() {
 }
 
 /* ========== 经期记录模块 JS v2 ========== */
-const PD2_HISTORY = [
-  {s:'2022-02-06',e:'2022-02-12'},{s:'2022-03-06',e:'2022-03-12'},{s:'2022-04-04',e:'2022-04-10'},
-  {s:'2022-05-04',e:'2022-05-10'},{s:'2022-06-03',e:'2022-06-10'},{s:'2022-07-02',e:'2022-07-09'},
-  {s:'2022-07-30',e:'2022-08-05'},{s:'2022-08-26',e:'2022-09-01'},{s:'2022-09-22',e:'2022-09-28'},
-  {s:'2022-10-20',e:'2022-10-27'},{s:'2022-11-19',e:'2022-11-25'},{s:'2022-12-17',e:'2022-12-23'},
-  {s:'2023-01-12',e:'2023-01-19'},{s:'2023-02-10',e:'2023-02-16'},{s:'2023-03-12',e:'2023-03-18'},
-  {s:'2023-04-08',e:'2023-04-14'},{s:'2023-05-07',e:'2023-05-13'},{s:'2023-06-07',e:'2023-06-13'},
-  {s:'2023-07-06',e:'2023-07-12'},{s:'2023-08-03',e:'2023-08-09'},{s:'2023-08-30',e:'2023-09-05'},
-  {s:'2023-09-29',e:'2023-10-05'},{s:'2023-10-28',e:'2023-11-04'},{s:'2023-11-26',e:'2023-12-01'},
-  {s:'2023-12-26',e:'2024-01-01'},
-  {s:'2024-01-22',e:'2024-01-28'},{s:'2024-02-22',e:'2024-02-28'},{s:'2024-03-22',e:'2024-03-28'},
-  {s:'2024-04-19',e:'2024-04-25'},{s:'2024-05-17',e:'2024-05-23'},{s:'2024-06-14',e:'2024-06-20'},
-  {s:'2024-07-16',e:'2024-07-22'},{s:'2024-08-11',e:'2024-08-17'},{s:'2024-09-14',e:'2024-09-20'},
-  {s:'2024-10-13',e:'2024-10-19'},{s:'2024-11-10',e:'2024-11-17'},{s:'2024-12-08',e:'2024-12-15'},
-  {s:'2025-01-07',e:'2025-01-13'},{s:'2025-02-05',e:'2025-02-11'},{s:'2025-03-08',e:'2025-03-14'},
-  {s:'2025-04-07',e:'2025-04-13'},{s:'2025-05-07',e:'2025-05-13'},{s:'2025-06-04',e:'2025-06-10'},
-  {s:'2025-07-06',e:'2025-07-12'},{s:'2025-08-05',e:'2025-08-11'},{s:'2025-09-04',e:'2025-09-10'},
-  {s:'2025-10-02',e:'2025-10-08'},{s:'2025-11-01',e:'2025-11-07'},{s:'2025-11-29',e:'2025-12-05'},
-  {s:'2025-12-26',e:'2026-01-01'},
-  {s:'2026-01-23',e:'2026-01-29'},{s:'2026-02-22',e:'2026-02-28'},{s:'2026-03-22',e:'2026-03-28'},
-  {s:'2026-04-22',e:'2026-04-28'},{s:'2026-05-22',e:'2026-05-28'},{s:'2026-06-20',e:'2026-06-26'},
-  {s:'2026-07-19',e:'2026-07-25'},{s:'2026-08-17',e:'2026-08-23'},{s:'2026-09-15',e:'2026-09-21'},
-];
+// 隐私保护：历史数据不硬编码在公开网页中，仅存于用户本地 localStorage
+// 数据导入：历史记录区「📥 导入」按钮，粘贴备份 JSON 即可恢复
+const PD2_HISTORY = [];
 let pd2Custom = DB.get('pd_custom', []);
 // 自动去重 + 清理误加的垃圾记录
 function pd2SanitizeCustom(){
@@ -10667,9 +10651,11 @@ function pd2All(){
 }
 
 function pd2Compute(){
-  const a = pd2All(); const ss = a.map(r=>r.s);
+  const a = pd2All();
+  if(!a.length) return null; // 空数据：公开版无硬编码历史，等待用户导入
+  const ss = a.map(r=>r.s);
   const cyc = []; for(let i=1;i<ss.length;i++) cyc.push(pd2D(ss[i-1],ss[i]));
-  const avgC = cyc.slice(-6).reduce((x,y)=>x+y,0)/Math.min(6,cyc.length);
+  const avgC = cyc.length ? cyc.slice(-6).reduce((x,y)=>x+y,0)/Math.min(6,cyc.length) : 28;
   const avgCR = Math.round(avgC);
   const dus = a.map(r=>pd2D(r.s,r.e)+1);
   const avgD = dus.reduce((x,y)=>x+y,0)/dus.length;
@@ -10695,6 +10681,19 @@ function pd2Compute(){
 function renderPeriodSection(){
   const st = pd2Compute();
   const today = new Date(); today.setHours(0,0,0,0);
+  if(!st){
+    // 空数据：显示引导，等待用户导入历史或手动添加
+    document.getElementById('pd2Days').textContent = '暂无数据';
+    document.getElementById('pd2NextDate').textContent = '--';
+    document.getElementById('pd2OvDate').textContent = '--';
+    document.getElementById('pd2Fertile').textContent = '--';
+    document.getElementById('pd2Peak').textContent = '--';
+    document.getElementById('pd2AvgCycle').textContent = '--';
+    document.getElementById('pd2AvgDur').textContent = '--';
+    document.getElementById('pd2SinceLast').textContent = '--';
+    pd2RenderCal(); pd2RenderHist();
+    return;
+  }
   const d2n = Math.round((st.pred - today)/86400000);
 
   // Summary
@@ -10735,26 +10734,27 @@ function pd2RenderCal(){
   const today = new Date(); today.setHours(0,0,0,0);
 
   const perSet = new Set();
-  st.a.forEach(r=>{
-    const s=pd2P(r.s),e=pd2P(r.e);
-    for(let d=new Date(s);d<=e;d.setDate(d.getDate()+1)){
-      if(d.getFullYear()===y&&d.getMonth()===m) perSet.add(d.getDate());
-    }
-  });
-
   const predSet=new Set(),ovSet=new Set(),ferSet=new Set(),pkSet=new Set();
-  for(let i=0;i<st.avgDR;i++){
-    const d=pd2A(st.pred,i);
-    if(d.getFullYear()===y&&d.getMonth()===m) predSet.add(d.getDate());
-  }
-  if(st.ov.getFullYear()===y&&st.ov.getMonth()===m) ovSet.add(st.ov.getDate());
-  for(let i=0;i<=5;i++){
-    const d=pd2A(st.ov,-i);
-    if(d.getFullYear()===y&&d.getMonth()===m) ferSet.add(d.getDate());
-  }
-  for(let i=1;i<=2;i++){
-    const d=pd2A(st.ov,-i);
-    if(d.getFullYear()===y&&d.getMonth()===m) pkSet.add(d.getDate());
+  if(st){
+    st.a.forEach(r=>{
+      const s=pd2P(r.s),e=pd2P(r.e);
+      for(let d=new Date(s);d<=e;d.setDate(d.getDate()+1)){
+        if(d.getFullYear()===y&&d.getMonth()===m) perSet.add(d.getDate());
+      }
+    });
+    for(let i=0;i<st.avgDR;i++){
+      const d=pd2A(st.pred,i);
+      if(d.getFullYear()===y&&d.getMonth()===m) predSet.add(d.getDate());
+    }
+    if(st.ov.getFullYear()===y&&st.ov.getMonth()===m) ovSet.add(st.ov.getDate());
+    for(let i=0;i<=5;i++){
+      const d=pd2A(st.ov,-i);
+      if(d.getFullYear()===y&&d.getMonth()===m) ferSet.add(d.getDate());
+    }
+    for(let i=1;i<=2;i++){
+      const d=pd2A(st.ov,-i);
+      if(d.getFullYear()===y&&d.getMonth()===m) pkSet.add(d.getDate());
+    }
   }
 
   let html = '';
@@ -10776,13 +10776,24 @@ function pd2RenderCal(){
 
 function pd2RenderHist(){
   const st = pd2Compute();
-  const a = st.a;
+  const a = st ? st.a : [];
+  const cycs = st ? st.cyc : [];
 
   // 年份筛选按钮
   const years = [...new Set(a.map(r=>pd2P(r.s).getFullYear()))].sort().reverse();
   const filterHtml = `<button class="${pd2Filter==='all'?'active':''}" onclick="pd2SetFilter('all')">全部</button>` +
     years.map(y=>`<button class="${pd2Filter===y?'active':''}" onclick="pd2SetFilter(${y})">${y}</button>`).join('');
   document.getElementById('pd2HistFilter').innerHTML = filterHtml;
+
+  if(!a.length){
+    document.getElementById('pd2HistList').innerHTML = `<div style="color:var(--muted);font-size:12.5px;padding:28px 16px;text-align:center;line-height:2">
+      🔒 经期数据仅存储在本机，公开网页不含任何隐私<br>
+      首次使用：点上方「📥 导入」粘贴备份 JSON 即可恢复历史<br>
+      或直接手动「添加」第一条记录开始使用
+    </div>`;
+    pd2RenderCustomList();
+    return;
+  }
 
   // 按年分组
   let filtered = a;
@@ -10801,7 +10812,6 @@ function pd2RenderHist(){
 
   const html = sortedYears.map(y=>{
     const items = byYear[y];
-    const cycs = st.cyc;
     // 该年统计
     const yearCyc = [];
     items.forEach((r,i)=>{
@@ -10826,7 +10836,7 @@ function pd2RenderHist(){
       // 计算周期（从 items 中取）
       let cycStr = '';
       const firstIdx = a.findIndex(x=>x.s===mItems[0].s);
-      if(firstIdx>0 && firstIdx-1 < st.cyc.length && st.cyc[firstIdx-1]!==undefined) cycStr = `周期 ${st.cyc[firstIdx-1]}天`;
+      if(firstIdx>0 && firstIdx-1 < cycs.length && cycs[firstIdx-1]!==undefined) cycStr = `周期 ${cycs[firstIdx-1]}天`;
 
       // 进度条：月初到月末，经期块定位
       const dim = new Date(y, m+1, 0).getDate();
@@ -10865,6 +10875,39 @@ function pd2RenderHist(){
 
   document.getElementById('pd2HistList').innerHTML = html || '<div style="color:var(--muted);font-size:12px;padding:20px;text-align:center">该年份暂无数据</div>';
   pd2RenderCustomList();
+}
+
+// 导出当前全部经期数据为 JSON（复制到剪贴板）
+function pd2Export(){
+  const data = pd2All();
+  if(!data.length){ alert('暂无数据可导出'); return; }
+  const json = JSON.stringify(data);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(json).then(()=>alert(`已复制 ${data.length} 条记录到剪贴板，粘贴保存到备忘录即可`));
+  }else{
+    prompt('复制以下 JSON 保存：', json);
+  }
+}
+
+// 导入经期数据（粘贴 JSON）
+function pd2Import(){
+  const input = prompt('粘贴经期备份 JSON（格式：[{"s":"2026-09-15","e":"2026-09-21"},...]）：');
+  if(!input) return;
+  try{
+    const arr = JSON.parse(input);
+    if(!Array.isArray(arr)) throw new Error('not array');
+    const valid = arr.filter(r=>r && /^\d{4}-\d{2}-\d{2}$/.test(r.s) && /^\d{4}-\d{2}-\d{2}$/.test(r.e));
+    if(!valid.length){ alert('未识别到有效记录'); return; }
+    // 合并进 pd2Custom，避免与已有重复
+    const existSet = new Set(pd2All().map(r=>r.s));
+    const newOnes = valid.filter(r=>!existSet.has(r.s));
+    pd2Custom = pd2Custom.concat(newOnes).sort((a,b)=>a.s.localeCompare(b.s));
+    DB.set('pd_custom', pd2Custom);
+    alert(`导入完成：新增 ${newOnes.length} 条，跳过重复 ${valid.length - newOnes.length} 条`);
+    renderPeriodSection();
+  }catch(e){
+    alert('JSON 格式错误，请检查是否完整复制');
+  }
 }
 
 function pd2SetFilter(y){ pd2Filter = y; pd2RenderHist(); }
